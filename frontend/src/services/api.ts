@@ -104,7 +104,11 @@ api.interceptors.response.use(
       "An unexpected error occurred. Please try again.";
     const errorSources = errorData?.errorSources;
 
-    const apiError = new ApiError(errorMessage, statusCode || 500, errorSources);
+    const apiError = new ApiError(
+      errorMessage,
+      statusCode || 500,
+      errorSources,
+    );
 
     // If not a 401, return structured ApiError immediately
     if (!originalRequest || statusCode !== 401) {
@@ -112,7 +116,9 @@ api.interceptors.response.use(
     }
 
     const requestUrl = originalRequest.url || "";
-    const isBypassUrl = AUTH_BYPASS_URLS.some((url) => requestUrl.includes(url));
+    const isBypassUrl = AUTH_BYPASS_URLS.some((url) =>
+      requestUrl.includes(url),
+    );
 
     // Do NOT refresh if:
     // 1. The URL is explicitly bypassed (login, register, logout, etc.)
@@ -171,10 +177,7 @@ api.interceptors.response.use(
       }
 
       return Promise.reject(
-        new ApiError(
-          "Your session has expired. Please sign in again.",
-          401,
-        ),
+        new ApiError("Your session has expired. Please sign in again.", 401),
       );
     } finally {
       isRefreshing = false;

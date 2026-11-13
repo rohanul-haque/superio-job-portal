@@ -18,12 +18,12 @@ export const setAuthCookies = (
 
   res.cookie("accessToken", tokens.accessToken, {
     ...baseOptions,
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    maxAge: 15 * 60 * 1000,
   });
 
   res.cookie("refreshToken", tokens.refreshToken, {
     ...baseOptions,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 };
 
@@ -33,7 +33,7 @@ export const setAccessTokenCookie = (
 ): void => {
   res.cookie("accessToken", accessToken, {
     ...getBaseCookieOptions(),
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    maxAge: 15 * 60 * 1000,
   });
 };
 
@@ -43,7 +43,7 @@ export const setEmailVerificationCookie = (
 ): void => {
   res.cookie("emailVerificationToken", verificationToken, {
     ...getBaseCookieOptions(),
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    maxAge: 5 * 60 * 1000,
   });
 };
 
