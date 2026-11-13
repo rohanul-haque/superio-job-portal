@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 
+import Job from "../models/Job.js";
+import JobApplication from "../models/JobApplication.js";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
-import JobApplication from "../models/JobApplication.js";
-import Job from "../models/Job.js";
 
 export const registerUser = async (req, res) => {
   try {
