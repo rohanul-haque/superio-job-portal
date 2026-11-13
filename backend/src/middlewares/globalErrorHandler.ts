@@ -1,5 +1,10 @@
 import { Prisma } from "@prisma/client";
-import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import type {
+  ErrorRequestHandler,
+  NextFunction,
+  Request,
+  Response,
+} from "express";
 import { StatusCodes } from "http-status-codes";
 import { ZodError } from "zod";
 import config from "../config";
@@ -7,7 +12,12 @@ import type { IGenericErrorMessage } from "../types";
 import AppError from "../utils/AppError";
 
 const globalErrorHandler: ErrorRequestHandler = (
-  err: Error | AppError | ZodError | Prisma.PrismaClientKnownRequestError | Record<string, unknown>,
+  err:
+    | Error
+    | AppError
+    | ZodError
+    | Prisma.PrismaClientKnownRequestError
+    | Record<string, unknown>,
   req: Request,
   res: Response,
   next: NextFunction,
