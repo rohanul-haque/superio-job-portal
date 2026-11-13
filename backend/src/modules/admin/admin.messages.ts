@@ -1,0 +1,32 @@
+const ADMIN_MESSAGES = {
+  DASHBOARD_STATS_FETCHED: "Admin platform statistics retrieved successfully",
+  CANDIDATES_FETCHED: "Candidate records retrieved successfully",
+  CANDIDATE_MODERATED: "Candidate account moderation applied successfully",
+  CANDIDATE_NOT_FOUND: "Candidate account not found",
+  RECRUITERS_FETCHED: "Recruiter records retrieved successfully",
+  RECRUITER_MODERATED: "Recruiter account moderation applied successfully",
+  RECRUITER_NOT_FOUND: "Recruiter company account not found",
+  JOBS_FETCHED: "Admin master job records retrieved successfully",
+  JOB_MODERATED: "Job vacancy moderation applied successfully",
+  JOB_NOT_FOUND: "Job vacancy record not found",
+  TRASH_FETCHED: "Trash and soft-deleted items retrieved successfully",
+  TRASH_RESTORED: "Item restored successfully from trash",
+  TRASH_PURGED: "Item permanently purged from system",
+  ENTITY_NOT_FOUND: "Target entity record not found in database",
+  INVALID_ENTITY_TYPE: "Invalid entity type specified for trash operations",
+  ADMIN_PROFILE_FETCHED: "Admin profile retrieved successfully",
+  ADMIN_PROFILE_UPDATED: "Admin profile updated successfully",
+  ADMIN_PASSWORD_CHANGED: "Admin password changed successfully",
+  ADMIN_NOT_FOUND: "Admin account not found in database",
+  EMAIL_ALREADY_IN_USE: "Email address is already in use by another account",
+  CURRENT_PASSWORD_INCORRECT: "Current password is incorrect",
+  PASSWORDS_DO_NOT_MATCH: "New password and confirm password do not match",
+  NO_PROFILE_CHANGES: "No profile changes were provided",
+  PROFILE_IMAGE_UPLOADED: "Profile image uploaded and updated successfully",
+  PROFILE_IMAGE_REMOVED: "Profile image removed successfully",
+  PROFILE_IMAGE_REQUIRED: "Profile image file is required",
+  INVALID_IMAGE_FILE: "Invalid image file. Only JPEG, JPG, PNG, and WEBP formats are supported.",
+};
+
+export default ADMIN_MESSAGES;
+

@@ -1,0 +1,137 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+type CloudinaryFile {
+  url      String
+  publicId String
+}
+
+model User {
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  email              String          @unique
+  password           String
+  role               String          @default("candidate") // candidate | admin
+  profilePicture     CloudinaryFile?
+  title              String          @default("")
+  bio                String          @default("")
+  skills             String[]
+  socialLinks        Json?
+  resume             CloudinaryFile?
+  isEmailVerified    Boolean         @default(false)
+  verificationToken  String?
+  resetPasswordToken String?
+  status             String          @default("active") // active | blocked
+  isDeleted          Boolean         @default(false)
+  deletedAt          DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  applications      JobApplication[]
+  bookmarks         Bookmark[]
+  categoriesCreated Category[]
+}
+
+model Company {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  email             String    @unique
+  password          String
+  role              String    @default("recruiter")
+  image             String    @default("")
+  description       String    @default("")
+  website           String    @default("")
+  location          String    @default("")
+  companySize       String    @default("")
+  socialLinks       Json?
+  isEmailVerified   Boolean   @default(false)
+  verificationToken String?
+  status            String    @default("active") // active | blocked
+  isDeleted         Boolean   @default(false)
+  deletedAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  jobs         Job[]
+  applications JobApplication[]
+}
+
+type CategoryIcon {
+  url      String
+  publicId String
+}
+
+model Category {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String       @unique
+  slug        String       @unique
+  icon        CategoryIcon
+  isActive    Boolean      @default(true)
+  createdById String       @db.ObjectId
+  createdBy   User         @relation(fields: [createdById], references: [id])
+  isDeleted   Boolean      @default(false)
+  deletedAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  jobs Job[]
+}
+
+model Job {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  categoryId   String    @db.ObjectId
+  category     Category  @relation(fields: [categoryId], references: [id])
+  companyId    String    @db.ObjectId
+  company      Company   @relation(fields: [companyId], references: [id])
+  location     String
+  level        String // Beginner level | Intermediate level | Senior level
+  salary       Float
+  vacancy      Int       @default(1)
+  jobType      String // Full-time | Part-time | Remote | Contract | Internship
+  hiringStatus String    @default("Ongoing") // Ongoing | Closed
+  deadline     DateTime
+  visible      Boolean   @default(true)
+  isDeleted    Boolean   @default(false)
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  applications JobApplication[]
+  bookmarks    Bookmark[]
+}
+
+model JobApplication {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id])
+  companyId String    @db.ObjectId
+  company   Company   @relation(fields: [companyId], references: [id])
+  jobId     String    @db.ObjectId
+  job       Job       @relation(fields: [jobId], references: [id])
+  status    String    @default("Pending") // Pending | Shortlisted | Accepted | Rejected | Withdrawn
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, jobId])
+}
+
+model Bookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  jobId     String   @db.ObjectId
+  job       Job      @relation(fields: [jobId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, jobId])
+}

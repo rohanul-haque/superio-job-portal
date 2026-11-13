@@ -1,39 +1,39 @@
 {
   "name": "frontend",
+  "version": "2.0.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.4",
-    "axios": "^1.8.4",
-    "framer-motion": "^12.9.2",
-    "k-convert": "^1.0.6",
-    "lucide-react": "^0.488.0",
-    "moment": "^2.30.1",
-    "quill": "^2.0.3",
+    "@tiptap/extension-link": "^3.33.1",
+    "@tiptap/extension-placeholder": "^3.33.1",
+    "@tiptap/extension-text-align": "^3.33.1",
+    "@tiptap/extension-underline": "^3.33.1",
+    "@tiptap/pm": "^3.33.1",
+    "@tiptap/react": "^3.33.1",
+    "@tiptap/starter-kit": "^3.33.1",
+    "axios": "^1.7.7",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.460.0",
+    "next": "^16.4.6",
     "react": "^19.0.0",
-    "react-countup": "^6.5.3",
     "react-dom": "^19.0.0",
-    "react-hot-toast": "^2.5.2",
-    "react-router-dom": "^7.5.0",
-    "swiper": "^11.2.6",
-    "tailwindcss": "^4.1.4"
+    "recharts": "^3.10.1",
+    "sonner": "^1.7.0",
+    "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.22.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
-    "vite": "^6.3.1"
+    "@tailwindcss/postcss": "^4.0.6",
+    "@types/node": "^22.8.7",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.0.6",
+    "typescript": "^5.6.3"
   }
 }
