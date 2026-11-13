@@ -1,3 +1,5 @@
+/// <reference types="multer" />
+
 import type { IJwtPayload } from "../lib/jwt";
 
 export interface IDbUser {
