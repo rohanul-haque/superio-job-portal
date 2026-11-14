@@ -11,9 +11,27 @@ import routes from "./routes";
 const app: Application = express();
 
 // Middlewares
+const allowedOrigins = [
+  config.FRONTEND_URL?.replace(/\/+$/, ""),
+  "https://superio-job-portal-gamma.vercel.app",
+  "http://localhost:3000",
+].filter(Boolean) as string[];
+
 app.use(
   cors({
-    origin: [config.FRONTEND_URL, "http://localhost:3000"],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (server-to-server BFF calls, mobile apps, health checks)
+      if (!origin) return callback(null, true);
+      const cleanOrigin = origin.replace(/\/+$/, "");
+      if (
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.endsWith(".vercel.app") ||
+        cleanOrigin.includes("localhost")
+      ) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
     credentials: true,
   }),
 );

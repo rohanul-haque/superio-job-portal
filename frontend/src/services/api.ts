@@ -17,8 +17,23 @@ export class ApiError extends Error {
   }
 }
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+/**
+ * In browser environments, routes all API requests through the same-origin Next.js BFF proxy (/api/backend).
+ * This binds HttpOnly authentication cookies directly to the frontend domain (Vercel), solving cross-domain issues.
+ * In server-side Node.js contexts (SSR), falls back to direct backend URL.
+ */
+export const getApiBaseUrl = (): string => {
+  if (typeof window !== "undefined") {
+    return "/api/backend";
+  }
+  const rawUrl =
+    process.env.BACKEND_API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:5000/api/v1";
+  return rawUrl.trim().replace(/\/+$/, "");
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -28,6 +43,13 @@ export const api = axios.create({
 // Request interceptor: allow browser/Axios to set multipart boundary for FormData payloads
 api.interceptors.request.use(
   (config) => {
+    // Ensure browser requests always target same-origin BFF proxy
+    if (typeof window !== "undefined") {
+      if (!config.baseURL || !config.baseURL.startsWith("http")) {
+        config.baseURL = "/api/backend";
+      }
+    }
+
     if (typeof FormData !== "undefined" && config.data instanceof FormData) {
       if (config.headers) {
         if (typeof config.headers.delete === "function") {
@@ -139,9 +161,14 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      // Call backend refresh endpoint; browser sends HTTP-only refreshToken cookie
+      // Call backend refresh endpoint; browser sends HTTP-only refreshToken cookie via BFF
+      const refreshUrl =
+        typeof window !== "undefined"
+          ? "/api/backend/auth/refresh-token"
+          : `${getApiBaseUrl()}/auth/refresh-token`;
+
       await axios.post(
-        `${API_BASE_URL}/auth/refresh-token`,
+        refreshUrl,
         {},
         { withCredentials: true },
       );
