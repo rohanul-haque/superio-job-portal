@@ -220,7 +220,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
+            className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium rounded-full h-11"
           >
             {isLoading ? (
               <>
@@ -237,12 +237,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         </form>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-2 border-t border-slate-100 bg-slate-50/50 p-6 text-center text-sm text-slate-600">
+      <CardFooter className="flex flex-col gap-2 border-t border-[#E5E7EB] bg-white p-6 text-center text-sm text-slate-600">
         <p>
           Already have an account?{" "}
           <Link
             href={`/login?role=${selectedRole}`}
-            className="font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+            className="font-semibold text-[#4F46E5] hover:underline"
           >
             Sign In
           </Link>

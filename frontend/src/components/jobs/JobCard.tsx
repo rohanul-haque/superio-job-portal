@@ -50,17 +50,17 @@ export const JobCard: React.FC<JobCardProps> = ({ job, featured = false }) => {
 
   return (
     <div
-      className={`group relative flex flex-col justify-between rounded-2xl border bg-white p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl ${
+      className={`group relative flex flex-col justify-between rounded-2xl border bg-white p-5 sm:p-6 transition-all duration-200 ${
         featured
-          ? "border-blue-300 ring-1 ring-blue-500/20 shadow-md"
-          : "border-slate-200 hover:border-blue-300"
+          ? "border-[#6366F1] ring-1 ring-[#6366F1]/20 shadow-none"
+          : "border-[#E5E7EB] hover:border-[#4F46E5] shadow-none"
       }`}
     >
       <div>
         {/* Header: Company Logo/Avatar & Badges */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-slate-700 font-bold text-base shadow-xs overflow-hidden">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-base shadow-none overflow-hidden">
               {job.company?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -77,7 +77,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, featured = false }) => {
                 {job.company?.name || "Verified Company"}
               </p>
               <Link href={`/apply-job/${job.id}`}>
-                <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                <h3 className="text-base font-bold text-[#0F172A] group-hover:text-[#4F46E5] transition-colors line-clamp-1">
                   {job.title}
                 </h3>
               </Link>
@@ -117,12 +117,12 @@ export const JobCard: React.FC<JobCardProps> = ({ job, featured = false }) => {
       </div>
 
       {/* Footer: Salary & Apply Link */}
-      <div className="mt-6 border-t border-slate-100 pt-4 flex items-center justify-between">
+      <div className="mt-6 border-t border-[#E5E7EB] pt-4 flex items-center justify-between">
         <div>
           <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
             Salary
           </span>
-          <span className="text-sm font-extrabold text-slate-900">
+          <span className="text-sm font-extrabold text-[#0F172A]">
             {formatSalary(job.salary)}
           </span>
         </div>
@@ -131,7 +131,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, featured = false }) => {
           {!isOngoing && (
             <Badge
               variant="outline"
-              className="bg-red-50 text-red-700 border-red-200 text-[10px]"
+              className="bg-red-50 text-[#DC2626] border-red-200 text-[10px]"
             >
               Closed
             </Badge>
@@ -139,10 +139,10 @@ export const JobCard: React.FC<JobCardProps> = ({ job, featured = false }) => {
           <Link href={`/apply-job/${job.id}`}>
             <Button
               size="sm"
-              className={`h-9 px-3.5 text-xs font-semibold ${
+              className={`h-9 px-4 text-xs font-medium rounded-full ${
                 isOngoing
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                  ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                  : "bg-slate-100 hover:bg-slate-200 text-[#0F172A]"
               }`}
             >
               Apply Now

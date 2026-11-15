@@ -4,16 +4,16 @@ import React from "react";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer className="border-t border-[#E5E7EB] bg-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#4F46E5] text-white">
                 <Briefcase className="h-5 w-5" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-slate-900">
-                Super<span className="text-blue-600">io</span>
+              <span className="text-xl font-bold tracking-tight text-[#0F172A]">
+                Super<span className="text-[#4F46E5]">io</span>
               </span>
             </div>
             <p className="text-sm text-slate-500 leading-relaxed">

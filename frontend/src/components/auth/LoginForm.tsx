@@ -211,7 +211,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               <Label htmlFor="login-password">Password</Label>
               <Link
                 href="/forgot-password"
-                className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                className="text-xs font-medium text-[#4F46E5] hover:underline"
               >
                 Forgot password?
               </Link>
@@ -245,7 +245,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
+            className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium rounded-full h-11"
           >
             {isLoading ? (
               <>
@@ -263,12 +263,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         </form>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-2 border-t border-slate-100 bg-slate-50/50 p-6 text-center text-sm text-slate-600">
+      <CardFooter className="flex flex-col gap-2 border-t border-[#E5E7EB] bg-white p-6 text-center text-sm text-slate-600">
         <p>
           Don&apos;t have an account?{" "}
           <Link
             href={`/register?role=${selectedRole}`}
-            className="font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+            className="font-semibold text-[#4F46E5] hover:underline"
           >
             Register Now
           </Link>

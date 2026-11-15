@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={outfit.variable}>
       <body
-        className={`${outfit.className} min-h-screen bg-slate-50 text-slate-900 antialiased`}
+        className={`${outfit.className} min-h-screen bg-white text-slate-900 antialiased`}
       >
         <AuthProvider>
           {children}

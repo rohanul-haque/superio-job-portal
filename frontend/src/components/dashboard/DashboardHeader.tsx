@@ -50,14 +50,14 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ role }) => {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white/95 px-4 sm:px-6 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-[#E5E7EB] bg-white px-4 sm:px-6">
       {/* Left: Sidebar Trigger (Mobile only) & Page Title */}
       <div className="flex items-center gap-2">
         <SidebarTrigger className="lg:hidden" />
         <Separator orientation="vertical" className="h-5 mx-1 lg:hidden" />
 
         <div className="flex items-center gap-2.5">
-          <h1 className="text-sm sm:text-base font-bold text-slate-900 leading-tight">
+          <h1 className="text-sm sm:text-base font-bold text-[#0F172A] leading-tight">
             {getPageTitle()}
           </h1>
         </div>
@@ -65,45 +65,23 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ role }) => {
 
       {/* Right: Live Portal Link / Back to Homepage & User Avatar */}
       <div className="flex items-center gap-3">
-        {role === "admin" ? (
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 transition-colors duration-150 hover:text-blue-600 hover:underline shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-xs"
-          >
-            <ArrowLeft className="h-3.5 w-3.5 text-slate-500 transition-colors duration-150 group-hover:text-blue-600" />
-            <span>Back to Home</span>
-          </Link>
-        ) : role === "recruiter" ? (
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 transition-colors duration-150 hover:text-blue-600 hover:underline shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-xs"
-          >
-            <ArrowLeft className="h-3.5 w-3.5 text-slate-500 transition-colors duration-150 group-hover:text-blue-600" />
-            <span>Back to Home Page</span>
-          </Link>
-        ) : (
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 transition-colors duration-150 hover:text-blue-600 hover:underline shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-xs"
-          >
-            <ArrowLeft className="h-3.5 w-3.5 text-slate-500 transition-colors duration-150 group-hover:text-blue-600" />
-            <span>Back to Home</span>
-          </Link>
-        )}
+        <Link
+          href="/"
+          className="group inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 transition-colors duration-150 hover:text-[#4F46E5] hover:underline shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 rounded-xs"
+        >
+          <ArrowLeft className="h-3.5 w-3.5 text-slate-500 transition-colors duration-150 group-hover:text-[#4F46E5]" />
+          <span>Back to Home</span>
+        </Link>
 
-        <div className="flex items-center gap-2.5 pl-2 border-l border-slate-100">
+        <div className="flex items-center gap-2.5 pl-2 border-l border-[#E5E7EB]">
           <UserAvatar
             user={user}
-            className="h-8 w-8 rounded-full border border-slate-200"
-            fallbackClassName={
-              role === "admin"
-                ? "bg-purple-100 text-purple-700 text-xs font-bold"
-                : "bg-blue-100 text-blue-700 text-xs font-bold"
-            }
+            className="h-8 w-8 rounded-full border border-[#E5E7EB]"
+            fallbackClassName="bg-[#EEF2FF] text-[#4F46E5] text-xs font-bold"
           />
 
           <div className="hidden md:block text-left">
-            <p className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[140px]">
+            <p className="text-xs font-bold text-[#0F172A] leading-tight truncate max-w-[140px]">
               {user?.name || (role === "admin" ? "Administrator" : "User")}
             </p>
             <span className="flex items-center gap-1 text-[10px] text-slate-500 leading-tight truncate max-w-[140px]">

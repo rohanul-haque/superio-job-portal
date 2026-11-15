@@ -250,12 +250,12 @@ export const JobsCatalogue: React.FC = () => {
   const FilterSidebar = () => (
     <div className="space-y-6">
       {/* Header & Reset Button */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+      <div className="flex items-center justify-between pb-4 border-b border-[#E5E7EB]">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-5 w-5 text-blue-600" />
-          <h3 className="font-bold text-slate-900 text-base">Filters</h3>
+          <SlidersHorizontal className="h-5 w-5 text-[#4F46E5]" />
+          <h3 className="font-bold text-[#0F172A] text-base">Filters</h3>
           {activeFilterCount > 0 && (
-            <Badge className="bg-blue-600 text-white text-[11px] px-2 py-0.5">
+            <Badge className="bg-[#4F46E5] text-white text-[11px] px-2 py-0.5 rounded-full">
               {activeFilterCount}
             </Badge>
           )}
@@ -314,9 +314,9 @@ export const JobsCatalogue: React.FC = () => {
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => handleToggleCategory(cat.id)}
-                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                   />
-                  <span className={isChecked ? "font-semibold text-blue-600" : ""}>
+                  <span className={isChecked ? "font-semibold text-[#4F46E5]" : ""}>
                     {cat.name}
                   </span>
                 </div>
@@ -329,7 +329,7 @@ export const JobsCatalogue: React.FC = () => {
 
       {/* 3. Job Type */}
       <div className="space-y-2">
-        <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+        <label className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
           Job Type
         </label>
         <div className="space-y-1.5">
@@ -344,9 +344,9 @@ export const JobsCatalogue: React.FC = () => {
                   type="checkbox"
                   checked={isChecked}
                   onChange={() => handleToggleJobType(type)}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
-                <span className={isChecked ? "font-semibold text-blue-600" : ""}>
+                <span className={isChecked ? "font-semibold text-[#4F46E5]" : ""}>
                   {type}
                 </span>
               </label>
@@ -357,7 +357,7 @@ export const JobsCatalogue: React.FC = () => {
 
       {/* 4. Experience Level */}
       <div className="space-y-2">
-        <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+        <label className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
           Experience Level
         </label>
         <div className="space-y-1.5">
@@ -372,9 +372,9 @@ export const JobsCatalogue: React.FC = () => {
                   type="checkbox"
                   checked={isChecked}
                   onChange={() => handleToggleLevel(level)}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
-                <span className={isChecked ? "font-semibold text-blue-600" : ""}>
+                <span className={isChecked ? "font-semibold text-[#4F46E5]" : ""}>
                   {level}
                 </span>
               </label>
@@ -385,7 +385,7 @@ export const JobsCatalogue: React.FC = () => {
 
       {/* 5. Location */}
       <div className="space-y-2">
-        <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+        <label className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
           Location
         </label>
         <div className="space-y-1.5">
@@ -400,9 +400,9 @@ export const JobsCatalogue: React.FC = () => {
                   type="checkbox"
                   checked={isChecked}
                   onChange={() => handleToggleLocation(loc)}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
-                <span className={isChecked ? "font-semibold text-blue-600" : ""}>
+                <span className={isChecked ? "font-semibold text-[#4F46E5]" : ""}>
                   {loc}
                 </span>
               </label>
@@ -457,12 +457,12 @@ export const JobsCatalogue: React.FC = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       {/* Page Header */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E5E7EB] pb-6">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#4F46E5] bg-[#EEF2FF] px-3.5 py-1 rounded-full">
             Job Catalogue
           </span>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0F172A] sm:text-4xl">
             Explore Open Opportunities
           </h1>
           <p className="mt-1 text-sm text-slate-500">
@@ -475,9 +475,9 @@ export const JobsCatalogue: React.FC = () => {
           <button
             type="button"
             onClick={() => setMobileFilterOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 lg:hidden cursor-pointer"
+            className="flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-4 py-2 text-xs font-medium text-[#0F172A] shadow-none hover:bg-slate-50 lg:hidden cursor-pointer"
           >
-            <Filter className="h-4 w-4 text-blue-600" />
+            <Filter className="h-4 w-4 text-[#4F46E5]" />
             Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
           </button>
 
@@ -491,10 +491,10 @@ export const JobsCatalogue: React.FC = () => {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-800 shadow-xs min-w-[190px]">
+              <SelectTrigger className="h-10 rounded-full border border-[#E5E7EB] bg-white px-4 text-xs font-medium text-[#0F172A] shadow-none min-w-[190px]">
                 <div className="flex items-center gap-1.5">
                   <ArrowUpDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                  <span className="text-xs font-semibold text-slate-500">Sort:</span>
+                  <span className="text-xs font-medium text-slate-500">Sort:</span>
                   <SelectValue />
                 </div>
               </SelectTrigger>
@@ -512,11 +512,11 @@ export const JobsCatalogue: React.FC = () => {
       {/* Active Filter Pills Bar */}
       {activeFilterCount > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-slate-500">Active filters:</span>
+          <span className="text-xs font-medium text-slate-500">Active filters:</span>
           {keyword && (
             <Badge
               variant="secondary"
-              className="gap-1 bg-blue-50 text-blue-700 border-blue-200 text-xs"
+              className="gap-1 bg-[#EEF2FF] text-[#4F46E5] border-transparent text-xs rounded-full"
             >
               Keyword: {keyword}
               <X
@@ -531,7 +531,7 @@ export const JobsCatalogue: React.FC = () => {
               <Badge
                 key={catId}
                 variant="secondary"
-                className="gap-1 bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                className="gap-1 bg-[#EEF2FF] text-[#4F46E5] border-transparent text-xs rounded-full"
               >
                 Category: {cat?.name || catId}
                 <X
@@ -663,10 +663,10 @@ export const JobsCatalogue: React.FC = () => {
                               variant={pNum === meta.page ? "default" : "outline"}
                               size="sm"
                               onClick={() => setPage(pNum)}
-                              className={`h-8 w-8 p-0 text-xs ${
+                              className={`h-8 w-8 p-0 text-xs rounded-full ${
                                 pNum === meta.page
-                                  ? "bg-blue-600 text-white"
-                                  : "text-slate-700"
+                                  ? "bg-[#6366F1] text-white"
+                                  : "text-[#0F172A] border-[#E5E7EB]"
                               }`}
                             >
                               {pNum}
@@ -743,10 +743,10 @@ export const JobsCatalogue: React.FC = () => {
               </button>
             </div>
             <FilterSidebar />
-            <div className="mt-6 pt-4 border-t border-slate-200">
+            <div className="mt-6 pt-4 border-t border-[#E5E7EB]">
               <Button
                 onClick={() => setMobileFilterOpen(false)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-full"
               >
                 Show Results ({meta.total})
               </Button>

@@ -78,9 +78,9 @@ export const GetHiredSteps: React.FC = () => {
     <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full py-8 sm:py-12 overflow-hidden">
       {/* Section Header */}
       <div className="text-center mb-12 sm:mb-16 max-w-2xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0F172A]">
           Get Hired in{" "}
-          <span className="text-purple-600 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+          <span className="text-[#4F46E5] bg-gradient-to-r from-[#4F46E5] to-[#6366F1] bg-clip-text text-transparent">
             4 Quick Easy Steps
           </span>
         </h2>
@@ -107,7 +107,7 @@ export const GetHiredSteps: React.FC = () => {
             {/* Dashed connector path weaving across the cards */}
             <path
               d="M 10 120 C 180 145, 340 100, 520 125 C 700 150, 860 110, 1020 70 L 1050 45"
-              stroke="#cbd5e1"
+              stroke="#E5E7EB"
               strokeWidth="2"
               strokeDasharray="6 6"
               strokeLinecap="round"
@@ -115,9 +115,9 @@ export const GetHiredSteps: React.FC = () => {
           </svg>
 
           {/* Paper airplane icon at the top-right end of the dashed line */}
-          <div className="absolute right-4 -top-3 sm:-top-5 text-purple-600 animate-pulse">
+          <div className="absolute right-4 -top-3 sm:-top-5 text-[#4F46E5] animate-pulse">
             <svg
-              className="w-8 h-8 sm:w-9 sm:h-9 -rotate-12 drop-shadow-sm fill-purple-600 text-purple-600"
+              className="w-8 h-8 sm:w-9 sm:h-9 -rotate-12 fill-[#4F46E5] text-[#4F46E5]"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -131,17 +131,17 @@ export const GetHiredSteps: React.FC = () => {
           {STEPS.map((step) => (
             <div
               key={step.id}
-              className="group relative bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-7 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-start text-left"
+              className="group relative bg-white rounded-2xl p-6 sm:p-7 border border-[#E5E7EB] shadow-none hover:border-[#4F46E5] transition-all duration-300 flex flex-col justify-start text-left"
             >
               {/* Circular Icon Badge */}
               <div
-                className={`w-14 h-14 rounded-2xl flex items-center justify-center ${step.iconBg} ${step.iconColor} mb-6 shadow-sm group-hover:scale-105 transition-transform duration-300`}
+                className={`w-14 h-14 rounded-2xl flex items-center justify-center ${step.iconBg} ${step.iconColor} mb-6 group-hover:scale-105 transition-transform duration-300`}
               >
                 {step.icon}
               </div>
 
               {/* Title */}
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2.5 tracking-tight group-hover:text-purple-600 transition-colors">
+              <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] mb-2.5 tracking-tight group-hover:text-[#4F46E5] transition-colors">
                 {step.title}
               </h3>
 

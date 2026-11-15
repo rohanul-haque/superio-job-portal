@@ -21,7 +21,7 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
 }) => {
   return (
     <div
-      className={`relative grid w-full grid-cols-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs ${className}`}
+      className={`relative grid w-full grid-cols-2 rounded-full border border-[#E5E7EB] bg-white p-1 shadow-none ${className}`}
       role="tablist"
       aria-label="Select Account Type"
     >
@@ -30,10 +30,10 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
         role="tab"
         aria-selected={selectedRole === "candidate"}
         onClick={() => onChange("candidate")}
-        className={`flex h-12 w-full cursor-pointer items-center justify-center text-sm font-semibold transition-colors duration-150 select-none ${
+        className={`flex h-10 w-full cursor-pointer items-center justify-center text-sm font-medium transition-colors duration-150 select-none rounded-full ${
           selectedRole === "candidate"
-            ? "bg-blue-600 text-white"
-            : "bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            ? "bg-[#6366F1] text-white"
+            : "bg-white text-slate-600 hover:text-[#4F46E5]"
         }`}
       >
         {candidateLabel}
@@ -44,10 +44,10 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
         role="tab"
         aria-selected={selectedRole === "recruiter"}
         onClick={() => onChange("recruiter")}
-        className={`flex h-12 w-full cursor-pointer items-center justify-center text-sm font-semibold transition-colors duration-150 select-none ${
+        className={`flex h-10 w-full cursor-pointer items-center justify-center text-sm font-medium transition-colors duration-150 select-none rounded-full ${
           selectedRole === "recruiter"
-            ? "bg-blue-600 text-white"
-            : "bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+            ? "bg-[#6366F1] text-white"
+            : "bg-white text-slate-600 hover:text-[#4F46E5]"
         }`}
       >
         {recruiterLabel}

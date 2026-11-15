@@ -12,13 +12,13 @@ import React from "react";
 
 const STATS = [
   {
-    icon: <Users className="h-6 w-6 text-blue-600" />,
+    icon: <Users className="h-6 w-6 text-[#4F46E5]" />,
     value: "25,000+",
     label: "Active Job Seekers",
     subtext: "Verified candidate profiles",
   },
   {
-    icon: <Building2 className="h-6 w-6 text-indigo-600" />,
+    icon: <Building2 className="h-6 w-6 text-[#6366F1]" />,
     value: "1,200+",
     label: "Verified Companies",
     subtext: "Hiring global talent",
@@ -72,12 +72,12 @@ export const Testimonials: React.FC = () => {
         {STATS.map((stat, i) => (
           <div
             key={i}
-            className="flex flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white p-6 text-center shadow-xs"
+            className="flex flex-col items-center justify-center rounded-2xl border border-[#E5E7EB] bg-white p-6 text-center shadow-none"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 mb-3">
               {stat.icon}
             </div>
-            <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            <span className="text-3xl font-extrabold text-[#0F172A] tracking-tight">
               {stat.value}
             </span>
             <span className="mt-1 text-sm font-semibold text-slate-700">
@@ -91,10 +91,10 @@ export const Testimonials: React.FC = () => {
       {/* Testimonials Grid */}
       <div>
         <div className="text-center max-w-xl mx-auto mb-10">
-          <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#4F46E5] bg-[#EEF2FF] px-3.5 py-1 rounded-full">
             Trusted Worldwide
           </span>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#0F172A]">
             Loved by Candidates and Recruiters
           </h2>
           <p className="mt-2 text-sm text-slate-500">
@@ -106,7 +106,7 @@ export const Testimonials: React.FC = () => {
           {TESTIMONIALS.map((t, i) => (
             <div
               key={i}
-              className="flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition hover:shadow-md"
+              className="flex flex-col justify-between rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-none transition hover:border-[#4F46E5]"
             >
               <div>
                 <div className="flex items-center gap-1 text-amber-400 mb-4">
@@ -114,13 +114,13 @@ export const Testimonials: React.FC = () => {
                     <Star key={idx} className="h-4 w-4 fill-amber-400" />
                   ))}
                 </div>
-                <Quote className="h-6 w-6 text-blue-200 mb-2" />
+                <Quote className="h-6 w-6 text-indigo-200 mb-2" />
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed italic">
                   &ldquo;{t.quote}&rdquo;
                 </p>
               </div>
 
-              <div className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-4">
+              <div className="mt-6 flex items-center gap-3 border-t border-[#E5E7EB] pt-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={t.avatar}
@@ -128,7 +128,7 @@ export const Testimonials: React.FC = () => {
                   className="h-10 w-10 rounded-full object-cover ring-2 ring-slate-100"
                 />
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{t.name}</h4>
+                  <h4 className="text-sm font-bold text-[#0F172A]">{t.name}</h4>
                   <p className="text-xs text-slate-400">{t.role}</p>
                 </div>
               </div>

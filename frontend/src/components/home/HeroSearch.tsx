@@ -29,7 +29,7 @@ export const HeroSearch: React.FC = () => {
     <div className="mx-auto w-full max-w-3xl">
       <form
         onSubmit={handleSearch}
-        className="flex flex-col sm:flex-row items-center gap-2 rounded-2xl border border-slate-200/90 bg-white p-2.5 shadow-xl shadow-slate-200/40"
+        className="flex flex-col sm:flex-row items-center gap-2 rounded-2xl border border-[#E5E7EB] bg-white p-2.5 shadow-none"
       >
         {/* Keyword Input */}
         <div className="relative flex flex-1 items-center w-full px-3">
@@ -43,7 +43,7 @@ export const HeroSearch: React.FC = () => {
           />
         </div>
 
-        <div className="hidden sm:block h-8 w-px bg-slate-200" />
+        <div className="hidden sm:block h-8 w-px bg-[#E5E7EB]" />
 
         {/* Location Input */}
         <div className="relative flex flex-1 items-center w-full px-3">
@@ -60,7 +60,7 @@ export const HeroSearch: React.FC = () => {
         {/* Submit Button */}
         <Button
           type="submit"
-          className="h-11 w-full sm:w-auto px-7 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shrink-0 cursor-pointer"
+          className="h-11 w-full sm:w-auto px-7 bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium rounded-full shrink-0 cursor-pointer"
         >
           Find Jobs
         </Button>
@@ -68,14 +68,14 @@ export const HeroSearch: React.FC = () => {
 
       {/* Popular Search Tags */}
       <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500">
-        <span className="font-semibold text-slate-700">Popular Searches:</span>
+        <span className="font-medium text-[#0F172A]">Popular Searches:</span>
         {["Frontend", "Node.js", "Full-time", "Remote", "DevOps", "UI/UX"].map(
           (tag) => (
             <button
               key={tag}
               type="button"
               onClick={() => handleQuickTag(tag)}
-              className="rounded-full bg-slate-100/80 px-2.5 py-1 text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer"
+              className="rounded-full bg-[#EEF2FF] px-3 py-1 text-[#4F46E5] hover:bg-[#4F46E5] hover:text-white transition cursor-pointer font-medium"
             >
               {tag}
             </button>

@@ -32,12 +32,12 @@ export const Navbar: React.FC = () => {
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#4F46E5] text-white shadow-none">
             <Briefcase className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-slate-900">
-              Super<span className="text-blue-600">io</span>
+            <span className="text-xl font-bold tracking-tight text-[#0F172A]">
+              Super<span className="text-[#4F46E5]">io</span>
             </span>
             <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
               Enterprise v2.0
@@ -49,25 +49,25 @@ export const Navbar: React.FC = () => {
         <nav className="hidden items-center gap-8 md:flex">
           <Link
             href="/"
-            className="text-sm font-medium text-slate-600 transition-colors hover:text-blue-600"
+            className="text-sm font-medium text-[#0F172A] transition-colors hover:text-[#4F46E5]"
           >
             Home
           </Link>
           <Link
             href="/all-jobs"
-            className="text-sm font-medium text-slate-600 transition-colors hover:text-blue-600"
+            className="text-sm font-medium text-[#0F172A] transition-colors hover:text-[#4F46E5]"
           >
             Find Jobs
           </Link>
           <Link
             href="/about"
-            className="text-sm font-medium text-slate-600 transition-colors hover:text-blue-600"
+            className="text-sm font-medium text-[#0F172A] transition-colors hover:text-[#4F46E5]"
           >
             About Us
           </Link>
           <Link
             href="/terms"
-            className="text-sm font-medium text-slate-600 transition-colors hover:text-blue-600"
+            className="text-sm font-medium text-[#0F172A] transition-colors hover:text-[#4F46E5]"
           >
             Terms & FAQ
           </Link>
@@ -78,7 +78,7 @@ export const Navbar: React.FC = () => {
           {isAuthenticated && user ? (
             <div className="relative flex items-center gap-3">
               <Link href={getDashboardUrl()} className="hidden sm:inline-flex">
-                <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+                <Button className="flex items-center gap-2 bg-[#6366F1] hover:bg-[#4F46E5]">
                   <LayoutDashboard className="h-4 w-4" />
                   <span>Dashboard</span>
                 </Button>
@@ -88,15 +88,15 @@ export const Navbar: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 p-1.5 pr-3 text-left transition hover:bg-slate-100 cursor-pointer"
+                  className="flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white p-1.5 pr-3 text-left transition hover:bg-slate-50 cursor-pointer"
                 >
                   <UserAvatar
                     user={user}
-                    className="h-8 w-8 rounded-full border border-slate-200"
-                    fallbackClassName="bg-blue-100 text-blue-700 font-bold text-xs uppercase"
+                    className="h-8 w-8 rounded-full border border-[#E5E7EB]"
+                    fallbackClassName="bg-[#EEF2FF] text-[#4F46E5] font-bold text-xs uppercase"
                   />
                   <div className="hidden flex-col md:flex">
-                    <span className="text-xs font-semibold text-slate-800 line-clamp-1 max-w-[120px]">
+                    <span className="text-xs font-semibold text-[#0F172A] line-clamp-1 max-w-[120px]">
                       {user.name}
                     </span>
                     <span className="text-[10px] capitalize text-slate-400">
@@ -108,12 +108,12 @@ export const Navbar: React.FC = () => {
 
                 {dropdownOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-56 rounded-xl border border-slate-100 bg-white py-2 shadow-xl z-50"
+                    className="absolute right-0 mt-2 w-56 rounded-2xl border border-[#E5E7EB] bg-white py-2 shadow-sm z-50"
                     onClick={() => setDropdownOpen(false)}
                   >
-                    <div className="border-b border-slate-100 px-4 py-2.5">
+                    <div className="border-b border-[#E5E7EB] px-4 py-2.5">
                       <p className="text-xs text-slate-400">Signed in as</p>
-                      <p className="truncate text-sm font-semibold text-slate-800">
+                      <p className="truncate text-sm font-semibold text-[#0F172A]">
                         {user.email}
                       </p>
                       <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-emerald-600">
@@ -124,7 +124,7 @@ export const Navbar: React.FC = () => {
 
                     <Link
                       href={getDashboardUrl()}
-                      className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                      className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#0F172A] transition hover:bg-slate-50"
                     >
                       <LayoutDashboard className="h-4 w-4 text-slate-400" />
                       Dashboard
@@ -132,7 +132,7 @@ export const Navbar: React.FC = () => {
 
                     <button
                       onClick={logout}
-                      className="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-red-600 transition hover:bg-red-50 cursor-pointer"
+                      className="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-[#DC2626] transition hover:bg-red-50 cursor-pointer"
                     >
                       <LogOut className="h-4 w-4" />
                       Sign Out
@@ -147,7 +147,7 @@ export const Navbar: React.FC = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-slate-700 font-medium hover:text-blue-600 hover:bg-blue-50/50"
+                  className="text-[#0F172A] font-medium hover:text-[#4F46E5] hover:bg-[#EEF2FF]"
                 >
                   Login
                 </Button>
@@ -155,7 +155,7 @@ export const Navbar: React.FC = () => {
               <Link href="/register">
                 <Button
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-xs"
+                  className="bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium"
                 >
                   Register
                 </Button>

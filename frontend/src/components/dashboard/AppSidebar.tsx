@@ -187,27 +187,27 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
           title: "Superio",
           subtitle: "Admin Console",
           icon: ShieldAlert,
-          color: "bg-purple-700 text-white shadow-purple-600/30",
+          color: "bg-[#4F46E5] text-white",
           homeHref: "/admin/dashboard",
-          badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
+          badgeColor: "bg-[#EEF2FF] text-[#4F46E5] border-transparent",
         };
       case "recruiter":
         return {
           title: "Superio",
           subtitle: "Recruiter Portal",
           icon: Building2,
-          color: "bg-indigo-600 text-white shadow-indigo-500/30",
+          color: "bg-[#4F46E5] text-white",
           homeHref: "/recruiter/dashboard",
-          badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+          badgeColor: "bg-[#EEF2FF] text-[#4F46E5] border-transparent",
         };
       default:
         return {
           title: "Superio",
           subtitle: "Candidate Portal",
           icon: Briefcase,
-          color: "bg-blue-600 text-white shadow-blue-500/30",
+          color: "bg-[#4F46E5] text-white",
           homeHref: "/candidate/dashboard",
-          badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+          badgeColor: "bg-[#EEF2FF] text-[#4F46E5] border-transparent",
         };
     }
   };
@@ -231,14 +231,14 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
           onClick={handleNavClick}
         >
           <div
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-bold shadow-md ${brand.color}`}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-bold ${brand.color}`}
           >
             <BrandIcon className="h-5 w-5" />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-base font-black tracking-tight text-slate-900 leading-tight">
+            <span className="text-base font-black tracking-tight text-[#0F172A] leading-tight">
               {brand.title}
-              <span className="text-blue-600">.</span>
+              <span className="text-[#4F46E5]">.</span>
             </span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
               {brand.subtitle}
@@ -265,25 +265,13 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
                 const isRecommendationAi =
                   item.href.includes("/recommendations");
 
-                let buttonClassName = "";
-                let iconClassName = "";
+                const buttonClassName = isActive
+                  ? "bg-[#EEF2FF] text-[#4F46E5] font-semibold rounded-full data-[active=true]:bg-[#EEF2FF] data-[active=true]:text-[#4F46E5]"
+                  : "text-[#0F172A] hover:bg-slate-50 hover:text-[#4F46E5] rounded-full";
 
-                if (isCandidateOrRecruiter) {
-                  buttonClassName = isActive
-                    ? "bg-blue-600 text-white font-bold shadow-none hover:bg-blue-600 hover:text-white data-[active=true]:bg-blue-600 data-[active=true]:text-white hover:[&>svg]:text-white data-[active=true]:[&>svg]:text-white hover:[&>span]:text-white data-[active=true]:[&>span]:text-white"
-                    : "text-slate-600 shadow-none hover:bg-blue-600 hover:text-white hover:[&>svg]:text-white hover:[&>span]:text-white";
-
-                  iconClassName = isActive
-                    ? "text-white group-hover/menu-button:text-white group-hover:text-white"
-                    : "text-slate-500 group-hover/menu-button:text-white group-hover:text-white";
-                } else if (isActive) {
-                  buttonClassName =
-                    "bg-purple-50 text-purple-700 font-bold hover:bg-purple-100 hover:text-purple-800";
-                  iconClassName = "text-purple-700";
-                } else {
-                  iconClassName =
-                    "text-slate-500 group-hover/menu-button:text-slate-900 group-hover:text-slate-900";
-                }
+                const iconClassName = isActive
+                  ? "text-[#4F46E5]"
+                  : "text-slate-500 group-hover/menu-button:text-[#4F46E5]";
 
                 return (
                   <SidebarMenuItem key={item.href}>
@@ -320,11 +308,9 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
                         <span
                           className={cn(
                             "truncate flex-1 transition-colors duration-150",
-                            isCandidateOrRecruiter
-                              ? isActive
-                                ? "text-white font-bold group-hover/menu-button:text-white group-hover:text-white"
-                                : "group-hover/menu-button:text-white group-hover:text-white"
-                              : "",
+                            isActive
+                              ? "text-[#4F46E5] font-semibold"
+                              : "text-[#0F172A] group-hover:text-[#4F46E5]",
                           )}
                         >
                           {item.label}
@@ -335,15 +321,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
                         {item.badge && (
                           <Badge
                             className={cn(
-                              "ml-auto px-1.5 py-0 text-[10px] font-bold transition-colors duration-150",
-                              isCandidateOrRecruiter
-                                ? isActive
-                                  ? "bg-white/20 text-white border-transparent"
-                                  : cn(
-                                      brand.badgeColor,
-                                      "group-hover/menu-button:bg-white/20 group-hover/menu-button:text-white group-hover/menu-button:border-transparent group-hover:bg-white/20 group-hover:text-white group-hover:border-transparent",
-                                    )
-                                : brand.badgeColor,
+                              "ml-auto px-2 py-0.5 text-[10px] font-semibold rounded-full transition-colors duration-150",
+                              isActive
+                                ? "bg-[#4F46E5] text-white border-transparent"
+                                : "bg-[#EEF2FF] text-[#4F46E5] border-transparent",
                             )}
                           >
                             {item.badge}

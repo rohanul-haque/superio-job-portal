@@ -70,15 +70,15 @@ export default function HomePage() {
       <section className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
         <Badge
           variant="secondary"
-          className="mb-4 gap-1.5 px-3.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200"
+          className="mb-4 gap-1.5 px-3.5 py-1 text-xs font-medium text-[#4F46E5] bg-[#EEF2FF] border-0 rounded-full"
         >
           <Sparkles className="h-3.5 w-3.5" />
           Enterprise Edition v2.0 Live
         </Badge>
 
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
+        <h1 className="text-4xl font-extrabold tracking-tight text-[#0F172A] sm:text-5xl md:text-6xl">
           Modern Recruitment Platform <br />
-          <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4338CA] bg-clip-text text-transparent">
             Built for High-Growth Teams
           </span>
         </h1>
@@ -102,10 +102,10 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#4F46E5] bg-[#EEF2FF] px-3.5 py-1 rounded-full">
               Explore by Industry
             </span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
               Popular Job Categories
             </h2>
             <p className="mt-1 text-sm text-slate-500">
@@ -115,7 +115,7 @@ export default function HomePage() {
           <Link href="/all-jobs">
             <Button
               variant="outline"
-              className="text-xs font-semibold border-slate-300 hover:border-blue-600 hover:text-blue-600"
+              className="text-xs font-medium border-[#E5E7EB] hover:border-[#4F46E5] hover:text-[#4F46E5]"
             >
               All Categories →
             </Button>
@@ -129,10 +129,10 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#22C55E] bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-200">
               Fresh Openings
             </span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
               Latest Featured Jobs
             </h2>
             <p className="mt-1 text-sm text-slate-500">
@@ -140,7 +140,7 @@ export default function HomePage() {
             </p>
           </div>
           <Link href="/all-jobs">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold">
+            <Button className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-xs font-medium">
               Browse All Jobs
               <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </Button>
@@ -179,7 +179,7 @@ export default function HomePage() {
                 </Button>
               </Link>
               <Link href="/register?role=recruiter">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Button size="sm" className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
                   Post a Job as Employer
                 </Button>
               </Link>
@@ -198,9 +198,9 @@ export default function HomePage() {
 
       {/* Call to Action (CTA) Section */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-6 py-12 sm:px-12 sm:py-16 md:py-20 text-white shadow-xl">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4338CA] px-6 py-12 sm:px-12 sm:py-16 md:py-20 text-white shadow-none">
           <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center">
-            <Badge className="bg-white/20 text-white border-0 mb-4 px-3.5 py-1 text-xs font-semibold backdrop-blur-xs inline-flex items-center gap-1.5 shadow-none">
+            <Badge className="bg-white/20 text-white border-0 mb-4 px-3.5 py-1 text-xs font-medium backdrop-blur-xs inline-flex items-center gap-1.5 shadow-none rounded-full">
               <Sparkles className="h-3.5 w-3.5" />
               Join High-Growth Careers
             </Badge>
@@ -209,7 +209,7 @@ export default function HomePage() {
               Ready to Accelerate Your Career or Build Your Dream Team?
             </h2>
 
-            <p className="mt-4 text-blue-100 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl">
+            <p className="mt-4 text-indigo-100 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl">
               Connect with leading organizations, discover verified global
               opportunities, and hire top-tier talent with Superio&apos;s
               enterprise recruitment ecosystem.
@@ -219,7 +219,7 @@ export default function HomePage() {
               <Button
                 onClick={() => setIsGetStartedOpen(true)}
                 size="lg"
-                className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-white text-blue-700 hover:bg-slate-50 font-semibold text-sm sm:text-base rounded-xl shadow-none"
+                className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-white text-[#4F46E5] hover:bg-slate-50 font-medium text-sm sm:text-base rounded-full shadow-none"
               >
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -229,7 +229,7 @@ export default function HomePage() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-transparent hover:bg-transparent text-white hover:text-white border-white/80 hover:border-white/80 font-semibold text-sm sm:text-base rounded-xl shadow-none"
+                  className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-transparent hover:bg-transparent text-white hover:text-white border-white/80 hover:border-white/80 font-medium text-sm sm:text-base rounded-full shadow-none"
                 >
                   <Briefcase className="mr-2 h-4 w-4" />
                   Explore All Opening Jobs
