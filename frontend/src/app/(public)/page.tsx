@@ -2,6 +2,7 @@
 
 import GetStartedModal from "@/components/auth/GetStartedModal";
 import CategoryGrid from "@/components/home/CategoryGrid";
+import GetHiredSteps from "@/components/home/GetHiredSteps";
 import HeroSearch from "@/components/home/HeroSearch";
 import Testimonials from "@/components/home/Testimonials";
 import JobCard from "@/components/jobs/JobCard";
@@ -21,14 +22,10 @@ import type { IJob } from "@/types/job";
 import {
   ArrowRight,
   Briefcase,
-  Building2,
-  CheckCircle2,
   Download,
   Layers,
-  ShieldCheck,
   Smartphone,
   Sparkles,
-  Users,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -226,144 +223,8 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Role Portals Grid */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="text-center mb-10 max-w-xl mx-auto">
-          <span className="text-xs font-semibold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
-            Role-Based Workflows
-          </span>
-          <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-            Dedicated Workflows for Every Role
-          </h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Access tailored dashboards designed specifically for your recruitment needs
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Candidate Card */}
-          <Card className="border border-slate-200 transition-all hover:shadow-lg hover:border-blue-300 flex flex-col justify-between">
-            <CardHeader className="space-y-2">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <Users className="h-6 w-6" />
-              </div>
-              <CardTitle className="text-xl font-bold">Candidates</CardTitle>
-              <CardDescription className="text-sm text-slate-500">
-                Find jobs, upload your resume, submit applications, and track your interview pipeline.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ul className="space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
-                  Mandatory Email Verification
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
-                  Application Activity Area Chart
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0" />
-                  PDF Resume & Skill Management
-                </li>
-              </ul>
-              <div className="flex gap-2 pt-2">
-                <Link href="/login?role=candidate" className="flex-1">
-                  <Button variant="outline" className="w-full text-xs">
-                    Candidate Login
-                  </Button>
-                </Link>
-                <Link href="/register?role=candidate" className="flex-1">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-xs">
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recruiter Card */}
-          <Card className="border border-slate-200 transition-all hover:shadow-lg hover:border-amber-300 flex flex-col justify-between">
-            <CardHeader className="space-y-2">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-                <Building2 className="h-6 w-6" />
-              </div>
-              <CardTitle className="text-xl font-bold">
-                Recruiters & Companies
-              </CardTitle>
-              <CardDescription className="text-sm text-slate-500">
-                Publish openings, screen candidates, review resumes, and manage hiring decisions.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ul className="space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
-                  Employer Company Profile
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
-                  Incoming Applicant Inflow Chart
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
-                  Applicant Status Mutations
-                </li>
-              </ul>
-              <div className="flex gap-2 pt-2">
-                <Link href="/login?role=recruiter" className="flex-1">
-                  <Button variant="outline" className="w-full text-xs">
-                    Recruiter Login
-                  </Button>
-                </Link>
-                <Link href="/register?role=recruiter" className="flex-1">
-                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white text-xs">
-                    Register Company
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Admin / Governance Card */}
-          <Card className="border border-slate-200 transition-all hover:shadow-lg hover:border-purple-300 flex flex-col justify-between">
-            <CardHeader className="space-y-2">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
-                <ShieldCheck className="h-6 w-6" />
-              </div>
-              <CardTitle className="text-xl font-bold">
-                System Administration
-              </CardTitle>
-              <CardDescription className="text-sm text-slate-500">
-                Govern platform taxonomy, moderate accounts, manage categories, and handle trash recovery.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ul className="space-y-2 text-xs text-slate-600">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-purple-600 shrink-0" />
-                  Dynamic Category CRUD
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-purple-600 shrink-0" />
-                  Non-Destructive Soft-Delete Trash
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-purple-600 shrink-0" />
-                  Candidate & Recruiter Moderation
-                </li>
-              </ul>
-              <div className="pt-2">
-                <Link href="/admin/dashboard" className="w-full">
-                  <Button variant="secondary" className="w-full text-xs">
-                    Admin Portal
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      {/* Get Hired in 4 Quick Easy Steps */}
+      <GetHiredSteps />
 
       {/* Testimonials & Counter Statistics Section */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
