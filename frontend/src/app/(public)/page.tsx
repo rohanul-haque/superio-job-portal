@@ -16,7 +16,6 @@ import type { IJob } from "@/types/job";
 import {
   ArrowRight,
   Briefcase,
-  CheckCircle2,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -199,9 +198,9 @@ export default function HomePage() {
 
       {/* Call to Action (CTA) Section */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 p-8 sm:p-14 text-white shadow-2xl">
-          <div className="relative z-10 max-w-3xl">
-            <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 mb-4 px-3.5 py-1 text-xs font-semibold backdrop-blur-xs inline-flex items-center gap-1.5">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-6 py-12 sm:px-12 sm:py-16 md:py-20 text-white shadow-xl">
+          <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center">
+            <Badge className="bg-white/20 text-white border-0 mb-4 px-3.5 py-1 text-xs font-semibold backdrop-blur-xs inline-flex items-center gap-1.5 shadow-none">
               <Sparkles className="h-3.5 w-3.5" />
               Join High-Growth Careers
             </Badge>
@@ -216,42 +215,26 @@ export default function HomePage() {
               enterprise recruitment ecosystem.
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
               <Button
                 onClick={() => setIsGetStartedOpen(true)}
                 size="lg"
-                className="bg-white text-blue-700 hover:bg-blue-50 font-bold text-sm sm:text-base px-6 sm:px-7 py-3 h-auto shadow-lg transition-transform hover:-translate-y-0.5"
+                className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-white text-blue-700 hover:bg-slate-50 font-semibold text-sm sm:text-base rounded-xl shadow-none"
               >
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
 
-              <Link href="/all-jobs">
+              <Link href="/all-jobs" className="w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-white/30 text-white hover:bg-white/10 font-semibold text-sm sm:text-base px-6 py-3 h-auto transition-transform hover:-translate-y-0.5"
+                  className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-transparent hover:bg-transparent text-white hover:text-white border-white/80 hover:border-white/80 font-semibold text-sm sm:text-base rounded-xl shadow-none"
                 >
                   <Briefcase className="mr-2 h-4 w-4" />
-                  Explore All Openings
+                  Explore All Opening Jobs
                 </Button>
               </Link>
-            </div>
-
-            {/* Micro trust indicators */}
-            <div className="mt-8 pt-6 border-t border-white/15 flex flex-wrap items-center gap-6 text-xs sm:text-sm text-blue-100">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
-                <span>100% Free for Candidates</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
-                <span>Verified Recruiters & Jobs</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
-                <span>Instant Application Tracking</span>
-              </div>
             </div>
           </div>
 
