@@ -5,16 +5,10 @@ import CategoryGrid from "@/components/home/CategoryGrid";
 import GetHiredSteps from "@/components/home/GetHiredSteps";
 import HeroSearch from "@/components/home/HeroSearch";
 import Testimonials from "@/components/home/Testimonials";
+import TrustedByCarousel from "@/components/home/TrustedByCarousel";
 import JobCard from "@/components/jobs/JobCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import categoryService from "@/services/category.service";
 import jobService from "@/services/job.service";
 import type { ICategory } from "@/types/category";
@@ -22,22 +16,11 @@ import type { IJob } from "@/types/job";
 import {
   ArrowRight,
   Briefcase,
-  Download,
-  Layers,
-  Smartphone,
+  CheckCircle2,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-
-const PARTNER_COMPANIES = [
-  "Google",
-  "Microsoft",
-  "Amazon",
-  "Spotify",
-  "Airbnb",
-  "Stripe",
-];
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
@@ -102,9 +85,9 @@ export default function HomePage() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-slate-600 leading-relaxed">
-          Superio connects ambitious talent with world-class employers. Featuring
-          enterprise Gmail verification, dynamic category management, and
-          server-side job discovery.
+          Superio connects ambitious talent with world-class employers.
+          Featuring enterprise Gmail verification, dynamic category management,
+          and server-side job discovery.
         </p>
 
         {/* Hero Search Bar */}
@@ -112,22 +95,8 @@ export default function HomePage() {
           <HeroSearch />
         </div>
 
-        {/* Partner Logos */}
-        <div className="mt-14 border-t border-slate-100 pt-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Trusted by hiring leaders at top organizations
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-8 sm:gap-12 opacity-60 grayscale hover:grayscale-0 transition-all">
-            {PARTNER_COMPANIES.map((company) => (
-              <span
-                key={company}
-                className="text-lg sm:text-xl font-bold tracking-tight text-slate-700"
-              >
-                {company}
-              </span>
-            ))}
-          </div>
-        </div>
+        {/* Brand Logo Section – Trust by Hiring Leaders and Top Organizations */}
+        <TrustedByCarousel />
       </section>
 
       {/* Dynamic Job Categories Section */}
@@ -154,10 +123,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <CategoryGrid
-          categories={categories}
-          isLoading={isLoadingCategories}
-        />
+        <CategoryGrid categories={categories} isLoading={isLoadingCategories} />
       </section>
 
       {/* Latest 6 Job Posts Section */}
@@ -231,45 +197,68 @@ export default function HomePage() {
         <Testimonials />
       </section>
 
-      {/* Mobile App Promotional Download Banner */}
+      {/* Call to Action (CTA) Section */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 p-8 sm:p-12 text-white shadow-2xl">
-          <div className="relative z-10 max-w-2xl">
-            <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 mb-4 text-xs font-semibold">
-              <Smartphone className="mr-1.5 h-3.5 w-3.5" />
-              Mobile App Experience
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 p-8 sm:p-14 text-white shadow-2xl">
+          <div className="relative z-10 max-w-3xl">
+            <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 mb-4 px-3.5 py-1 text-xs font-semibold backdrop-blur-xs inline-flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5" />
+              Join High-Growth Careers
             </Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              Take Your Career Search Anywhere
+
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+              Ready to Accelerate Your Career or Build Your Dream Team?
             </h2>
-            <p className="mt-3 text-blue-100 text-sm sm:text-base leading-relaxed">
-              Receive real-time push notifications when employers review your
-              resume, schedule interviews, and accept applications. Available on
-              iOS and Android.
+
+            <p className="mt-4 text-blue-100 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl">
+              Connect with leading organizations, discover verified global
+              opportunities, and hire top-tier talent with Superio&apos;s
+              enterprise recruitment ecosystem.
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
+
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <Button
-                variant="secondary"
+                onClick={() => setIsGetStartedOpen(true)}
                 size="lg"
-                className="bg-white text-slate-900 hover:bg-slate-100 font-semibold text-xs sm:text-sm"
+                className="bg-white text-blue-700 hover:bg-blue-50 font-bold text-sm sm:text-base px-6 sm:px-7 py-3 h-auto shadow-lg transition-transform hover:-translate-y-0.5"
               >
-                <Download className="mr-2 h-4 w-4" />
-                Download for iOS
+                Get Started Free
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white/30 text-white hover:bg-white/10 font-semibold text-xs sm:text-sm"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Download for Android
-              </Button>
+
+              <Link href="/all-jobs">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-white/30 text-white hover:bg-white/10 font-semibold text-sm sm:text-base px-6 py-3 h-auto transition-transform hover:-translate-y-0.5"
+                >
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  Explore All Openings
+                </Button>
+              </Link>
+            </div>
+
+            {/* Micro trust indicators */}
+            <div className="mt-8 pt-6 border-t border-white/15 flex flex-wrap items-center gap-6 text-xs sm:text-sm text-blue-100">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
+                <span>100% Free for Candidates</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
+                <span>Verified Recruiters & Jobs</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
+                <span>Instant Application Tracking</span>
+              </div>
             </div>
           </div>
 
-          {/* Background decorative circles */}
-          <div className="absolute -right-16 -bottom-16 h-80 w-80 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute right-40 top-0 h-40 w-40 rounded-full bg-indigo-400/20 blur-xl" />
+          {/* Background decorative elements */}
+          <div className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute right-40 top-0 h-40 w-40 rounded-full bg-indigo-400/20 blur-2xl" />
+          <div className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-blue-400/20 blur-2xl" />
         </div>
       </section>
     </div>
