@@ -1,7 +1,6 @@
 "use client";
 
 import GetStartedModal from "@/components/auth/GetStartedModal";
-import CategoryGrid from "@/components/home/CategoryGrid";
 import GetHiredSteps from "@/components/home/GetHiredSteps";
 import HeroSearch from "@/components/home/HeroSearch";
 import Testimonials from "@/components/home/Testimonials";
@@ -9,38 +8,19 @@ import TrustedByCarousel from "@/components/home/TrustedByCarousel";
 import JobCard from "@/components/jobs/JobCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import categoryService from "@/services/category.service";
 import jobService from "@/services/job.service";
-import type { ICategory } from "@/types/category";
 import type { IJob } from "@/types/job";
-import {
-  ArrowRight,
-  Briefcase,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Briefcase, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
-  const [categories, setCategories] = useState<ICategory[]>([]);
   const [jobs, setJobs] = useState<IJob[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isLoadingJobs, setIsLoadingJobs] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const catRes = await categoryService.getAllCategories({
-          isActive: "true",
-        });
-        setCategories(catRes || []);
-      } catch (err) {
-        console.error("Failed to fetch categories:", err);
-      } finally {
-        setIsLoadingCategories(false);
-      }
-
+    const fetchJobs = async () => {
       try {
         const jobRes = await jobService.getAllJobs({
           limit: 6,
@@ -55,7 +35,7 @@ export default function HomePage() {
       }
     };
 
-    fetchData();
+    fetchJobs();
   }, []);
 
   return (
@@ -73,7 +53,7 @@ export default function HomePage() {
           className="mb-4 gap-1.5 px-3.5 py-1 text-xs font-medium text-[#4F46E5] bg-[#EEF2FF] border-0 rounded-full"
         >
           <Sparkles className="h-3.5 w-3.5" />
-          Enterprise Edition v2.0 Live
+          Smart Job Discovery & Hiring Platform
         </Badge>
 
         <h1 className="text-4xl font-extrabold tracking-tight text-[#0F172A] sm:text-5xl md:text-6xl">
@@ -84,9 +64,9 @@ export default function HomePage() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-slate-600 leading-relaxed">
-          Superio connects ambitious talent with world-class employers.
-          Featuring enterprise Gmail verification, dynamic category management,
-          and server-side job discovery.
+          Hirenest connects ambitious talent with world-class employers.
+          Featuring verified candidate profiles, intelligent job matching,
+          and server-side career discovery.
         </p>
 
         {/* Hero Search Bar */}
@@ -98,49 +78,22 @@ export default function HomePage() {
         <TrustedByCarousel />
       </section>
 
-      {/* Dynamic Job Categories Section */}
+      {/* Latest Job Posts Section (Replaces Job Popular Categories) */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
             <span className="text-xs font-medium uppercase tracking-wider text-[#4F46E5] bg-[#EEF2FF] px-3.5 py-1 rounded-full">
-              Explore by Industry
+              Latest Openings
             </span>
             <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
-              Popular Job Categories
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Discover opportunities across Admin-curated career categories
-            </p>
-          </div>
-          <Link href="/all-jobs">
-            <Button
-              variant="outline"
-              className="text-xs font-medium border-[#E5E7EB] hover:border-[#4F46E5] hover:text-[#4F46E5]"
-            >
-              All Categories →
-            </Button>
-          </Link>
-        </div>
-
-        <CategoryGrid categories={categories} isLoading={isLoadingCategories} />
-      </section>
-
-      {/* Latest 6 Job Posts Section */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-[#22C55E] bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-200">
-              Fresh Openings
-            </span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
-              Latest Featured Jobs
+              Latest Job Posts
             </h2>
             <p className="mt-1 text-sm text-slate-500">
               Verified active opportunities published recently
             </p>
           </div>
           <Link href="/all-jobs">
-            <Button className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-xs font-medium">
+            <Button className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-xs font-medium rounded-full h-10 px-5">
               Browse All Jobs
               <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </Button>
@@ -152,7 +105,7 @@ export default function HomePage() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-60 animate-pulse rounded-2xl border border-slate-100 bg-slate-50 p-6"
+                className="h-60 animate-pulse rounded-2xl border border-[#E5E7EB] bg-slate-50 p-6"
               />
             ))}
           </div>
@@ -163,7 +116,7 @@ export default function HomePage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-slate-200 p-12 text-center bg-slate-50/50">
+          <div className="rounded-2xl border border-dashed border-[#E5E7EB] p-12 text-center bg-slate-50/50">
             <Briefcase className="mx-auto h-10 w-10 text-slate-400" />
             <h3 className="mt-3 text-base font-bold text-slate-800">
               No jobs currently published
@@ -174,12 +127,12 @@ export default function HomePage() {
             </p>
             <div className="mt-4 flex items-center justify-center gap-3">
               <Link href="/all-jobs">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="rounded-full">
                   View All Openings
                 </Button>
               </Link>
               <Link href="/register?role=recruiter">
-                <Button size="sm" className="bg-[#6366F1] hover:bg-[#4F46E5] text-white">
+                <Button size="sm" className="bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-full">
                   Post a Job as Employer
                 </Button>
               </Link>
@@ -211,8 +164,8 @@ export default function HomePage() {
 
             <p className="mt-4 text-indigo-100 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl">
               Connect with leading organizations, discover verified global
-              opportunities, and hire top-tier talent with Superio&apos;s
-              enterprise recruitment ecosystem.
+              opportunities, and hire top-tier talent with Hirenest&apos;s
+              recruitment ecosystem.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">

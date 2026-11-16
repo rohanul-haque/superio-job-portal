@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import LinkExtension from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
@@ -153,7 +152,9 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
         {/* Headings */}
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
           className={`h-7 w-7 rounded-md p-1 transition flex items-center justify-center ${
             editor.isActive("heading", { level: 1 })
               ? "bg-indigo-600 text-white shadow-xs font-bold"
@@ -167,7 +168,9 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
 
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           className={`h-7 w-7 rounded-md p-1 transition flex items-center justify-center ${
             editor.isActive("heading", { level: 2 })
               ? "bg-indigo-600 text-white shadow-xs font-bold"
@@ -181,7 +184,9 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
 
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
           className={`h-7 w-7 rounded-md p-1 transition flex items-center justify-center ${
             editor.isActive("heading", { level: 3 })
               ? "bg-indigo-600 text-white shadow-xs font-bold"
@@ -195,7 +200,9 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
 
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 4 }).run()
+          }
           className={`h-7 w-7 rounded-md p-1 transition flex items-center justify-center ${
             editor.isActive("heading", { level: 4 })
               ? "bg-indigo-600 text-white shadow-xs font-bold"
@@ -376,7 +383,9 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
         {/* Clear formatting */}
         <button
           type="button"
-          onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
+          onClick={() =>
+            editor.chain().focus().unsetAllMarks().clearNodes().run()
+          }
           className="h-7 w-7 rounded-md p-1 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition flex items-center justify-center"
           title="Clear Formatting"
           disabled={disabled}
@@ -417,4 +426,3 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
 };
 
 export default TiptapEditor;
-

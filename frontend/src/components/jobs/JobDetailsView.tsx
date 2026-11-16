@@ -487,7 +487,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-slate-900">
-                  {job.company?.name || "Superio Verified Enterprise"}
+                  {job.company?.name || "Hirenest Verified Employer"}
                 </h4>
                 <p className="text-xs text-slate-500">
                   {job.company?.location || job.location}

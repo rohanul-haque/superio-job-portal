@@ -11,9 +11,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Superio Job Portal — Enterprise Edition",
+  title: "Hirenest — Smart Job Discovery & Hiring Platform",
   description:
-    "Enterprise recruitment platform for Candidates, Recruiters, and Administrators.",
+    "Next-generation job discovery and recruitment platform connecting ambitious talent with world-class employers.",
 };
 
 export default function RootLayout({

@@ -2,6 +2,7 @@
 
 import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
 import RoleSelector, { RoleType } from "@/components/auth/RoleSelector";
+import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -126,15 +127,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
       <Card className="border border-slate-200/80 shadow-xl shadow-slate-200/50">
       <CardHeader className="space-y-4 text-center pb-6">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 ring-8 ring-blue-50/50">
-          <UserPlus className="h-6 w-6" />
+        <div className="flex justify-center pb-1">
+          <Logo href="/" />
         </div>
         <div className="space-y-1">
           <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">
             Create an Account
           </CardTitle>
           <CardDescription className="text-sm text-slate-500">
-            Join Superio Enterprise as a {selectedRole === "recruiter" ? "Recruiter" : "Candidate"}
+            Join Hirenest as a {selectedRole === "recruiter" ? "Recruiter" : "Candidate"}
           </CardDescription>
         </div>
 

@@ -23,19 +23,22 @@ const pageTitles: { [key: string]: { title: string; subtitle: string } } = {
   },
   "/recruiter/dashboard/add-job": {
     title: "Published Job Vacancy",
-    subtitle: "Publish a job opportunity to the Superio marketplace.",
+    subtitle: "Publish a job opportunity to the Hirenest marketplace.",
   },
   "/recruiter/dashboard/view-applicants": {
     title: "Applicant Pipeline",
-    subtitle: "Review incoming candidates, view PDF resumes, and update statuses.",
+    subtitle:
+      "Review incoming candidates, view PDF resumes, and update statuses.",
   },
   "/recruiter/dashboard/recommendations": {
     title: "AI Candidate Matching",
-    subtitle: "Intelligent talent discovery matching skills to your requirements.",
+    subtitle:
+      "Intelligent talent discovery matching skills to your requirements.",
   },
   "/recruiter/dashboard/company-profile": {
     title: "Company Profile",
-    subtitle: "Manage company identity, logo, size, headquarters, and branding.",
+    subtitle:
+      "Manage company identity, logo, size, headquarters, and branding.",
   },
 };
 
@@ -100,4 +103,3 @@ export const RecruiterHeader: React.FC<RecruiterHeaderProps> = ({
 };
 
 export default RecruiterHeader;
-

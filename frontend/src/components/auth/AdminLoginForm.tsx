@@ -1,5 +1,6 @@
 "use client";
 
+import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -123,15 +124,15 @@ export const AdminLoginForm: React.FC = () => {
   return (
     <Card className="border border-slate-200/80 shadow-xl shadow-slate-200/50">
       <CardHeader className="space-y-4 text-center pb-6">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 ring-8 ring-blue-50/50">
-          <Lock className="h-6 w-6" />
+        <div className="flex justify-center pb-1">
+          <Logo href="/" />
         </div>
         <div className="space-y-1">
           <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">
             Admin Sign In
           </CardTitle>
           <CardDescription className="text-sm text-slate-500">
-            Sign in to your Superio Administrator account
+            Sign in to your Hirenest Administrator account
           </CardDescription>
         </div>
       </CardHeader>
@@ -154,7 +155,7 @@ export const AdminLoginForm: React.FC = () => {
             <Input
               id="admin-email"
               type="email"
-              placeholder="admin@superio.com"
+              placeholder="admin@hirenest.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -226,7 +227,7 @@ export const AdminLoginForm: React.FC = () => {
           href="/"
           className="text-xs text-slate-400 hover:text-slate-600 hover:underline"
         >
-          ← Back to Superio Homepage
+          ← Back to Hirenest Homepage
         </Link>
       </CardFooter>
     </Card>

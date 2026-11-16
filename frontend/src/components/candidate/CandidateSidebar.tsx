@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import Logo from "@/components/shared/Logo";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -83,14 +84,7 @@ export const CandidateSidebar: React.FC<CandidateSidebarProps> = ({
         <div className="flex flex-col flex-1 overflow-y-auto">
           {/* Brand header */}
           <div className="flex h-18 items-center justify-between border-b border-slate-100 px-6">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-black text-lg shadow-sm shadow-blue-500/30">
-                S
-              </div>
-              <span className="text-xl font-black tracking-tight text-slate-900">
-                Superio<span className="text-blue-600">.</span>
-              </span>
-            </Link>
+            <Logo href="/candidate/dashboard" subtitle="Candidate Portal" onClick={onClose} />
 
             <button
               onClick={onClose}

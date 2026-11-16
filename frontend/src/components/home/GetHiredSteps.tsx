@@ -90,44 +90,10 @@ export const GetHiredSteps: React.FC = () => {
         </p>
       </div>
 
-      {/* Steps Container with connecting dashed line */}
-      <div className="relative">
-        {/* Decorative connecting dashed curve line for desktop */}
-        <div
-          className="hidden lg:block absolute inset-0 pointer-events-none -top-4 z-0"
-          aria-hidden="true"
-        >
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 1100 240"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-          >
-            {/* Dashed connector path weaving across the cards */}
-            <path
-              d="M 10 120 C 180 145, 340 100, 520 125 C 700 150, 860 110, 1020 70 L 1050 45"
-              stroke="#E5E7EB"
-              strokeWidth="2"
-              strokeDasharray="6 6"
-              strokeLinecap="round"
-            />
-          </svg>
-
-          {/* Paper airplane icon at the top-right end of the dashed line */}
-          <div className="absolute right-4 -top-3 sm:-top-5 text-[#4F46E5] animate-pulse">
-            <svg
-              className="w-8 h-8 sm:w-9 sm:h-9 -rotate-12 fill-[#4F46E5] text-[#4F46E5]"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-            </svg>
-          </div>
-        </div>
-
+      {/* Steps Container */}
+      <div>
         {/* 4 Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
           {STEPS.map((step) => (
             <div
               key={step.id}

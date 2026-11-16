@@ -1,5 +1,6 @@
 "use client";
 
+import Logo from "@/components/shared/Logo";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -184,36 +185,23 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
     switch (role) {
       case "admin":
         return {
-          title: "Superio",
           subtitle: "Admin Console",
-          icon: ShieldAlert,
-          color: "bg-[#4F46E5] text-white",
           homeHref: "/admin/dashboard",
-          badgeColor: "bg-[#EEF2FF] text-[#4F46E5] border-transparent",
         };
       case "recruiter":
         return {
-          title: "Superio",
           subtitle: "Recruiter Portal",
-          icon: Building2,
-          color: "bg-[#4F46E5] text-white",
           homeHref: "/recruiter/dashboard",
-          badgeColor: "bg-[#EEF2FF] text-[#4F46E5] border-transparent",
         };
       default:
         return {
-          title: "Superio",
           subtitle: "Candidate Portal",
-          icon: Briefcase,
-          color: "bg-[#4F46E5] text-white",
           homeHref: "/candidate/dashboard",
-          badgeColor: "bg-[#EEF2FF] text-[#4F46E5] border-transparent",
         };
     }
   };
 
   const brand = getBrandDetails();
-  const BrandIcon = brand.icon;
 
   const handleNavClick = () => {
     if (isMobile) {
@@ -225,26 +213,13 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
     <Sidebar collapsible="none">
       {/* Brand Header */}
       <SidebarHeader>
-        <Link
-          href={brand.homeHref}
-          className="flex items-center gap-3 px-2 py-1.5 transition-opacity hover:opacity-90"
-          onClick={handleNavClick}
-        >
-          <div
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-bold ${brand.color}`}
-          >
-            <BrandIcon className="h-5 w-5" />
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-base font-black tracking-tight text-[#0F172A] leading-tight">
-              {brand.title}
-              <span className="text-[#4F46E5]">.</span>
-            </span>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
-              {brand.subtitle}
-            </span>
-          </div>
-        </Link>
+        <div className="px-2 py-1.5">
+          <Logo
+            href={brand.homeHref}
+            subtitle={brand.subtitle}
+            onClick={handleNavClick}
+          />
+        </div>
       </SidebarHeader>
 
       {/* Main Navigation Content */}

@@ -1,6 +1,7 @@
 "use client";
 
 import RoleSelector, { RoleType } from "@/components/auth/RoleSelector";
+import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -55,14 +56,14 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
 
         {/* Modal Header */}
         <div className="text-center space-y-2 mb-6">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 ring-8 ring-blue-50/50">
-            <Sparkles className="h-6 w-6" />
+          <div className="flex justify-center pb-2">
+            <Logo href="" />
           </div>
           <h2
             id="get-started-title"
             className="text-2xl font-bold tracking-tight text-slate-900"
           >
-            Get Started with Superio
+            Get Started with Hirenest
           </h2>
           <p className="text-sm text-slate-500 max-w-xs mx-auto">
             Choose how you want to use the platform to begin your registration.

@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/shared/Logo";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { useAuth } from "@/context/AuthContext";
 import {
-  Briefcase,
   ChevronDown,
   LayoutDashboard,
   LogOut,
@@ -31,19 +31,7 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-40 w-full border-b border-slate-100 bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#4F46E5] text-white shadow-none">
-            <Briefcase className="h-5 w-5" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-[#0F172A]">
-              Super<span className="text-[#4F46E5]">io</span>
-            </span>
-            <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
-              Enterprise v2.0
-            </span>
-          </div>
-        </Link>
+        <Logo href="/" />
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 md:flex">

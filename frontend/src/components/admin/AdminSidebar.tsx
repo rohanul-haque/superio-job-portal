@@ -1,5 +1,6 @@
 "use client";
 
+import Logo from "@/components/shared/Logo";
 import { useAuth } from "@/context/AuthContext";
 import {
   Briefcase,
@@ -86,19 +87,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <div className="flex flex-col flex-1 overflow-y-auto">
           {/* Brand header */}
           <div className="flex h-18 items-center justify-between border-b border-slate-100 px-6">
-            <Link href="/admin/dashboard" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-700 text-white font-black text-lg shadow-sm shadow-purple-600/30">
-                <ShieldAlert className="h-5 w-5" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-lg font-black tracking-tight text-slate-900 leading-tight">
-                  Superio<span className="text-purple-700">.</span>
-                </span>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700">
-                  Admin Console
-                </span>
-              </div>
-            </Link>
+            <Logo href="/admin/dashboard" subtitle="Admin Console" onClick={onClose} />
 
             {/* Mobile close button */}
             <button

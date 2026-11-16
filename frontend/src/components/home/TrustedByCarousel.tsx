@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useRef } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { useRef } from "react";
 
 const PARTNER_COMPANIES = [
   "Google",
@@ -30,11 +30,11 @@ export default function TrustedByCarousel() {
       delay: 2000,
       stopOnInteraction: false,
       stopOnMouseEnter: false,
-    })
+    }),
   );
 
   return (
-    <div className="mt-14 border-t border-[#E5E7EB] pt-8 w-full max-w-5xl mx-auto">
+    <div className="mt-14 pt-4 w-full max-w-5xl mx-auto">
       <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 text-center mb-6">
         Trusted by hiring leaders at top organizations
       </p>
@@ -71,4 +71,3 @@ export default function TrustedByCarousel() {
     </div>
   );
 }
-

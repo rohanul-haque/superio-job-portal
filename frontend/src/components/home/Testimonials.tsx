@@ -12,38 +12,47 @@ import React from "react";
 
 const STATS = [
   {
-    icon: <Users className="h-6 w-6 text-[#4F46E5]" />,
+    icon: <Users className="h-6 w-6 stroke-[2.2]" />,
     value: "25,000+",
     label: "Active Job Seekers",
     subtext: "Verified candidate profiles",
+    iconBg: "bg-[#EEF2FF]",
+    iconColor: "text-[#4F46E5]",
   },
   {
-    icon: <Building2 className="h-6 w-6 text-[#6366F1]" />,
+    icon: <Building2 className="h-6 w-6 stroke-[2.2]" />,
     value: "1,200+",
     label: "Verified Companies",
     subtext: "Hiring global talent",
+    iconBg: "bg-[#F5F3FF]",
+    iconColor: "text-[#6366F1]",
   },
   {
-    icon: <TrendingUp className="h-6 w-6 text-emerald-600" />,
+    icon: <TrendingUp className="h-6 w-6 stroke-[2.2]" />,
     value: "8,500+",
     label: "Active Vacancies",
     subtext: "Updated daily in real time",
+    iconBg: "bg-emerald-50",
+    iconColor: "text-emerald-600",
   },
   {
-    icon: <CheckCircle className="h-6 w-6 text-amber-600" />,
+    icon: <CheckCircle className="h-6 w-6 stroke-[2.2]" />,
     value: "98.4%",
     label: "Successful Placement",
     subtext: "Within 30 days of applying",
+    iconBg: "bg-amber-50",
+    iconColor: "text-amber-600",
   },
 ];
 
 const TESTIMONIALS = [
   {
     quote:
-      "Superio completely streamlined our tech hiring. The verified email requirement and candidate PDF resume preview helped us filter out bots and hire 3 senior engineers in record time.",
+      "Hirenest completely streamlined our tech hiring. The verified email requirement and candidate PDF resume preview helped us filter out bots and hire 3 senior engineers in record time.",
     name: "Sarah Jenkins",
     role: "VP of People at CloudScale",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80",
     rating: 5,
   },
   {
@@ -51,15 +60,17 @@ const TESTIMONIALS = [
       "The zero-token email verification and dynamic role dashboard made finding and applying to remote developer positions effortless. I received 4 interview requests within a week!",
     name: "Alex Rivera",
     role: "Lead Full-Stack Developer",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80",
     rating: 5,
   },
   {
     quote:
-      "The role-based access control and live applicant inflow charts provide our recruitment team with unmatched clarity. We couldn't imagine hiring without Superio Enterprise.",
+      "The role-based access control and live applicant inflow charts provide our recruitment team with unmatched clarity. We couldn't imagine hiring without Hirenest.",
     name: "Marcus Vance",
     role: "Head of Talent Acquisition at Apex Labs",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80",
     rating: 5,
   },
 ];
@@ -68,22 +79,26 @@ export const Testimonials: React.FC = () => {
   return (
     <section className="space-y-16">
       {/* Counters Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
         {STATS.map((stat, i) => (
           <div
             key={i}
-            className="flex flex-col items-center justify-center rounded-2xl border border-[#E5E7EB] bg-white p-6 text-center shadow-none"
+            className="group relative bg-white rounded-2xl p-6 sm:p-7 border border-[#E5E7EB] shadow-none hover:border-[#4F46E5] transition-all duration-300 flex flex-col justify-start text-left"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 mb-3">
+            <div
+              className={`w-14 h-14 rounded-2xl flex items-center justify-center ${stat.iconBg} ${stat.iconColor} mb-5 group-hover:scale-105 transition-transform duration-300`}
+            >
               {stat.icon}
             </div>
-            <span className="text-3xl font-extrabold text-[#0F172A] tracking-tight">
+            <span className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
               {stat.value}
             </span>
-            <span className="mt-1 text-sm font-semibold text-slate-700">
+            <span className="mt-2 text-base font-bold text-[#0F172A] tracking-tight group-hover:text-[#4F46E5] transition-colors">
               {stat.label}
             </span>
-            <span className="text-xs text-slate-400 mt-0.5">{stat.subtext}</span>
+            <span className="mt-1 text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
+              {stat.subtext}
+            </span>
           </div>
         ))}
       </div>
@@ -98,7 +113,8 @@ export const Testimonials: React.FC = () => {
             Loved by Candidates and Recruiters
           </h2>
           <p className="mt-2 text-sm text-slate-500">
-            Here is what high-growth companies and job seekers have to say about Superio Enterprise.
+            Here is what high-growth companies and job seekers have to say about
+            Hirenest.
           </p>
         </div>
 
@@ -141,4 +157,3 @@ export const Testimonials: React.FC = () => {
 };
 
 export default Testimonials;
-
