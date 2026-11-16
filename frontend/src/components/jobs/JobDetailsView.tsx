@@ -306,25 +306,30 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                 {job.title}
               </h1>
 
-              {/* Company Name */}
-              <div className="mt-2 flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600">
-                <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
-                <span>{job.company?.name || "Verified Enterprise Employer"}</span>
-              </div>
+              {/* Company Information & Key Meta Row (Company, Salary, Vacancies, Deadline) */}
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-xs sm:text-sm text-slate-600">
+                {/* Company Name */}
+                <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+                  <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 shrink-0" />
+                  {job.company?.name || "Verified Enterprise Employer"}
+                </span>
 
-              {/* Job Information: Salary, Open Vacancies, Deadline */}
-              <div className="mt-3.5 flex flex-wrap items-center gap-y-2 gap-x-5 text-xs sm:text-sm text-slate-600">
+                {/* Salary */}
                 <span className="flex items-center gap-1.5 font-semibold text-[#0F172A]">
-                  <DollarSign className="h-4 w-4 text-[#4F46E5] shrink-0" />
+                  <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 shrink-0" />
                   {formatSalary(job.salary)}
                 </span>
+
+                {/* Open Vacancies */}
                 <span className="flex items-center gap-1.5 font-medium text-slate-600">
-                  <Users className="h-4 w-4 text-[#4F46E5] shrink-0" />
+                  <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 shrink-0" />
                   {job.vacancy} {job.vacancy === 1 ? "Position" : "Positions"}
                 </span>
+
+                {/* Deadline */}
                 <span className="flex items-center gap-1.5 font-medium text-slate-600">
-                  <CalendarDays className="h-4 w-4 text-[#4F46E5] shrink-0" />
-                  {formatDate(job.deadline)}
+                  <CalendarDays className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 shrink-0" />
+                  Deadline: {formatDate(job.deadline)}
                 </span>
               </div>
             </div>
