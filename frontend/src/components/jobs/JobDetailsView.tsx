@@ -17,14 +17,12 @@ import {
   Building2,
   Calendar,
   CheckCircle2,
-  DollarSign,
   ExternalLink,
   FileText,
   Loader2,
   MapPin,
   Share2,
   ShieldCheck,
-  Users,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -238,192 +236,191 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
         </span>
       </nav>
 
-      {/* Job Details Information Card */}
+      {/* Hero Header Card */}
       <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-none">
-        {/* Top: Company Logo, Title, Badges & Company Name */}
-        <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
-          {/* Company Avatar / Logo */}
-          <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-xl shadow-none overflow-hidden">
-            {job.company?.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={job.company.image}
-                alt={job.company.name || "Company"}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <Building2 className="h-8 w-8 text-slate-400" />
-            )}
-          </div>
-
-          {/* Title & Badges */}
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <Badge
-                variant="outline"
-                className="bg-[#EEF2FF] text-[#4F46E5] border-transparent text-xs font-semibold"
-              >
-                {job.jobType}
-              </Badge>
-              {isOngoing ? (
-                <Badge
-                  variant="outline"
-                  className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-semibold"
-                >
-                  ● Hiring Active
-                </Badge>
+        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+          {/* Top Section – Left Side */}
+          <div className="flex items-start gap-4 sm:gap-5 flex-1 min-w-0">
+            {/* Company Avatar / Logo */}
+            <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-xl shadow-none overflow-hidden">
+              {job.company?.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={job.company.image}
+                  alt={job.company.name || "Company"}
+                  className="h-full w-full object-cover"
+                />
               ) : (
-                <Badge
-                  variant="outline"
-                  className="bg-red-50 text-red-700 border-red-200 text-xs font-semibold"
-                >
-                  ● Applications Closed
-                </Badge>
-              )}
-              <Badge
-                variant="secondary"
-                className="bg-slate-100 text-slate-700 text-xs"
-              >
-                {job.level}
-              </Badge>
-              {job.category?.name && (
-                <Badge
-                  variant="outline"
-                  className="border-slate-200 text-slate-600 text-xs"
-                >
-                  {job.category.name}
-                </Badge>
+                <Building2 className="h-8 w-8 text-slate-400" />
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A]">
-              {job.title}
-            </h1>
-
-            <p className="mt-1.5 text-xs sm:text-sm font-semibold text-slate-600 flex items-center gap-1.5">
-              <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
-              {job.company?.name || "Verified Enterprise Employer"}
-            </p>
-          </div>
-        </div>
-
-        {/* Job Information: Location, Posted Date, Salary, Vacancy with Lucide Icons (no redundant text labels) */}
-        <div className="mt-6 pt-6 border-t border-[#E5E7EB] grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {/* Location */}
-          <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 sm:p-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
-              <MapPin className="h-5 w-5" />
-            </div>
+            {/* Badges, Title & Company Name */}
             <div className="min-w-0 flex-1">
-              <span className="text-xs sm:text-sm font-bold text-[#0F172A] truncate block">
+              {/* Badges above title */}
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <Badge
+                  variant="outline"
+                  className="bg-[#EEF2FF] text-[#4F46E5] border-transparent text-xs font-semibold rounded-full px-3 py-0.5"
+                >
+                  {job.jobType}
+                </Badge>
+                {isOngoing ? (
+                  <Badge
+                    variant="outline"
+                    className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-semibold rounded-full px-3 py-0.5"
+                  >
+                    ● Hiring Active
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className="bg-red-50 text-red-700 border-red-200 text-xs font-semibold rounded-full px-3 py-0.5"
+                  >
+                    ● Applications Closed
+                  </Badge>
+                )}
+                {job.level && (
+                  <Badge
+                    variant="secondary"
+                    className="bg-slate-100 text-slate-700 text-xs font-medium rounded-full px-3 py-0.5"
+                  >
+                    {job.level}
+                  </Badge>
+                )}
+                {job.category?.name && (
+                  <Badge
+                    variant="secondary"
+                    className="bg-slate-100 text-slate-700 text-xs font-medium rounded-full px-3 py-0.5"
+                  >
+                    {job.category.name}
+                  </Badge>
+                )}
+              </div>
+
+              {/* Job Title */}
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A]">
+                {job.title}
+              </h1>
+
+              {/* Company Name */}
+              <div className="mt-2 flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600">
+                <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
+                <span>{job.company?.name || "Verified Enterprise Employer"}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Top Section – Right Side */}
+          <div className="flex flex-col items-start lg:items-end gap-3 shrink-0">
+            {/* Horizontally aligned action buttons */}
+            <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+              {/* Bookmark */}
+              <button
+                type="button"
+                onClick={handleBookmarkToggle}
+                className={`flex h-11 items-center gap-2 rounded-xl border px-4 text-xs font-semibold transition cursor-pointer ${
+                  isBookmarked
+                    ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                {isBookmarked ? (
+                  <>
+                    <BookmarkCheck className="h-4 w-4 text-amber-600 fill-amber-600" />
+                    Saved
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="h-4 w-4 text-slate-400" />
+                    Bookmark
+                  </>
+                )}
+              </button>
+
+              {/* Share */}
+              <button
+                type="button"
+                onClick={handleShare}
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+                aria-label="Share job"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+
+              {/* Apply Now */}
+              <Button
+                onClick={handleApplyClick}
+                disabled={!isOngoing || hasApplied}
+                className={`h-11 px-7 font-semibold text-xs sm:text-sm rounded-full cursor-pointer shadow-none ${
+                  hasApplied
+                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                    : isOngoing
+                      ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                      : "bg-slate-200 text-slate-500 cursor-not-allowed"
+                }`}
+              >
+                {hasApplied ? (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Applied Successfully
+                  </>
+                ) : isOngoing ? (
+                  <>
+                    Apply Now
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                ) : (
+                  "Applications Closed"
+                )}
+              </Button>
+            </div>
+
+            {/* Location & Posted Date directly below the 3 action buttons */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500 lg:justify-end">
+              <span className="flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                 {job.location}
               </span>
-            </div>
-          </div>
-
-          {/* Posted Date */}
-          <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 sm:p-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
-              <Calendar className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <span className="text-xs sm:text-sm font-bold text-[#0F172A] truncate block">
-                {formatDate(job.createdAt)}
-              </span>
-            </div>
-          </div>
-
-          {/* Salary */}
-          <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 sm:p-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
-              <DollarSign className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <span className="text-xs sm:text-sm font-bold text-[#0F172A] truncate block">
-                {formatSalary(job.salary)}
-              </span>
-            </div>
-          </div>
-
-          {/* Vacancy */}
-          <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 sm:p-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
-              <Users className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <span className="text-xs sm:text-sm font-bold text-[#0F172A] truncate block">
-                {job.vacancy} {job.vacancy === 1 ? "Opening" : "Openings"}
+              <span className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                Posted {formatDate(job.createdAt)}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Action Buttons: Bottom Section of Job Details Information */}
-        <div className="mt-6 pt-6 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Bookmark Button */}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleBookmarkToggle}
-              className={`h-11 px-5 text-xs font-semibold rounded-full border transition cursor-pointer flex-1 sm:flex-none ${
-                isBookmarked
-                  ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-                  : "border-[#E5E7EB] bg-white text-slate-700 hover:bg-slate-50"
-              }`}
-            >
-              {isBookmarked ? (
-                <>
-                  <BookmarkCheck className="mr-2 h-4 w-4 text-amber-600 fill-amber-600" />
-                  Saved
-                </>
-              ) : (
-                <>
-                  <Bookmark className="mr-2 h-4 w-4 text-slate-400" />
-                  Bookmark
-                </>
-              )}
-            </Button>
-
-            {/* Share Button */}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleShare}
-              className="h-11 px-5 text-xs font-semibold rounded-full border border-[#E5E7EB] bg-white text-slate-700 hover:bg-slate-50 transition cursor-pointer flex-1 sm:flex-none"
-              aria-label="Share job"
-            >
-              <Share2 className="mr-2 h-4 w-4 text-slate-400" />
-              Share
-            </Button>
+        {/* Bottom Information Cards (Three Cards Only) */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-100 pt-6">
+          {/* Card 1 – Offered Salary */}
+          <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+              Offered Salary
+            </span>
+            <span className="mt-1 text-base sm:text-lg font-bold text-[#0F172A] block">
+              {formatSalary(job.salary)}
+            </span>
           </div>
 
-          {/* Apply Now Button */}
-          <Button
-            onClick={handleApplyClick}
-            disabled={!isOngoing || hasApplied}
-            className={`h-11 px-8 font-semibold text-xs sm:text-sm rounded-full cursor-pointer shadow-none w-full sm:w-auto ${
-              hasApplied
-                ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                : isOngoing
-                  ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
-                  : "bg-slate-200 text-slate-500 cursor-not-allowed"
-            }`}
-          >
-            {hasApplied ? (
-              <>
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                Applied Successfully
-              </>
-            ) : isOngoing ? (
-              <>
-                Apply Now
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            ) : (
-              "Applications Closed"
-            )}
-          </Button>
+          {/* Card 2 – Open Vacancies */}
+          <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+              Open Vacancies
+            </span>
+            <span className="mt-1 text-base sm:text-lg font-bold text-[#0F172A] block">
+              {job.vacancy} {job.vacancy === 1 ? "Position" : "Positions"}
+            </span>
+          </div>
+
+          {/* Card 3 – Deadline */}
+          <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+              Deadline
+            </span>
+            <span className="mt-1 text-base sm:text-lg font-bold text-[#0F172A] block truncate">
+              {formatDate(job.deadline)}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -443,71 +440,6 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               className="job-description-content text-sm text-slate-700 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: job.description }}
             />
-
-            {/* Action Buttons: Bottom of Role Description */}
-            <div className="mt-8 pt-6 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleBookmarkToggle}
-                  className={`h-10 px-4 text-xs font-semibold rounded-full border transition cursor-pointer flex-1 sm:flex-none ${
-                    isBookmarked
-                      ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-                      : "border-[#E5E7EB] bg-white text-slate-700 hover:bg-slate-50"
-                  }`}
-                >
-                  {isBookmarked ? (
-                    <>
-                      <BookmarkCheck className="mr-2 h-3.5 w-3.5 text-amber-600 fill-amber-600" />
-                      Saved
-                    </>
-                  ) : (
-                    <>
-                      <Bookmark className="mr-2 h-3.5 w-3.5 text-slate-400" />
-                      Bookmark
-                    </>
-                  )}
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleShare}
-                  className="h-10 px-4 text-xs font-semibold rounded-full border border-[#E5E7EB] bg-white text-slate-700 hover:bg-slate-50 transition cursor-pointer flex-1 sm:flex-none"
-                  aria-label="Share job"
-                >
-                  <Share2 className="mr-2 h-3.5 w-3.5 text-slate-400" />
-                  Share
-                </Button>
-              </div>
-
-              <Button
-                onClick={handleApplyClick}
-                disabled={!isOngoing || hasApplied}
-                className={`h-10 px-7 font-semibold text-xs rounded-full cursor-pointer shadow-none w-full sm:w-auto ${
-                  hasApplied
-                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                    : isOngoing
-                      ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
-                      : "bg-slate-200 text-slate-500 cursor-not-allowed"
-                }`}
-              >
-                {hasApplied ? (
-                  <>
-                    <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
-                    Applied Successfully
-                  </>
-                ) : isOngoing ? (
-                  <>
-                    Apply Now
-                    <ArrowRight className="ml-2 h-3.5 w-3.5" />
-                  </>
-                ) : (
-                  "Applications Closed"
-                )}
-              </Button>
-            </div>
           </div>
 
           {/* Similar Jobs Section */}
