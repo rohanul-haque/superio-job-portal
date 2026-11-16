@@ -1,10 +1,11 @@
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import type { Application, Request, Response } from "express";
+import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
 import { StatusCodes } from "http-status-codes";
 import corsOptions from "./lib/cors-options";
+import connectDatabase from "./lib/db";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import notFoundHandler from "./middlewares/notFoundHandler";
 import routes from "./routes";
@@ -37,6 +38,16 @@ app.get("/", (req: Request, res: Response) => {
     version: "2.0.0",
     documentation: "/api/v1",
   });
+});
+
+// Ensure database connectivity for API operations (supports both local and Vercel serverless lifecycles)
+app.use("/api/v1", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.use("/api/v1", routes);

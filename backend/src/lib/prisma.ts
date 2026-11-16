@@ -14,8 +14,7 @@ const prisma =
         : ["error"],
   });
 
-if (config.NODE_ENV !== "production") {
-  global.prisma = prisma;
-}
+// Cache the Prisma client on globalThis to avoid multiple connections across serverless invocations
+global.prisma = prisma;
 
 export default prisma;
