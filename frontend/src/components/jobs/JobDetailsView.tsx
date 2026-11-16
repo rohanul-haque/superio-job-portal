@@ -16,13 +16,16 @@ import {
   Briefcase,
   Building2,
   Calendar,
+  CalendarDays,
   CheckCircle2,
+  DollarSign,
   ExternalLink,
   FileText,
   Loader2,
   MapPin,
   Share2,
   ShieldCheck,
+  Users,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -308,6 +311,22 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                 <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
                 <span>{job.company?.name || "Verified Enterprise Employer"}</span>
               </div>
+
+              {/* Job Information: Salary, Open Vacancies, Deadline */}
+              <div className="mt-3.5 flex flex-wrap items-center gap-y-2 gap-x-5 text-xs sm:text-sm text-slate-600">
+                <span className="flex items-center gap-1.5 font-semibold text-[#0F172A]">
+                  <DollarSign className="h-4 w-4 text-[#4F46E5] shrink-0" />
+                  {formatSalary(job.salary)}
+                </span>
+                <span className="flex items-center gap-1.5 font-medium text-slate-600">
+                  <Users className="h-4 w-4 text-[#4F46E5] shrink-0" />
+                  {job.vacancy} {job.vacancy === 1 ? "Position" : "Positions"}
+                </span>
+                <span className="flex items-center gap-1.5 font-medium text-slate-600">
+                  <CalendarDays className="h-4 w-4 text-[#4F46E5] shrink-0" />
+                  {formatDate(job.deadline)}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -387,39 +406,6 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                 Posted {formatDate(job.createdAt)}
               </span>
             </div>
-          </div>
-        </div>
-
-        {/* Bottom Information Cards (Three Cards Only) */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-100 pt-6">
-          {/* Card 1 – Offered Salary */}
-          <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-              Offered Salary
-            </span>
-            <span className="mt-1 text-base sm:text-lg font-bold text-[#0F172A] block">
-              {formatSalary(job.salary)}
-            </span>
-          </div>
-
-          {/* Card 2 – Open Vacancies */}
-          <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-              Open Vacancies
-            </span>
-            <span className="mt-1 text-base sm:text-lg font-bold text-[#0F172A] block">
-              {job.vacancy} {job.vacancy === 1 ? "Position" : "Positions"}
-            </span>
-          </div>
-
-          {/* Card 3 – Deadline */}
-          <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-              Deadline
-            </span>
-            <span className="mt-1 text-base sm:text-lg font-bold text-[#0F172A] block truncate">
-              {formatDate(job.deadline)}
-            </span>
           </div>
         </div>
       </div>
