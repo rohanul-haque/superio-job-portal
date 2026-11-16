@@ -6,6 +6,7 @@ import bookmarkRoutes from "../modules/bookmark/bookmark.route";
 import candidateRoutes from "../modules/candidate/candidate.route";
 import categoryRoutes from "../modules/category/category.route";
 import jobRoutes from "../modules/job/job.route";
+import recommendationRoutes from "../modules/recommendation/recommendation.route";
 import recruiterRoutes from "../modules/recruiter/recruiter.route";
 
 const router = Router();
@@ -26,6 +27,10 @@ const moduleRoutes = [
   {
     path: "/candidate",
     route: candidateRoutes,
+  },
+  {
+    path: "/recommendations",
+    route: recommendationRoutes,
   },
   {
     path: "/recruiter",

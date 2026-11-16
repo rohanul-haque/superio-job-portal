@@ -6,6 +6,7 @@ import {
 } from "../../lib/cloudinary";
 import prisma from "../../lib/prisma";
 import AppError from "../../utils/AppError";
+import { clearCandidateCache } from "../recommendation/recommendation.service";
 import type {
   ICandidateDashboardStatsResponse,
   ICandidateProfileResponse,
@@ -271,6 +272,9 @@ const updateProfile = async (
       ),
     );
   }
+
+  // Clear cached AI recommendations so they recalculate with the updated profile
+  clearCandidateCache(candidateId);
 
   return {
     ...updatedUser,

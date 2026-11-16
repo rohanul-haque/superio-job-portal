@@ -1,9 +1,13 @@
 import {
   getDashboardStats as getDashboardStatsApi,
   getProfile as getProfileApi,
+  getRecommendations as getRecommendationsApi,
   updateProfile as updateProfileApi,
 } from "@/api/candidate.api";
-import type { ICandidateProfile } from "@/interfaces/candidate.interface";
+import type {
+  ICandidateProfile,
+  IRecommendationsResponseData,
+} from "@/interfaces/candidate.interface";
 import type { ICandidateDashboardStats } from "@/responses/candidate.response";
 
 export const getProfile = async (): Promise<ICandidateProfile> => {
@@ -23,3 +27,11 @@ export const getDashboardStats =
     const res = await getDashboardStatsApi();
     return res.data.data;
   };
+
+export const getRecommendations = async (
+  refresh = false,
+): Promise<IRecommendationsResponseData> => {
+  const res = await getRecommendationsApi(refresh);
+  return res.data.data;
+};
+

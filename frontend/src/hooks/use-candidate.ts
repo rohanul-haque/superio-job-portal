@@ -1,6 +1,13 @@
-import type { ICandidateProfile } from "@/interfaces/candidate.interface";
+import type {
+  ICandidateProfile,
+  IRecommendationsResponseData,
+} from "@/interfaces/candidate.interface";
 import type { ICandidateDashboardStats } from "@/responses/candidate.response";
-import { getDashboardStats, getProfile } from "@/services/candidate.service";
+import {
+  getDashboardStats,
+  getProfile,
+  getRecommendations,
+} from "@/services/candidate.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -66,5 +73,52 @@ export function useCandidateProfile() {
     isLoading,
     error,
     refetch: fetchProfile,
+  };
+}
+
+export function useCandidateRecommendations() {
+  const [data, setData] = useState<IRecommendationsResponseData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchRecommendations = useCallback(async (refresh = false) => {
+    if (refresh) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    setError(null);
+    try {
+      const res = await getRecommendations(refresh);
+      setData(res);
+      if (refresh) {
+        toast.success("Recommendations Refreshed", {
+          description: "Fetched latest job matches based on your profile.",
+        });
+      }
+    } catch (err: unknown) {
+      let msg = "Failed to load job recommendations.";
+      if (err instanceof Error) msg = err.message;
+      setError(msg);
+      toast.error("Recommendations Error", { description: msg });
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRecommendations(false);
+  }, [fetchRecommendations]);
+
+  return {
+    data,
+    recommendations: data?.recommendations || [],
+    meta: data?.meta,
+    isLoading,
+    isRefreshing,
+    error,
+    refetch: (refresh = false) => fetchRecommendations(refresh),
   };
 }

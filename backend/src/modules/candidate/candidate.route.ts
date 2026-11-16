@@ -2,6 +2,7 @@ import { Router } from "express";
 import authGuard from "../../middlewares/authGuard";
 import { uploadCandidateMedia } from "../../middlewares/upload";
 import validateRequest from "../../middlewares/validateRequest";
+import recommendationController from "../recommendation/recommendation.controller";
 import candidateController from "./candidate.controller";
 import candidateValidation from "./candidate.validation";
 
@@ -24,6 +25,13 @@ router.get(
   "/dashboard-stats",
   authGuard("candidate"),
   candidateController.getDashboardStats,
+);
+
+// Candidate: Fetch AI-powered job recommendations
+router.get(
+  "/recommendations",
+  authGuard("candidate"),
+  recommendationController.getRecommendations,
 );
 
 export default router;

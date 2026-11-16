@@ -1,5 +1,8 @@
 import type { IApiResponse } from "@/interfaces/api-response.interface";
-import type { ICandidateProfile } from "@/interfaces/candidate.interface";
+import type {
+  ICandidateProfile,
+  IRecommendationsResponseData,
+} from "@/interfaces/candidate.interface";
 import type { ICandidateDashboardStats } from "@/responses/candidate.response";
 import { api } from "@/services/api";
 
@@ -14,3 +17,10 @@ export const updateProfile = (data: FormData | Record<string, unknown>) => {
 export const getDashboardStats = () => {
   return api.get<IApiResponse<ICandidateDashboardStats>>("/candidate/dashboard-stats");
 };
+
+export const getRecommendations = (refresh = false) => {
+  return api.get<IApiResponse<IRecommendationsResponseData>>(
+    `/recommendations${refresh ? "?refresh=true" : ""}`,
+  );
+};
+

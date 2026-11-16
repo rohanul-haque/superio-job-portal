@@ -2,6 +2,18 @@ import { StatusCodes } from "http-status-codes";
 import type { SentMessageInfo } from "nodemailer";
 import nodemailer from "nodemailer";
 import config from "../config";
+import {
+  getApplicationPendingEmailSubject,
+  getApplicationPendingEmailTemplate,
+} from "../templates/application-pending-email";
+import {
+  getApplicationRejectedEmailSubject,
+  getApplicationRejectedEmailTemplate,
+} from "../templates/application-rejected-email";
+import {
+  getApplicationShortlistedEmailSubject,
+  getApplicationShortlistedEmailTemplate,
+} from "../templates/application-shortlisted-email";
 import getPasswordResetEmailTemplate from "../templates/password-reset-email";
 import getVerificationEmailTemplate from "../templates/verification-email";
 import AppError from "./AppError";
@@ -156,3 +168,96 @@ export const sendPasswordResetEmail = async ({
     );
   }
 };
+
+export type ApplicationNotificationStatus =
+  | "PENDING"
+  | "SHORTLISTED"
+  | "REJECTED";
+
+export interface ISendApplicationStatusEmailOptions {
+  to: string;
+  candidateName: string;
+  jobTitle: string;
+  companyName: string;
+  status: ApplicationNotificationStatus;
+}
+
+export const sendApplicationStatusEmail = async ({
+  to,
+  candidateName,
+  jobTitle,
+  companyName,
+  status,
+}: ISendApplicationStatusEmailOptions): Promise<void> => {
+  const normalizedStatus = status.trim().toUpperCase() as ApplicationNotificationStatus;
+
+  let subject = "";
+  let html = "";
+
+  switch (normalizedStatus) {
+    case "PENDING":
+      subject = getApplicationPendingEmailSubject(jobTitle);
+      html = getApplicationPendingEmailTemplate({
+        candidateName,
+        jobTitle,
+        companyName,
+      });
+      break;
+    case "SHORTLISTED":
+      subject = getApplicationShortlistedEmailSubject(jobTitle);
+      html = getApplicationShortlistedEmailTemplate({
+        candidateName,
+        jobTitle,
+        companyName,
+      });
+      break;
+    case "REJECTED":
+      subject = getApplicationRejectedEmailSubject(jobTitle);
+      html = getApplicationRejectedEmailTemplate({
+        candidateName,
+        jobTitle,
+        companyName,
+      });
+      break;
+    default:
+      console.warn(
+        `[Email Warning] No email template mapped for status: ${status}`,
+      );
+      return;
+  }
+
+  const from = getSenderAddress();
+
+  try {
+    if (config.EMAIL_USER && config.EMAIL_PASS) {
+      const info = await transporter.sendMail({
+        from,
+        to,
+        subject,
+        html,
+      });
+
+      console.log(
+        `[Email] Application status (${normalizedStatus}) email sent successfully to ${to} via Gmail SMTP (MessageID: ${info.messageId})`,
+      );
+    } else {
+      console.log(
+        "\n================== APPLICATION STATUS EMAIL (DEV FALLBACK - GMAIL SMTP NOT CONFIGURED) ==================",
+      );
+      console.log(`To: ${to} (${candidateName})`);
+      console.log(`Status: ${normalizedStatus}`);
+      console.log(`Job: ${jobTitle} | Company: ${companyName}`);
+      console.log(`Subject: ${subject}`);
+      console.log(
+        "=========================================================================================================\n",
+      );
+    }
+  } catch (error) {
+    console.error(
+      `[Email Error] Failed to send ${normalizedStatus} application status email to ${to}:`,
+      error,
+    );
+    throw error;
+  }
+};
+

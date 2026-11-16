@@ -2,6 +2,10 @@ import { StatusCodes } from "http-status-codes";
 import { uploadImage } from "../../lib/cloudinary";
 import prisma from "../../lib/prisma";
 import AppError from "../../utils/AppError";
+import {
+  type ApplicationNotificationStatus,
+  sendApplicationStatusEmail,
+} from "../../utils/email-sender";
 import type {
   ICompanyProfileResponse,
   IRecruiterApplicantResponse,
@@ -362,6 +366,12 @@ const updateApplicantStatus = async (
     where: { id: applicationId },
     data: { status },
     include: {
+      company: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       user: {
         select: {
           id: true,
@@ -391,6 +401,44 @@ const updateApplicantStatus = async (
       },
     },
   });
+
+  // Trigger candidate email notification if status actually changed to PENDING, SHORTLISTED, or REJECTED
+  const prevStatusNorm = (existing.status || "").trim().toUpperCase();
+  const newStatusNorm = (status || "").trim().toUpperCase();
+  const isStatusChanged = prevStatusNorm !== newStatusNorm;
+  const isNotificationEligible = [
+    "PENDING",
+    "SHORTLISTED",
+    "REJECTED",
+  ].includes(newStatusNorm);
+
+  if (isStatusChanged && isNotificationEligible) {
+    const candidateEmail = updated.user?.email;
+    const candidateName = updated.user?.name || "Candidate";
+    const jobTitle = updated.job?.title || "Position";
+    const companyName = updated.company?.name || "Company";
+
+    if (candidateEmail) {
+      try {
+        await sendApplicationStatusEmail({
+          to: candidateEmail,
+          candidateName,
+          jobTitle,
+          companyName,
+          status: newStatusNorm as ApplicationNotificationStatus,
+        });
+      } catch (emailError) {
+        console.error(
+          `[Email Error] Failed to send ${newStatusNorm} status notification email to candidate ${candidateEmail}:`,
+          emailError,
+        );
+      }
+    } else {
+      console.warn(
+        `[Email Warning] Candidate email missing for application ${applicationId}; status email skipped.`,
+      );
+    }
+  }
 
   return {
     id: updated.id,
