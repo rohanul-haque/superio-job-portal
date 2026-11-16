@@ -13,7 +13,6 @@ import categoryService from "@/services/category.service";
 import jobService from "@/services/job.service";
 import type { ICategory } from "@/types/category";
 import type { IJob } from "@/types/job";
-import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Briefcase, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -24,16 +23,6 @@ export default function HomePage() {
   const [jobs, setJobs] = useState<IJob[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isLoadingJobs, setIsLoadingJobs] = useState(true);
-
-  const shouldReduceMotion = useReducedMotion();
-
-  // Smooth scroll behavior exclusively for this page
-  useEffect(() => {
-    document.documentElement.style.scrollBehavior = "smooth";
-    return () => {
-      document.documentElement.style.scrollBehavior = "auto";
-    };
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,94 +70,39 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8 w-full">
-        <motion.div
-          initial={
-            shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }
-          }
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1.0] }}
+        <Badge
+          variant="secondary"
+          className="mb-4 gap-1.5 px-3.5 py-1 text-xs font-medium text-[#4F46E5] bg-[#EEF2FF] border-0 rounded-full"
         >
-          <Badge
-            variant="secondary"
-            className="mb-4 gap-1.5 px-3.5 py-1 text-xs font-medium text-[#4F46E5] bg-[#EEF2FF] border-0 rounded-full"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            Smart Job Discovery & Hiring Platform
-          </Badge>
-        </motion.div>
+          <Sparkles className="h-3.5 w-3.5" />
+          Smart Job Discovery & Hiring Platform
+        </Badge>
 
-        <motion.h1
-          initial={
-            shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.55,
-            delay: 0.08,
-            ease: [0.25, 0.1, 0.25, 1.0],
-          }}
-          className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#0F172A] leading-tight"
-        >
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#0F172A] leading-tight">
           Modern Recruitment Platform <br className="hidden sm:inline" />
           <span className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4338CA] bg-clip-text text-transparent">
             Built for High-Growth Teams
           </span>
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={
-            shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.55,
-            delay: 0.16,
-            ease: [0.25, 0.1, 0.25, 1.0],
-          }}
-          className="mx-auto mt-4 sm:mt-6 max-w-2xl text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed px-2"
-        >
+        <p className="mx-auto mt-4 sm:mt-6 max-w-2xl text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed px-2">
           Hirenest connects ambitious talent with world-class employers.
           Featuring verified candidate profiles, intelligent job matching,
           and server-side career discovery.
-        </motion.p>
+        </p>
 
         {/* Hero Search Bar */}
-        <motion.div
-          initial={
-            shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }
-          }
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.6,
-            delay: 0.24,
-            ease: [0.25, 0.1, 0.25, 1.0],
-          }}
-          className="mt-8 sm:mt-10"
-        >
+        <div className="mt-8 sm:mt-10">
           <HeroSearch />
-        </motion.div>
+        </div>
 
         {/* Brand Logo Section – Trust by Hiring Leaders and Top Organizations */}
-        <motion.div
-          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
-        >
-          <TrustedByCarousel />
-        </motion.div>
+        <TrustedByCarousel />
       </section>
 
       {/* Job Popular Categories Section (Placed directly above Latest Job Posts) */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <motion.div
-          initial={
-            shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1.0] }}
-          className="text-center mb-8 sm:mb-10 max-w-2xl mx-auto px-4"
-        >
+        <div className="text-center mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
           <span className="text-xs font-medium uppercase tracking-wider text-[#4F46E5] bg-[#EEF2FF] px-3.5 py-1 rounded-full">
             Explore by Industry
           </span>
@@ -178,22 +112,14 @@ export default function HomePage() {
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
             Discover opportunities across Admin-curated career categories
           </p>
-        </motion.div>
+        </div>
 
         <CategoryGrid categories={categories} isLoading={isLoadingCategories} />
       </section>
 
       {/* Latest Job Posts Section */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <motion.div
-          initial={
-            shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1.0] }}
-          className="text-center mb-8 sm:mb-10 max-w-2xl mx-auto px-4"
-        >
+        <div className="text-center mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
           <span className="text-xs font-medium uppercase tracking-wider text-[#4F46E5] bg-[#EEF2FF] px-3.5 py-1 rounded-full">
             Latest Openings
           </span>
@@ -203,7 +129,7 @@ export default function HomePage() {
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
             Verified active opportunities published recently
           </p>
-        </motion.div>
+        </div>
 
         {isLoadingJobs ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -217,50 +143,20 @@ export default function HomePage() {
         ) : jobs.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {jobs.map((job, index) => (
-                <motion.div
-                  key={job.id}
-                  initial={
-                    shouldReduceMotion
-                      ? { opacity: 1, y: 0 }
-                      : { opacity: 0, y: 24 }
-                  }
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{
-                    duration: shouldReduceMotion ? 0 : 0.45,
-                    delay: shouldReduceMotion ? 0 : index * 0.08,
-                    ease: [0.25, 0.1, 0.25, 1.0],
-                  }}
-                >
-                  <JobCard job={job} />
-                </motion.div>
+              {jobs.map((job) => (
+                <JobCard key={job.id} job={job} />
               ))}
             </div>
 
             {/* Center-aligned Browse All Jobs button below job cards */}
-            <motion.div
-              initial={
-                shouldReduceMotion
-                  ? { opacity: 1, y: 0 }
-                  : { opacity: 0, y: 16 }
-              }
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{
-                duration: 0.5,
-                delay: 0.15,
-                ease: [0.25, 0.1, 0.25, 1.0],
-              }}
-              className="mt-10 sm:mt-12 flex justify-center"
-            >
+            <div className="mt-10 sm:mt-12 flex justify-center">
               <Link href="/all-jobs">
                 <Button className="bg-[#6366F1] hover:bg-[#4F46E5] text-white text-xs sm:text-sm font-medium rounded-full h-11 px-8 shadow-none cursor-pointer">
                   Browse All Jobs
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-            </motion.div>
+            </div>
           </>
         ) : (
           <div className="rounded-2xl border border-dashed border-[#E5E7EB] p-12 text-center bg-slate-50/50">
@@ -301,15 +197,7 @@ export default function HomePage() {
 
       {/* Call to Action (CTA) Section */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <motion.div
-          initial={
-            shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }
-          }
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1.0] }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4338CA] px-6 py-12 sm:px-12 sm:py-16 md:py-20 text-white shadow-none"
-        >
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4338CA] px-6 py-12 sm:px-12 sm:py-16 md:py-20 text-white shadow-none">
           <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center">
             <Badge className="bg-white/20 text-white border-0 mb-4 px-3.5 py-1 text-xs font-medium backdrop-blur-xs inline-flex items-center gap-1.5 shadow-none rounded-full">
               <Sparkles className="h-3.5 w-3.5" />
@@ -353,7 +241,7 @@ export default function HomePage() {
           <div className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
           <div className="pointer-events-none absolute right-40 top-0 h-40 w-40 rounded-full bg-indigo-400/20 blur-2xl" />
           <div className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-blue-400/20 blur-2xl" />
-        </motion.div>
+        </div>
       </section>
     </div>
   );

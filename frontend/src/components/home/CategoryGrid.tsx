@@ -1,7 +1,6 @@
 "use client";
 
 import type { ICategory } from "@/types/category";
-import { motion, useReducedMotion } from "framer-motion";
 import {
   Briefcase,
   Code,
@@ -108,8 +107,6 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
   categories,
   isLoading = false,
 }) => {
-  const shouldReduceMotion = useReducedMotion();
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
@@ -136,42 +133,27 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-      {categories.map((category, index) => {
+      {categories.map((category) => {
         const count = category.jobCount ?? category._count?.jobs ?? 0;
         return (
-          <motion.div
+          <Link
             key={category.id}
-            initial={
-              shouldReduceMotion
-                ? { opacity: 1, y: 0 }
-                : { opacity: 0, y: 20 }
-            }
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{
-              duration: shouldReduceMotion ? 0 : 0.45,
-              delay: shouldReduceMotion ? 0 : index * 0.05,
-              ease: [0.25, 0.1, 0.25, 1.0],
-            }}
+            href={`/all-jobs?category=${encodeURIComponent(category.id)}`}
+            className="group flex flex-col justify-between rounded-xl sm:rounded-2xl border border-[#E5E7EB] bg-white p-4 sm:p-5 transition-colors duration-200 hover:border-[#4F46E5] shadow-none"
           >
-            <Link
-              href={`/all-jobs?category=${encodeURIComponent(category.id)}`}
-              className="group flex flex-col justify-between rounded-xl sm:rounded-2xl border border-[#E5E7EB] bg-white p-4 sm:p-5 transition-colors duration-200 hover:border-[#4F46E5] shadow-none h-full"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 group-hover:bg-[#EEF2FF] transition-colors">
-                <CategoryIconDisplay name={category.name} icon={category.icon} />
-              </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 group-hover:bg-[#EEF2FF] transition-colors">
+              <CategoryIconDisplay name={category.name} icon={category.icon} />
+            </div>
 
-              <div className="mt-3.5">
-                <h3 className="text-sm sm:text-base font-bold text-[#0F172A] group-hover:text-[#4F46E5] transition-colors line-clamp-1">
-                  {category.name}
-                </h3>
-                <p className="mt-0.5 text-xs text-slate-500 font-normal">
-                  {count} {count === 1 ? "Open Position" : "Open Positions"}
-                </p>
-              </div>
-            </Link>
-          </motion.div>
+            <div className="mt-3.5">
+              <h3 className="text-sm sm:text-base font-bold text-[#0F172A] group-hover:text-[#4F46E5] transition-colors line-clamp-1">
+                {category.name}
+              </h3>
+              <p className="mt-0.5 text-xs text-slate-500 font-normal">
+                {count} {count === 1 ? "Open Position" : "Open Positions"}
+              </p>
+            </div>
+          </Link>
         );
       })}
     </div>

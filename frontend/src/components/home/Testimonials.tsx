@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import {
   Building2,
   CheckCircle,
@@ -77,27 +76,13 @@ const TESTIMONIALS = [
 ];
 
 export const Testimonials: React.FC = () => {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <section className="space-y-16">
       {/* Counters Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
         {STATS.map((stat, i) => (
-          <motion.div
+          <div
             key={i}
-            initial={
-              shouldReduceMotion
-                ? { opacity: 1, y: 0 }
-                : { opacity: 0, y: 24 }
-            }
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{
-              duration: shouldReduceMotion ? 0 : 0.45,
-              delay: shouldReduceMotion ? 0 : i * 0.08,
-              ease: [0.25, 0.1, 0.25, 1.0],
-            }}
             className="group relative bg-white rounded-2xl p-6 sm:p-7 border border-[#E5E7EB] shadow-none hover:border-[#4F46E5] transition-all duration-300 flex flex-col justify-start text-left"
           >
             <div
@@ -114,26 +99,13 @@ export const Testimonials: React.FC = () => {
             <span className="mt-1 text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
               {stat.subtext}
             </span>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* Testimonials Grid */}
       <div>
-        <motion.div
-          initial={
-            shouldReduceMotion
-              ? { opacity: 1, y: 0 }
-              : { opacity: 0, y: 20 }
-          }
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{
-            duration: shouldReduceMotion ? 0 : 0.5,
-            ease: [0.25, 0.1, 0.25, 1.0],
-          }}
-          className="text-center max-w-xl mx-auto mb-10"
-        >
+        <div className="text-center max-w-xl mx-auto mb-10">
           <span className="text-xs font-medium uppercase tracking-wider text-[#4F46E5] bg-[#EEF2FF] px-3.5 py-1 rounded-full">
             Trusted Worldwide
           </span>
@@ -144,24 +116,12 @@ export const Testimonials: React.FC = () => {
             Here is what high-growth companies and job seekers have to say about
             Hirenest.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={
-                shouldReduceMotion
-                  ? { opacity: 1, y: 0 }
-                  : { opacity: 0, y: 24 }
-              }
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{
-                duration: shouldReduceMotion ? 0 : 0.5,
-                delay: shouldReduceMotion ? 0 : i * 0.12,
-                ease: [0.25, 0.1, 0.25, 1.0],
-              }}
               className="flex flex-col justify-between rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-none transition hover:border-[#4F46E5]"
             >
               <div>
@@ -188,7 +148,7 @@ export const Testimonials: React.FC = () => {
                   <p className="text-xs text-slate-400">{t.role}</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
