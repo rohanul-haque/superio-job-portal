@@ -78,10 +78,10 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
           />
 
           {/* Role Benefit Card */}
-          <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4 transition-all">
+          <div className="rounded-xl border border-[#E5E7EB] bg-slate-50/70 p-4 transition-all">
             {selectedRole === "candidate" ? (
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#4F46E5]">
                   <Users className="h-5 w-5" />
                 </div>
                 <div>
@@ -95,7 +95,7 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
               </div>
             ) : (
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#4F46E5]">
                   <Building2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -113,7 +113,7 @@ export const GetStartedModal: React.FC<GetStartedModalProps> = ({
           {/* Continue Button */}
           <Button
             onClick={handleContinue}
-            className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+            className="w-full h-11 bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium rounded-full shadow-none"
           >
             Continue as {selectedRole === "recruiter" ? "Recruiter" : "Candidate"}
             <ArrowRight className="ml-2 h-4 w-4" />

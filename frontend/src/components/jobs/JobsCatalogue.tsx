@@ -598,7 +598,7 @@ export const JobsCatalogue: React.FC = () => {
           <button
             type="button"
             onClick={handleResetFilters}
-            className="text-xs text-blue-600 hover:underline font-semibold ml-1 cursor-pointer"
+            className="text-xs text-[#4F46E5] hover:underline font-semibold ml-1 cursor-pointer"
           >
             Clear all
           </button>

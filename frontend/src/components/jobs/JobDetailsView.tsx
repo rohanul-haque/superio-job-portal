@@ -193,7 +193,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
         <p className="text-sm font-medium text-slate-500">
           Loading job details...
         </p>
@@ -203,9 +203,9 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
 
   if (errorMessage || !job) {
     return (
-      <div className="mx-auto my-16 max-w-lg rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg">
+      <div className="mx-auto my-16 max-w-lg rounded-2xl border border-[#E5E7EB] bg-white p-8 text-center shadow-none">
         <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
-        <h2 className="mt-4 text-xl font-bold text-slate-900">
+        <h2 className="mt-4 text-xl font-bold text-[#0F172A]">
           Job Vacancy Unavailable
         </h2>
         <p className="mt-2 text-sm text-slate-500 leading-relaxed">
@@ -214,12 +214,14 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link href="/all-jobs">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-full">
               Browse Other Jobs
             </Button>
           </Link>
           <Link href="/">
-            <Button variant="outline">Go to Homepage</Button>
+            <Button variant="outline" className="rounded-full border-[#E5E7EB]">
+              Go to Homepage
+            </Button>
           </Link>
         </div>
       </div>
@@ -232,11 +234,11 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       {/* Breadcrumb Navigation */}
       <nav className="mb-6 flex items-center gap-2 text-xs font-medium text-slate-400">
-        <Link href="/" className="hover:text-blue-600 transition">
+        <Link href="/" className="hover:text-[#4F46E5] transition">
           Home
         </Link>
         <span>/</span>
-        <Link href="/all-jobs" className="hover:text-blue-600 transition">
+        <Link href="/all-jobs" className="hover:text-[#4F46E5] transition">
           All Jobs
         </Link>
         <span>/</span>
@@ -246,11 +248,11 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
       </nav>
 
       {/* Hero Header Card */}
-      <div className="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
+      <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-none">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-start gap-4 sm:gap-5">
             {/* Company Avatar / Logo */}
-            <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-slate-100 bg-slate-50 text-slate-700 font-bold text-xl shadow-xs overflow-hidden">
+            <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-xl shadow-none overflow-hidden">
               {job.company?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -268,7 +270,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               <div className="flex flex-wrap items-center gap-2 mb-1.5">
                 <Badge
                   variant="outline"
-                  className="bg-blue-50 text-blue-700 border-blue-200 text-xs font-semibold"
+                  className="bg-[#EEF2FF] text-[#4F46E5] border-transparent text-xs font-semibold"
                 >
                   {job.jobType}
                 </Badge>
@@ -352,11 +354,11 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
             <Button
               onClick={handleApplyClick}
               disabled={!isOngoing || hasApplied}
-              className={`h-11 px-7 font-semibold text-xs sm:text-sm cursor-pointer ${
+              className={`h-11 px-7 font-semibold text-xs sm:text-sm rounded-full cursor-pointer shadow-none ${
                 hasApplied
                   ? "bg-emerald-600 text-white hover:bg-emerald-700"
                   : isOngoing
-                  ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20"
+                  ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                   : "bg-slate-200 text-slate-500 cursor-not-allowed"
               }`}
             >
@@ -422,9 +424,9 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-8">
           {/* Job Description Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-blue-600" />
+          <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-none">
+            <h2 className="text-xl font-bold text-[#0F172A] mb-6 flex items-center gap-2">
+              <Briefcase className="h-5 w-5 text-[#4F46E5]" />
               Role Description & Overview
             </h2>
 
@@ -440,7 +442,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900">
+                  <h3 className="text-xl font-bold text-[#0F172A]">
                     Similar Job Opportunities
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -448,7 +450,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                   </p>
                 </div>
                 <Link href="/all-jobs">
-                  <Button variant="outline" size="sm" className="text-xs">
+                  <Button variant="outline" size="sm" className="text-xs rounded-full border-[#E5E7EB]">
                     View Catalogue
                   </Button>
                 </Link>
@@ -466,14 +468,14 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
         {/* Right Column: Company Summary Card & Application Guard */}
         <div className="space-y-6">
           {/* Company Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-xs">
-            <h3 className="text-base font-bold text-slate-900 mb-4 pb-3 border-b border-slate-100 flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-blue-600" />
+          <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-none">
+            <h3 className="text-base font-bold text-[#0F172A] mb-4 pb-3 border-b border-slate-100 flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-[#4F46E5]" />
               About the Company
             </h3>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-slate-50 text-slate-700 font-bold text-base overflow-hidden">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-base overflow-hidden shadow-none">
                 {job.company?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -486,7 +488,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                 )}
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-900">
+                <h4 className="text-sm font-bold text-[#0F172A]">
                   {job.company?.name || "Hirenest Verified Employer"}
                 </h4>
                 <p className="text-xs text-slate-500">
@@ -513,7 +515,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-1 font-semibold text-blue-600 hover:underline"
+                    className="flex items-center gap-1 font-semibold text-[#4F46E5] hover:underline"
                   >
                     Visit Website
                     <ExternalLink className="h-3 w-3" />
@@ -539,8 +541,8 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
           </div>
 
           {/* Quick Apply Summary Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-xs space-y-4">
-            <h3 className="text-base font-bold text-slate-900 pb-3 border-b border-slate-100">
+          <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-none space-y-4">
+            <h3 className="text-base font-bold text-[#0F172A] pb-3 border-b border-slate-100">
               Apply for this Position
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">
@@ -550,11 +552,11 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
             <Button
               onClick={handleApplyClick}
               disabled={!isOngoing || hasApplied}
-              className={`w-full h-11 font-semibold text-xs sm:text-sm cursor-pointer ${
+              className={`w-full h-11 font-semibold text-xs sm:text-sm rounded-full shadow-none cursor-pointer ${
                 hasApplied
                   ? "bg-emerald-600 text-white"
                   : isOngoing
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                  ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                   : "bg-slate-200 text-slate-500 cursor-not-allowed"
               }`}
             >
@@ -599,7 +601,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
             </p>
             <div className="mt-6 flex flex-col gap-2">
               <Link href="/candidate/dashboard/profile">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+                <Button className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white font-semibold rounded-full">
                   Upload Resume in Profile
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -607,7 +609,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               <Button
                 variant="ghost"
                 onClick={() => setIsResumeWarningOpen(false)}
-                className="text-slate-600"
+                className="text-slate-600 rounded-full"
               >
                 Cancel
               </Button>
@@ -623,13 +625,13 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
           onClick={() => setIsApplyModalOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-150"
+            className="w-full max-w-md rounded-2xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-2xl animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
           >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <h3 className="text-base font-bold text-slate-900">
+              <h3 className="text-base font-bold text-[#0F172A]">
                 Confirm Application
               </h3>
               <button
@@ -645,16 +647,16 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               <p className="text-xs text-slate-600">
                 You are about to apply for:
               </p>
-              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
-                <h4 className="text-sm font-bold text-slate-900">{job.title}</h4>
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-[#E5E7EB]">
+                <h4 className="text-sm font-bold text-[#0F172A]">{job.title}</h4>
                 <p className="text-xs text-slate-500 mt-0.5">
                   {job.company?.name} • {job.location}
                 </p>
               </div>
 
-              <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-3 text-xs text-blue-900">
+              <div className="rounded-xl border border-indigo-100 bg-[#EEF2FF] p-3 text-xs text-indigo-950">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0" />
+                  <ShieldCheck className="h-4 w-4 text-[#4F46E5] shrink-0" />
                   <span>
                     Your verified profile (<strong>{user?.name}</strong>) and attached resume will be shared with the recruiter.
                   </span>
@@ -667,14 +669,14 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                 variant="ghost"
                 onClick={() => setIsApplyModalOpen(false)}
                 disabled={isApplying}
-                className="text-xs"
+                className="text-xs rounded-full"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleConfirmApplication}
                 disabled={isApplying}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs"
+                className="bg-[#6366F1] hover:bg-[#4F46E5] text-white font-semibold text-xs rounded-full"
               >
                 {isApplying ? (
                   <>

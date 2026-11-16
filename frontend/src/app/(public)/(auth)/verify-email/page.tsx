@@ -1,5 +1,6 @@
 "use client";
 
+import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -163,11 +164,11 @@ function VerifyEmailContent() {
   // ==================== STATE 1: CHECKING (LOADING) ====================
   if (stage === "checking") {
     return (
-      <Card className="border border-slate-200/80 shadow-xl text-center p-8">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600 mb-4 ring-8 ring-blue-50/50">
+      <Card className="rounded-2xl border border-[#E5E7EB] bg-white shadow-none text-center p-8">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#4F46E5] mb-4">
           <Loader2 className="h-7 w-7 animate-spin" />
         </div>
-        <CardTitle className="text-xl font-bold text-slate-900">
+        <CardTitle className="text-xl font-bold text-[#0F172A]">
           Validating Email Verification...
         </CardTitle>
         <CardDescription className="mt-2 text-slate-500">
@@ -183,11 +184,11 @@ function VerifyEmailContent() {
     const loginUrl = isRecruiter ? "/recruiter-login" : "/candidate-login";
 
     return (
-      <Card className="border border-emerald-200 shadow-xl text-center p-6">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-8 ring-emerald-50/50 mb-4">
+      <Card className="rounded-2xl border border-emerald-200 bg-white shadow-none text-center p-6 sm:p-8">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 mb-4">
           <CheckCircle2 className="h-9 w-9" />
         </div>
-        <CardTitle className="text-2xl font-bold text-slate-900">
+        <CardTitle className="text-2xl font-bold text-[#0F172A]">
           Email Verified Successfully!
         </CardTitle>
         <CardDescription className="mt-2 text-slate-600">
@@ -200,7 +201,7 @@ function VerifyEmailContent() {
         </div>
 
         <Link href={loginUrl}>
-          <Button className="w-full bg-blue-600 hover:bg-blue-700">
+          <Button className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-full font-semibold h-11">
             Proceed to {isRecruiter ? "Recruiter" : "Candidate"} Login
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
@@ -211,19 +212,21 @@ function VerifyEmailContent() {
 
   // ==================== STATE 3: CROSS-DEVICE OR ERROR ====================
   return (
-    <Card className="border border-slate-200/80 shadow-xl shadow-slate-200/50">
-      <CardHeader className="space-y-2 text-center pb-6">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 ring-8 ring-blue-50/50">
-          <ShieldCheck className="h-6 w-6" />
+    <Card className="rounded-2xl border border-[#E5E7EB] bg-white shadow-none">
+      <CardHeader className="space-y-4 text-center pb-6">
+        <div className="flex justify-center pb-1">
+          <Logo href="/" />
         </div>
-        <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">
-          Email Verification
-        </CardTitle>
-        <CardDescription className="text-sm text-slate-500">
-          {stage === "cross_device"
-            ? "Opened on a new device or browser? Verify with credentials"
-            : "Complete verification to activate your Superio account"}
-        </CardDescription>
+        <div className="space-y-1">
+          <CardTitle className="text-2xl font-bold tracking-tight text-[#0F172A]">
+            Email Verification
+          </CardTitle>
+          <CardDescription className="text-sm text-slate-500">
+            {stage === "cross_device"
+              ? "Opened on a new device or browser? Verify with credentials"
+              : "Complete verification to activate your Hirenest account"}
+          </CardDescription>
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -247,6 +250,7 @@ function VerifyEmailContent() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="rounded-xl border-[#E5E7EB]"
             />
           </div>
 
@@ -259,13 +263,14 @@ function VerifyEmailContent() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="rounded-xl border-[#E5E7EB]"
             />
           </div>
 
           <Button
             type="submit"
             disabled={isSubmittingCredentials}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-full font-semibold h-11"
           >
             {isSubmittingCredentials ? (
               <>
@@ -287,7 +292,7 @@ function VerifyEmailContent() {
             <button
               type="button"
               onClick={() => setShowResend(true)}
-              className="text-xs font-medium text-blue-600 hover:underline"
+              className="text-xs font-medium text-[#4F46E5] hover:underline cursor-pointer"
             >
               Need a new verification email? Click here to resend
             </button>
@@ -303,7 +308,7 @@ function VerifyEmailContent() {
                   placeholder="Enter email"
                   value={resendEmail}
                   onChange={(e) => setResendEmail(e.target.value)}
-                  className="text-xs"
+                  className="text-xs rounded-xl border-[#E5E7EB]"
                   required
                 />
                 <Button
@@ -311,7 +316,7 @@ function VerifyEmailContent() {
                   size="sm"
                   variant="outline"
                   disabled={isResending}
-                  className="shrink-0 text-xs border-slate-300"
+                  className="shrink-0 text-xs border-[#E5E7EB] rounded-full"
                 >
                   {isResending ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -325,12 +330,12 @@ function VerifyEmailContent() {
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-center border-t border-slate-100 bg-slate-50/50 p-6 text-sm text-slate-600">
+      <CardFooter className="flex justify-center border-t border-[#E5E7EB] bg-slate-50/50 p-6 text-sm text-slate-600 rounded-b-2xl">
         <Link
           href="/candidate-login"
-          className="text-xs font-medium text-slate-500 hover:text-blue-600"
+          className="text-xs font-medium text-slate-500 hover:text-[#4F46E5] transition-colors"
         >
-          Return to Login
+          Return to Sign In
         </Link>
       </CardFooter>
     </Card>
@@ -341,8 +346,8 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <Card className="border border-slate-200/80 shadow-xl text-center p-8">
-          <Loader2 className="mx-auto h-7 w-7 animate-spin text-blue-600" />
+        <Card className="rounded-2xl border border-[#E5E7EB] bg-white shadow-none text-center p-8">
+          <Loader2 className="mx-auto h-7 w-7 animate-spin text-[#4F46E5]" />
           <p className="mt-2 text-sm text-slate-500">Loading verification...</p>
         </Card>
       }

@@ -149,7 +149,7 @@ export const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
             type="button"
             onClick={handleResend}
             disabled={isResending}
-            className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-xs transition cursor-pointer"
+            className="w-full h-11 bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium rounded-full shadow-none transition cursor-pointer"
           >
             {isResending ? (
               <>

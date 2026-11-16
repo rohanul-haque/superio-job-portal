@@ -7,9 +7,9 @@ interface PageProps {
 }
 
 export const metadata: Metadata = {
-  title: "Job Details & Application — Superio Job Portal",
+  title: "Job Details & Application — Hirenest Job Portal",
   description:
-    "Review complete job overview, vacancy specifications, company profile, and submit your application on Superio Enterprise.",
+    "Review complete job overview, vacancy specifications, company profile, and submit your application on Hirenest.",
 };
 
 export default async function ApplyJobPage({ params }: PageProps) {
