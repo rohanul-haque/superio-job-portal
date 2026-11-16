@@ -3,13 +3,6 @@
 import JobCard from "@/components/jobs/JobCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import applicationService from "@/services/application.service";
 import bookmarkService from "@/services/bookmark.service";
@@ -17,7 +10,6 @@ import jobService from "@/services/job.service";
 import type { IJob } from "@/types/job";
 import {
   AlertCircle,
-  ArrowLeft,
   ArrowRight,
   Bookmark,
   BookmarkCheck,
@@ -25,16 +17,13 @@ import {
   Building2,
   Calendar,
   CheckCircle2,
-  Clock,
   DollarSign,
   ExternalLink,
   FileText,
-  Globe,
   Loader2,
   MapPin,
   Share2,
   ShieldCheck,
-  Sparkles,
   Users,
   X,
 } from "lucide-react";
@@ -171,9 +160,11 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
         err &&
         typeof err === "object" &&
         "response" in err &&
-        (err as { response?: { data?: { message?: string } } }).response?.data?.message
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
       ) {
-        message = (err as { response: { data: { message: string } } }).response.data.message;
+        message = (err as { response: { data: { message: string } } }).response
+          .data.message;
       } else if (err instanceof Error) {
         message = err.message;
       }
@@ -247,175 +238,192 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
         </span>
       </nav>
 
-      {/* Hero Header Card */}
+      {/* Job Details Information Card */}
       <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-none">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-start gap-4 sm:gap-5">
-            {/* Company Avatar / Logo */}
-            <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-xl shadow-none overflow-hidden">
-              {job.company?.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={job.company.image}
-                  alt={job.company.name || "Company"}
-                  className="h-full w-full object-cover"
-                />
+        {/* Top: Company Logo, Title, Badges & Company Name */}
+        <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
+          {/* Company Avatar / Logo */}
+          <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-xl shadow-none overflow-hidden">
+            {job.company?.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={job.company.image}
+                alt={job.company.name || "Company"}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Building2 className="h-8 w-8 text-slate-400" />
+            )}
+          </div>
+
+          {/* Title & Badges */}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <Badge
+                variant="outline"
+                className="bg-[#EEF2FF] text-[#4F46E5] border-transparent text-xs font-semibold"
+              >
+                {job.jobType}
+              </Badge>
+              {isOngoing ? (
+                <Badge
+                  variant="outline"
+                  className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-semibold"
+                >
+                  ● Hiring Active
+                </Badge>
               ) : (
-                <Building2 className="h-8 w-8 text-slate-400" />
+                <Badge
+                  variant="outline"
+                  className="bg-red-50 text-red-700 border-red-200 text-xs font-semibold"
+                >
+                  ● Applications Closed
+                </Badge>
+              )}
+              <Badge
+                variant="secondary"
+                className="bg-slate-100 text-slate-700 text-xs"
+              >
+                {job.level}
+              </Badge>
+              {job.category?.name && (
+                <Badge
+                  variant="outline"
+                  className="border-slate-200 text-slate-600 text-xs"
+                >
+                  {job.category.name}
+                </Badge>
               )}
             </div>
 
-            {/* Title & Company info */}
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                <Badge
-                  variant="outline"
-                  className="bg-[#EEF2FF] text-[#4F46E5] border-transparent text-xs font-semibold"
-                >
-                  {job.jobType}
-                </Badge>
-                {isOngoing ? (
-                  <Badge
-                    variant="outline"
-                    className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-semibold"
-                  >
-                    ● Hiring Active
-                  </Badge>
-                ) : (
-                  <Badge
-                    variant="outline"
-                    className="bg-red-50 text-red-700 border-red-200 text-xs font-semibold"
-                  >
-                    ● Applications Closed
-                  </Badge>
-                )}
-                <Badge
-                  variant="secondary"
-                  className="bg-slate-100 text-slate-700 text-xs"
-                >
-                  {job.level}
-                </Badge>
-              </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0F172A]">
+              {job.title}
+            </h1>
 
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-                {job.title}
-              </h1>
+            <p className="mt-1.5 text-xs sm:text-sm font-semibold text-slate-600 flex items-center gap-1.5">
+              <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
+              {job.company?.name || "Verified Enterprise Employer"}
+            </p>
+          </div>
+        </div>
 
-              <div className="mt-2 flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-500">
-                <span className="font-semibold text-slate-700 flex items-center gap-1.5">
-                  <Building2 className="h-3.5 w-3.5 text-slate-400" />
-                  {job.company?.name || "Verified Enterprise Employer"}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5 text-slate-400" />
-                  {job.location}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                  Posted {formatDate(job.createdAt)}
-                </span>
-              </div>
+        {/* Job Information: Location, Posted Date, Salary, Vacancy with Lucide Icons (no redundant text labels) */}
+        <div className="mt-6 pt-6 border-t border-[#E5E7EB] grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {/* Location */}
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 sm:p-3.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
+              <MapPin className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-xs sm:text-sm font-bold text-[#0F172A] truncate block">
+                {job.location}
+              </span>
             </div>
           </div>
 
-          {/* Action Buttons: Apply & Bookmark */}
-          <div className="flex flex-wrap items-center gap-3">
-            <button
+          {/* Posted Date */}
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 sm:p-3.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
+              <Calendar className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-xs sm:text-sm font-bold text-[#0F172A] truncate block">
+                {formatDate(job.createdAt)}
+              </span>
+            </div>
+          </div>
+
+          {/* Salary */}
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 sm:p-3.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
+              <DollarSign className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-xs sm:text-sm font-bold text-[#0F172A] truncate block">
+                {formatSalary(job.salary)}
+              </span>
+            </div>
+          </div>
+
+          {/* Vacancy */}
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 sm:p-3.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
+              <Users className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-xs sm:text-sm font-bold text-[#0F172A] truncate block">
+                {job.vacancy} {job.vacancy === 1 ? "Opening" : "Openings"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons: Bottom Section of Job Details Information */}
+        <div className="mt-6 pt-6 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Bookmark Button */}
+            <Button
               type="button"
+              variant="outline"
               onClick={handleBookmarkToggle}
-              className={`flex h-11 items-center gap-2 rounded-xl border px-4 text-xs font-semibold transition cursor-pointer ${
+              className={`h-11 px-5 text-xs font-semibold rounded-full border transition cursor-pointer flex-1 sm:flex-none ${
                 isBookmarked
                   ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                  : "border-[#E5E7EB] bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
               {isBookmarked ? (
                 <>
-                  <BookmarkCheck className="h-4 w-4 text-amber-600 fill-amber-600" />
+                  <BookmarkCheck className="mr-2 h-4 w-4 text-amber-600 fill-amber-600" />
                   Saved
                 </>
               ) : (
                 <>
-                  <Bookmark className="h-4 w-4 text-slate-400" />
+                  <Bookmark className="mr-2 h-4 w-4 text-slate-400" />
                   Bookmark
                 </>
               )}
-            </button>
+            </Button>
 
-            <button
+            {/* Share Button */}
+            <Button
               type="button"
+              variant="outline"
               onClick={handleShare}
-              className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+              className="h-11 px-5 text-xs font-semibold rounded-full border border-[#E5E7EB] bg-white text-slate-700 hover:bg-slate-50 transition cursor-pointer flex-1 sm:flex-none"
               aria-label="Share job"
             >
-              <Share2 className="h-4 w-4" />
-            </button>
-
-            <Button
-              onClick={handleApplyClick}
-              disabled={!isOngoing || hasApplied}
-              className={`h-11 px-7 font-semibold text-xs sm:text-sm rounded-full cursor-pointer shadow-none ${
-                hasApplied
-                  ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                  : isOngoing
-                  ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
-                  : "bg-slate-200 text-slate-500 cursor-not-allowed"
-              }`}
-            >
-              {hasApplied ? (
-                <>
-                  <CheckCircle2 className="mr-2 h-4 w-4" />
-                  Applied Successfully
-                </>
-              ) : isOngoing ? (
-                <>
-                  Apply Now
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              ) : (
-                "Applications Closed"
-              )}
+              <Share2 className="mr-2 h-4 w-4 text-slate-400" />
+              Share
             </Button>
           </div>
-        </div>
 
-        {/* Highlight Metrics Cards */}
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-slate-100 pt-6">
-          <div className="rounded-xl bg-slate-50 p-4">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-              Offered Salary
-            </span>
-            <span className="mt-1 text-base sm:text-lg font-bold text-slate-900 block">
-              {formatSalary(job.salary)}
-            </span>
-          </div>
-
-          <div className="rounded-xl bg-slate-50 p-4">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-              Open Vacancies
-            </span>
-            <span className="mt-1 text-base sm:text-lg font-bold text-slate-900 block">
-              {job.vacancy} {job.vacancy === 1 ? "Position" : "Positions"}
-            </span>
-          </div>
-
-          <div className="rounded-xl bg-slate-50 p-4">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-              Job Category
-            </span>
-            <span className="mt-1 text-base sm:text-lg font-bold text-slate-900 block truncate">
-              {job.category?.name || "General"}
-            </span>
-          </div>
-
-          <div className="rounded-xl bg-slate-50 p-4">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
-              Deadline
-            </span>
-            <span className="mt-1 text-base sm:text-lg font-bold text-slate-900 block truncate">
-              {formatDate(job.deadline)}
-            </span>
-          </div>
+          {/* Apply Now Button */}
+          <Button
+            onClick={handleApplyClick}
+            disabled={!isOngoing || hasApplied}
+            className={`h-11 px-8 font-semibold text-xs sm:text-sm rounded-full cursor-pointer shadow-none w-full sm:w-auto ${
+              hasApplied
+                ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                : isOngoing
+                  ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                  : "bg-slate-200 text-slate-500 cursor-not-allowed"
+            }`}
+          >
+            {hasApplied ? (
+              <>
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                Applied Successfully
+              </>
+            ) : isOngoing ? (
+              <>
+                Apply Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </>
+            ) : (
+              "Applications Closed"
+            )}
+          </Button>
         </div>
       </div>
 
@@ -435,6 +443,71 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               className="job-description-content text-sm text-slate-700 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: job.description }}
             />
+
+            {/* Action Buttons: Bottom of Role Description */}
+            <div className="mt-8 pt-6 border-t border-[#E5E7EB] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBookmarkToggle}
+                  className={`h-10 px-4 text-xs font-semibold rounded-full border transition cursor-pointer flex-1 sm:flex-none ${
+                    isBookmarked
+                      ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                      : "border-[#E5E7EB] bg-white text-slate-700 hover:bg-slate-50"
+                  }`}
+                >
+                  {isBookmarked ? (
+                    <>
+                      <BookmarkCheck className="mr-2 h-3.5 w-3.5 text-amber-600 fill-amber-600" />
+                      Saved
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark className="mr-2 h-3.5 w-3.5 text-slate-400" />
+                      Bookmark
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleShare}
+                  className="h-10 px-4 text-xs font-semibold rounded-full border border-[#E5E7EB] bg-white text-slate-700 hover:bg-slate-50 transition cursor-pointer flex-1 sm:flex-none"
+                  aria-label="Share job"
+                >
+                  <Share2 className="mr-2 h-3.5 w-3.5 text-slate-400" />
+                  Share
+                </Button>
+              </div>
+
+              <Button
+                onClick={handleApplyClick}
+                disabled={!isOngoing || hasApplied}
+                className={`h-10 px-7 font-semibold text-xs rounded-full cursor-pointer shadow-none w-full sm:w-auto ${
+                  hasApplied
+                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                    : isOngoing
+                      ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                      : "bg-slate-200 text-slate-500 cursor-not-allowed"
+                }`}
+              >
+                {hasApplied ? (
+                  <>
+                    <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
+                    Applied Successfully
+                  </>
+                ) : isOngoing ? (
+                  <>
+                    Apply Now
+                    <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                  </>
+                ) : (
+                  "Applications Closed"
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Similar Jobs Section */}
@@ -450,7 +523,11 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                   </p>
                 </div>
                 <Link href="/all-jobs">
-                  <Button variant="outline" size="sm" className="text-xs rounded-full border-[#E5E7EB]">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs rounded-full border-[#E5E7EB]"
+                  >
                     View Catalogue
                   </Button>
                 </Link>
@@ -546,7 +623,8 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               Apply for this Position
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Submit your verified candidate credentials, resume, and portfolio directly to the hiring manager.
+              Submit your verified candidate credentials, resume, and portfolio
+              directly to the hiring manager.
             </p>
 
             <Button
@@ -556,8 +634,8 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                 hasApplied
                   ? "bg-emerald-600 text-white"
                   : isOngoing
-                  ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
-                  : "bg-slate-200 text-slate-500 cursor-not-allowed"
+                    ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                    : "bg-slate-200 text-slate-500 cursor-not-allowed"
               }`}
             >
               {hasApplied ? (
@@ -597,7 +675,8 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               Resume Upload Required
             </h3>
             <p className="mt-2 text-xs sm:text-sm text-slate-600 text-center leading-relaxed">
-              Enterprise policy requires candidates to have an uploaded PDF resume on their profile before submitting applications.
+              Enterprise policy requires candidates to have an uploaded PDF
+              resume on their profile before submitting applications.
             </p>
             <div className="mt-6 flex flex-col gap-2">
               <Link href="/candidate/dashboard/profile">
@@ -648,7 +727,9 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                 You are about to apply for:
               </p>
               <div className="rounded-xl bg-slate-50 p-3.5 border border-[#E5E7EB]">
-                <h4 className="text-sm font-bold text-[#0F172A]">{job.title}</h4>
+                <h4 className="text-sm font-bold text-[#0F172A]">
+                  {job.title}
+                </h4>
                 <p className="text-xs text-slate-500 mt-0.5">
                   {job.company?.name} • {job.location}
                 </p>
@@ -658,7 +739,8 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-[#4F46E5] shrink-0" />
                   <span>
-                    Your verified profile (<strong>{user?.name}</strong>) and attached resume will be shared with the recruiter.
+                    Your verified profile (<strong>{user?.name}</strong>) and
+                    attached resume will be shared with the recruiter.
                   </span>
                 </div>
               </div>
@@ -696,4 +778,3 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
 };
 
 export default JobDetailsView;
-

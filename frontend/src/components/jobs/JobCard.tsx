@@ -19,9 +19,14 @@ import React from "react";
 interface JobCardProps {
   job: IJob;
   featured?: boolean;
+  actionLabel?: string;
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ job, featured = false }) => {
+export const JobCard: React.FC<JobCardProps> = ({
+  job,
+  featured = false,
+  actionLabel = "View Details",
+}) => {
   const formatSalary = (amount: number) => {
     if (amount >= 1000) {
       return `$${(amount / 1000).toFixed(0)}k/mo`;
@@ -139,13 +144,13 @@ export const JobCard: React.FC<JobCardProps> = ({ job, featured = false }) => {
           <Link href={`/apply-job/${job.id}`}>
             <Button
               size="sm"
-              className={`h-9 px-4 text-xs font-medium rounded-full ${
+              className={`h-9 px-4 text-xs font-medium rounded-full cursor-pointer transition ${
                 isOngoing
                   ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
                   : "bg-slate-100 hover:bg-slate-200 text-[#0F172A]"
               }`}
             >
-              Apply Now
+              {actionLabel}
               <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </Button>
           </Link>
