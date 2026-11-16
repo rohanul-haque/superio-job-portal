@@ -10,9 +10,12 @@ const config = {
 
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
 
-  GMAIL_USER: process.env.GMAIL_USER,
-  GMAIL_APP_PASSWORD: process.env.GMAIL_APP_PASSWORD,
-  EMAIL_FROM: process.env.EMAIL_FROM,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
+  EMAIL_FROM:
+    process.env.EMAIL_FROM ||
+    process.env.RESEND_FROM_EMAIL ||
+    "Superio Job Portal <onboarding@resend.dev>",
 
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
