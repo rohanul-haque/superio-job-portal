@@ -125,7 +125,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         email={registeredEmail}
       />
 
-      <Card className="border border-slate-200/80 shadow-xl shadow-slate-200/50">
+      <Card className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.05)]">
       <CardHeader className="space-y-4 text-center pb-6">
         <div className="flex justify-center pb-1">
           <Logo href="/" />
@@ -238,7 +238,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         </form>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-2 border-t border-[#E5E7EB] bg-white p-6 text-center text-sm text-slate-600">
+      <CardFooter className="flex flex-col gap-2 border-t border-[#E5E7EB] bg-transparent p-6 text-center text-sm text-slate-600 rounded-b-2xl">
         <p>
           Already have an account?{" "}
           <Link

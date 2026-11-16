@@ -13,7 +13,7 @@ export default function RecruiterLoginPage() {
   return (
     <Suspense
       fallback={
-        <Card className="border border-slate-200/80 shadow-xl text-center p-8">
+        <Card className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.05)] text-center p-8">
           <Loader2 className="mx-auto h-7 w-7 animate-spin text-blue-600" />
           <p className="mt-2 text-sm text-slate-500">Loading sign in...</p>
         </Card>

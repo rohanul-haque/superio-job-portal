@@ -15,18 +15,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
-import {
-  AlertCircle,
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-} from "lucide-react";
+import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
-import { toast } from "sonner";
 
 interface LoginFormProps {
   initialRole?: RoleType;
@@ -147,7 +139,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         email={email.trim()}
       />
 
-      <Card className="border border-slate-200/80 shadow-xl shadow-slate-200/50">
+      <Card className="border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.05)]">
         <CardHeader className="space-y-4 text-center pb-6">
           <div className="flex justify-center pb-1">
             <Logo href="/" />
@@ -185,97 +177,97 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             </div>
           )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="login-email">
-              {selectedRole === "recruiter"
-                ? "Work Email Address"
-                : "Email Address"}
-            </Label>
-            <Input
-              id="login-email"
-              type="email"
-              placeholder={
-                selectedRole === "recruiter"
-                  ? "hr@company.com"
-                  : "candidate@example.com"
-              }
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="login-password">Password</Label>
-              <Link
-                href="/forgot-password"
-                className="text-xs font-medium text-[#4F46E5] hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="login-email">
+                {selectedRole === "recruiter"
+                  ? "Work Email Address"
+                  : "Email Address"}
+              </Label>
               <Input
-                id="login-password"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="login-email"
+                type="email"
+                placeholder={
+                  selectedRole === "recruiter"
+                    ? "hr@company.com"
+                    : "candidate@example.com"
+                }
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                autoComplete="current-password"
-                className="pr-10"
+                autoComplete="email"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
             </div>
-          </div>
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium rounded-full h-11"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              <>
-                Sign In as{" "}
-                {selectedRole === "recruiter" ? "Recruiter" : "Candidate"}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="login-password">Password</Label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs font-medium text-[#4F46E5] hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Input
+                  id="login-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
 
-      <CardFooter className="flex flex-col gap-2 border-t border-[#E5E7EB] bg-white p-6 text-center text-sm text-slate-600">
-        <p>
-          Don&apos;t have an account?{" "}
-          <Link
-            href={`/register?role=${selectedRole}`}
-            className="font-semibold text-[#4F46E5] hover:underline"
-          >
-            Register Now
-          </Link>
-        </p>
-      </CardFooter>
-    </Card>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white font-medium rounded-full h-11"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign In as{" "}
+                  {selectedRole === "recruiter" ? "Recruiter" : "Candidate"}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-2 border-t border-[#E5E7EB] bg-transparent p-6 text-center text-sm text-slate-600 rounded-b-2xl">
+          <p>
+            Don&apos;t have an account?{" "}
+            <Link
+              href={`/register?role=${selectedRole}`}
+              className="font-semibold text-[#4F46E5] hover:underline"
+            >
+              Register Now
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
     </>
   );
 };
