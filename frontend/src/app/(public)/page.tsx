@@ -1,6 +1,7 @@
 "use client";
 
 import GetStartedModal from "@/components/auth/GetStartedModal";
+import CategoryGrid from "@/components/home/CategoryGrid";
 import GetHiredSteps from "@/components/home/GetHiredSteps";
 import HeroSearch from "@/components/home/HeroSearch";
 import Testimonials from "@/components/home/Testimonials";
@@ -8,7 +9,9 @@ import TrustedByCarousel from "@/components/home/TrustedByCarousel";
 import JobCard from "@/components/jobs/JobCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import categoryService from "@/services/category.service";
 import jobService from "@/services/job.service";
+import type { ICategory } from "@/types/category";
 import type { IJob } from "@/types/job";
 import { ArrowRight, Briefcase, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -16,11 +19,30 @@ import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
+  const [categories, setCategories] = useState<ICategory[]>([]);
   const [jobs, setJobs] = useState<IJob[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isLoadingJobs, setIsLoadingJobs] = useState(true);
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchData = async () => {
+      try {
+        const catRes = await categoryService.getAllCategories({
+          isActive: "true",
+        });
+        // Sort by latest created categories first and take exactly 8
+        const sorted = [...(catRes || [])].sort((a, b) => {
+          const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return timeB - timeA;
+        });
+        setCategories(sorted.slice(0, 8));
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      } finally {
+        setIsLoadingCategories(false);
+      }
+
       try {
         const jobRes = await jobService.getAllJobs({
           limit: 6,
@@ -35,7 +57,7 @@ export default function HomePage() {
       }
     };
 
-    fetchJobs();
+    fetchData();
   }, []);
 
   return (
@@ -78,7 +100,34 @@ export default function HomePage() {
         <TrustedByCarousel />
       </section>
 
-      {/* Latest Job Posts Section (Replaces Job Popular Categories) */}
+      {/* Job Popular Categories Section (Placed directly above Latest Job Posts) */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#4F46E5] bg-[#EEF2FF] px-3.5 py-1 rounded-full">
+              Explore by Industry
+            </span>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A]">
+              Popular Job Categories
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Discover opportunities across Admin-curated career categories
+            </p>
+          </div>
+          <Link href="/all-jobs">
+            <Button
+              variant="outline"
+              className="text-xs font-medium border-[#E5E7EB] hover:border-[#4F46E5] hover:text-[#4F46E5] rounded-full h-10 px-5"
+            >
+              All Categories →
+            </Button>
+          </Link>
+        </div>
+
+        <CategoryGrid categories={categories} isLoading={isLoadingCategories} />
+      </section>
+
+      {/* Latest Job Posts Section */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
