@@ -3,10 +3,10 @@ import { StatusCodes } from "http-status-codes";
 
 const healthCheck = (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({
-    status: "ok",
+    success: true,
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
-    service: "Superio Job Portal Enterprise API v2",
+    message: "Hire Nest API is running...",
   });
 };
 
