@@ -1,16 +1,16 @@
-import { ApplicationStatus } from "./ApplicationStatus";
+import ApplicationStatus from "./ApplicationStatus";
 import { Button } from "@/components/ui/button";
 import type { IJobApplication } from "@/interfaces/application.interface";
 import { MapPin } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export interface ApplicationCardProps {
+interface ApplicationCardProps {
   application: IJobApplication;
   onWithdraw: (application: IJobApplication) => void;
 }
 
-export function ApplicationCard({
+function ApplicationCard({
   application: app,
   onWithdraw,
 }: ApplicationCardProps) {

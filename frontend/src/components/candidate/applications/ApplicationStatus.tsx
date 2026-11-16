@@ -1,11 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import React from "react";
 
-export interface ApplicationStatusProps {
+interface ApplicationStatusProps {
   status: string;
 }
 
-export function ApplicationStatus({ status }: ApplicationStatusProps) {
+function ApplicationStatus({ status }: ApplicationStatusProps) {
   const baseClasses =
     "hover:text-white hover:border-transparent transition-all duration-150 ease-in-out cursor-default select-none text-xs font-semibold";
 

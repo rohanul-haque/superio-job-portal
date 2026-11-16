@@ -1,9 +1,9 @@
 "use client";
 
-import { JobApplyModal } from "./details/JobApplyModal";
-import { JobDetailsDescription } from "./details/JobDetailsDescription";
-import { JobDetailsHeader } from "./details/JobDetailsHeader";
-import { JobDetailsSidebar } from "./details/JobDetailsSidebar";
+import JobApplyModal from "./details/JobApplyModal";
+import JobDetailsDescription from "./details/JobDetailsDescription";
+import JobDetailsHeader from "./details/JobDetailsHeader";
+import JobDetailsSidebar from "./details/JobDetailsSidebar";
 import { JobDetailsSkeleton } from "@/components/loaders/skeleton/JobListSkeleton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
@@ -21,7 +21,7 @@ interface JobDetailsViewProps {
   id: string;
 }
 
-export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
+const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuth();

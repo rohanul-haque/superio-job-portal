@@ -1,6 +1,6 @@
 import type { IApiResponse } from "@/interfaces/api-response.interface";
 import type { ICategory } from "@/types/category";
-import api from "@/services/api";
+import { api } from "@/services/api";
 
 export const getAllCategories = (params?: {
   search?: string;

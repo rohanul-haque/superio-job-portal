@@ -9,7 +9,7 @@ import type {
   IRecruiterApplicant,
 } from "@/interfaces/recruiter.interface";
 import type { IRecruiterDashboardStats } from "@/responses/recruiter.response";
-import api from "@/services/api";
+import { api } from "@/services/api";
 
 export const getProfile = () => {
   return api.get<IApiResponse<ICompanyProfile>>("/recruiter/profile");

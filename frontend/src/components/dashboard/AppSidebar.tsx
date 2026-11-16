@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { cn } from "@/lib/utils";
+import cn from "@/lib/utils";
 import type { UserRole } from "@/types/auth";
 import {
   Bookmark,
@@ -169,7 +169,7 @@ const adminNav: NavItem[] = [
   },
 ];
 
-export const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
+const AppSidebar: React.FC<AppSidebarProps> = ({ role }) => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { isMobile, setOpenMobile } = useSidebar();

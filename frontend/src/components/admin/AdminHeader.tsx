@@ -10,7 +10,7 @@ interface AdminHeaderProps {
   onOpenSidebar: () => void;
 }
 
-export const AdminHeader: React.FC<AdminHeaderProps> = ({ onOpenSidebar }) => {
+const AdminHeader: React.FC<AdminHeaderProps> = ({ onOpenSidebar }) => {
   const { user } = useAuth();
   const pathname = usePathname();
 

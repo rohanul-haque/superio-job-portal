@@ -35,7 +35,7 @@ const pageTitles: { [key: string]: { title: string; subtitle: string } } = {
   },
 };
 
-export const CandidateHeader: React.FC<CandidateHeaderProps> = ({
+const CandidateHeader: React.FC<CandidateHeaderProps> = ({
   onToggleSidebar,
 }) => {
   const pathname = usePathname();

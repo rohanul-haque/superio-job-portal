@@ -1,4 +1,4 @@
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { ArrowRight, Briefcase } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export interface RecentApplicationItem {
+interface RecentApplicationItem {
   id: string;
   status: string;
   createdAt: string;
@@ -26,12 +26,12 @@ export interface RecentApplicationItem {
   };
 }
 
-export interface RecentApplicationsProps {
+interface RecentApplicationsProps {
   applications?: RecentApplicationItem[];
   isLoading?: boolean;
 }
 
-export function RecentApplications({
+function RecentApplications({
   applications = [],
   isLoading = false,
 }: RecentApplicationsProps) {

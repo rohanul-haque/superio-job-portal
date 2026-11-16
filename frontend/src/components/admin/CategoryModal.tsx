@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
+import Spinner from "@/components/ui/spinner";
 import { createCategory, updateCategory } from "@/services/category.service";
 import type { ICategory } from "@/types/category";
 import {
@@ -34,7 +34,7 @@ const ALLOWED_TYPES = [
   "image/jpg",
 ];
 
-export const CategoryModal: React.FC<CategoryModalProps> = ({
+const CategoryModal: React.FC<CategoryModalProps> = ({
   isOpen,
   onClose,
   category,

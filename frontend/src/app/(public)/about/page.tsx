@@ -9,14 +9,8 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import type { Metadata } from "next";
 import React from "react";
 
-export const metadata: Metadata = {
-  title: "About Us — Hirenest Job Portal",
-  description:
-    "Learn about Hirenest recruitment ecosystem connecting candidates, employers, and administrators globally.",
-};
 
 const PILLARS = [
   {

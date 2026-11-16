@@ -11,7 +11,7 @@ interface DashboardShellProps {
   children: React.ReactNode;
 }
 
-export const DashboardShell: React.FC<DashboardShellProps> = ({
+const DashboardShell: React.FC<DashboardShellProps> = ({
   role,
   children,
 }) => {

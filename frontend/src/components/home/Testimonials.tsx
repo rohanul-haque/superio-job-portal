@@ -75,7 +75,7 @@ const TESTIMONIALS = [
   },
 ];
 
-export const Testimonials: React.FC = () => {
+const Testimonials: React.FC = () => {
   return (
     <section className="space-y-16">
       {/* Counters Grid */}

@@ -83,4 +83,3 @@ export const config = {
 };
 
 export { proxy as middleware };
-export default proxy;

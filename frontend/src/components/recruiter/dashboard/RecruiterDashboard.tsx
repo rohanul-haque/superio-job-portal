@@ -1,11 +1,11 @@
 "use client";
 
-import { RecentApplicants } from "./RecentApplicants";
-import { RecruiterStatistics } from "./RecruiterStatistics";
+import RecentApplicants from "./RecentApplicants";
+import RecruiterStatistics from "./RecruiterStatistics";
 import ApplicantInflowChart from "@/components/recruiter/ApplicantInflowChart";
 import CandidateProfileModal from "@/components/recruiter/CandidateProfileModal";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import { useRecruiterDashboard } from "@/hooks/use-recruiter";
 import type { IRecruiterApplicant } from "@/interfaces/recruiter.interface";
@@ -13,7 +13,7 @@ import { PlusCircle, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 
-export function RecruiterDashboard() {
+export default function RecruiterDashboard() {
   const { user } = useAuth();
   const { statsData, isLoading, refetch } = useRecruiterDashboard();
   const [selectedApplicant, setSelectedApplicant] =

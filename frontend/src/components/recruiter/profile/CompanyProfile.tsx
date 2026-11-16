@@ -1,7 +1,7 @@
 "use client";
 
-import { CompanyProfileForm } from "./CompanyProfileForm";
-import { ProfileSkeleton } from "@/components/loaders/skeleton/ProfileSkeleton";
+import CompanyProfileForm from "./CompanyProfileForm";
+import ProfileSkeleton from "@/components/loaders/skeleton/ProfileSkeleton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import type { ICompanyProfile } from "@/interfaces/recruiter.interface";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-export function CompanyProfile() {
+export default function CompanyProfile() {
   const { refreshUser } = useAuth();
   const [profile, setProfile] = useState<ICompanyProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);

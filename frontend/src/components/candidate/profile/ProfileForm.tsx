@@ -1,8 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
+import Spinner from "@/components/ui/spinner";
 import type { ICandidateProfile } from "@/interfaces/candidate.interface";
 import {
   AlertCircle,
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import React, { type RefObject } from "react";
 
-export interface ProfileFormProps {
+interface ProfileFormProps {
   name: string;
   setName: (v: string) => void;
   title: string;
@@ -43,7 +43,7 @@ export interface ProfileFormProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-export function ProfileForm({
+function ProfileForm({
   name,
   setName,
   title,

@@ -1,10 +1,10 @@
 "use client";
 
-import { ApplicantItemRow } from "./ApplicantItemRow";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import ApplicantItemRow from "./ApplicantItemRow";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import CandidateProfileModal from "@/components/recruiter/CandidateProfileModal";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import Input from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -282,7 +282,7 @@ function ApplicantsListInner() {
   );
 }
 
-export function ApplicantsList() {
+function ApplicantsList() {
   return (
     <Suspense
       fallback={

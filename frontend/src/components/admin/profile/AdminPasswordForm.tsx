@@ -7,13 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
+import Spinner from "@/components/ui/spinner";
 import { Eye, EyeOff, KeyRound, Lock } from "lucide-react";
 import React, { useState } from "react";
 
-export interface AdminPasswordFormProps {
+interface AdminPasswordFormProps {
   currentPassword: string;
   setCurrentPassword: (v: string) => void;
   newPassword: string;
@@ -24,7 +24,7 @@ export interface AdminPasswordFormProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-export function AdminPasswordForm({
+export default function AdminPasswordForm({
   currentPassword,
   setCurrentPassword,
   newPassword,

@@ -1,10 +1,10 @@
 "use client";
 
-import { TrashItemRow } from "./TrashItemRow";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import TrashItemRow from "./TrashItemRow";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import type { ITrashItem } from "@/interfaces/admin.interface";
 import {
   getTrashItems,
@@ -19,7 +19,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function TrashCenter() {
+export default function TrashCenter() {
   const [trashItems, setTrashItems] = useState<ITrashItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<string>("all");

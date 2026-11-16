@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Camera, CheckCircle2 } from "lucide-react";
 import React, { type RefObject } from "react";
 
-export interface ProfileInformationProps {
+interface ProfileInformationProps {
   name: string;
   imagePreview: string | null;
   fileInputRef: RefObject<HTMLInputElement | null>;
@@ -12,7 +12,7 @@ export interface ProfileInformationProps {
   isSaving: boolean;
 }
 
-export function ProfileInformation({
+function ProfileInformation({
   name,
   imagePreview,
   fileInputRef,

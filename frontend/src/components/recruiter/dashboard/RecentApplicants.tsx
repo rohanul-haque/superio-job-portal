@@ -1,4 +1,4 @@
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,13 +8,13 @@ import { ArrowRight, Eye, FileText, Users } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export interface RecentApplicantsProps {
+interface RecentApplicantsProps {
   applicants?: IRecruiterDashboardRecentApplicant[];
   isLoading?: boolean;
   onSelectApplicant?: (applicant: IRecruiterDashboardRecentApplicant) => void;
 }
 
-export function RecentApplicants({
+export default function RecentApplicants({
   applicants = [],
   isLoading = false,
   onSelectApplicant,

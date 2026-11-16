@@ -1,12 +1,12 @@
 "use client";
 
-import { ProfileSkeleton } from "@/components/loaders/skeleton/ProfileSkeleton";
+import ProfileSkeleton from "@/components/loaders/skeleton/ProfileSkeleton";
 import TiptapEditor from "@/components/shared/TiptapEditor";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import Calendar from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -19,10 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import type { ICategory } from "@/types/category";
 import type { ExperienceLevel, JobType } from "@/types/job.type";
-import { cn } from "@/lib/utils";
+import cn from "@/lib/utils";
 import { getAllCategories } from "@/services/category.service";
 import { getJobById } from "@/services/job.service";
 import { createJob, updateJob } from "@/services/recruiter.service";
@@ -51,12 +51,12 @@ const EXPERIENCE_LEVELS: ExperienceLevel[] = [
   "Senior level",
 ];
 
-export interface JobFormProps {
+interface JobFormProps {
   mode: "create" | "edit";
   jobId?: string;
 }
 
-export function JobForm({ mode, jobId }: JobFormProps) {
+export default function JobForm({ mode, jobId }: JobFormProps) {
   const router = useRouter();
 
   const [categories, setCategories] = useState<ICategory[]>([]);

@@ -1,5 +1,5 @@
 import { JobCardSkeleton } from "@/components/loaders/skeleton/CardSkeleton";
-import { Skeleton } from "@/components/ui/skeleton";
+import Skeleton from "@/components/ui/skeleton";
 import React from "react";
 
 export function JobListSkeleton({ count = 6 }: { count?: number }) {
@@ -92,5 +92,3 @@ export function JobDetailsSkeleton() {
     </div>
   );
 }
-
-export default JobListSkeleton;

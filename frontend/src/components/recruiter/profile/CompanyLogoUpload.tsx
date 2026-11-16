@@ -2,14 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Building2, Camera, CheckCircle2, Upload } from "lucide-react";
 import React from "react";
 
-export interface CompanyLogoUploadProps {
+interface CompanyLogoUploadProps {
   logoPreview: string | null;
   selectedLogo: File | null;
   logoInputRef: React.RefObject<HTMLInputElement | null>;
   onLogoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function CompanyLogoUpload({
+export default function CompanyLogoUpload({
   logoPreview,
   selectedLogo,
   logoInputRef,

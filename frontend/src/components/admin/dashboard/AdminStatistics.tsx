@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import React from "react";
 
-export interface AdminStatsProps {
+interface AdminStatsProps {
   stats?: {
     totalCandidates: number;
     totalRecruiters: number;
@@ -23,7 +23,7 @@ export interface AdminStatsProps {
   isLoading?: boolean;
 }
 
-export function AdminStatistics({
+export default function AdminStatistics({
   stats = {
     totalCandidates: 0,
     totalRecruiters: 0,

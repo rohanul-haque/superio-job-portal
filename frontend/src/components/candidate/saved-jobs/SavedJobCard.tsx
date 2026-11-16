@@ -1,18 +1,18 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import type { IBookmark } from "@/types/bookmark";
 import { Briefcase, MapPin, Trash2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export interface SavedJobCardProps {
+interface SavedJobCardProps {
   bookmark: IBookmark;
   isRemoving: boolean;
   onRemove: (jobId: string) => void;
 }
 
-export function SavedJobCard({
+function SavedJobCard({
   bookmark: b,
   isRemoving,
   onRemove,

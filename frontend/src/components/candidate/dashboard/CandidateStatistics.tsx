@@ -1,8 +1,6 @@
-import {
-  CandidateStatisticsCard,
-  type CandidateStatCardProps,
-} from "./CandidateStatisticsCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import CandidateStatisticsCard from "./CandidateStatisticsCard";
+import Skeleton from "@/components/ui/skeleton";
+import type { LucideIcon } from "lucide-react";
 import {
   Briefcase,
   CheckCircle2,
@@ -12,7 +10,7 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export interface CandidateStatisticsProps {
+interface CandidateStatisticsProps {
   stats?: {
     totalApplied: number;
     pending: number;
@@ -23,7 +21,17 @@ export interface CandidateStatisticsProps {
   isLoading?: boolean;
 }
 
-export function CandidateStatistics({
+interface StatItem {
+  label: string;
+  value: number;
+  icon: LucideIcon;
+  color: string;
+  bg: string;
+  border: string;
+  description: string;
+}
+
+function CandidateStatistics({
   stats = {
     totalApplied: 0,
     pending: 0,
@@ -33,7 +41,7 @@ export function CandidateStatistics({
   },
   isLoading = false,
 }: CandidateStatisticsProps) {
-  const cards: Omit<CandidateStatCardProps, "isLoading">[] = [
+  const cards: StatItem[] = [
     {
       label: "Total Applied",
       value: stats.totalApplied,

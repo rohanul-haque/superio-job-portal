@@ -3,13 +3,13 @@ import type { IJob } from "@/interfaces/job.interface";
 import { ArrowRight, Building2, CheckCircle2, ExternalLink, ShieldCheck } from "lucide-react";
 import React from "react";
 
-export interface JobDetailsSidebarProps {
+interface JobDetailsSidebarProps {
   job: IJob;
   hasApplied: boolean;
   onApplyClick: () => void;
 }
 
-export function JobDetailsSidebar({
+export default function JobDetailsSidebar({
   job,
   hasApplied,
   onApplyClick,

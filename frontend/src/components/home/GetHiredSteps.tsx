@@ -73,7 +73,7 @@ const STEPS: StepItem[] = [
   },
 ];
 
-export const GetHiredSteps: React.FC = () => {
+const GetHiredSteps: React.FC = () => {
   return (
     <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full py-8 sm:py-12 overflow-hidden">
       {/* Section Header */}

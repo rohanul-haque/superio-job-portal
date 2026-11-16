@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import type { ITrashItem } from "@/interfaces/admin.interface";
 import {
   Briefcase,
@@ -12,14 +12,14 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export interface TrashItemRowProps {
+interface TrashItemRowProps {
   item: ITrashItem;
   isBusy: boolean;
   onRestore: (item: ITrashItem) => void;
   onPurgeRequest: (item: ITrashItem) => void;
 }
 
-export function TrashItemRow({
+export default function TrashItemRow({
   item,
   isBusy,
   onRestore,

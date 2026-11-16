@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/AuthContext";
 
-export function useAuthUser() {
+export default function useAuthUser() {
   const auth = useAuth();
 
   return {
@@ -10,5 +10,3 @@ export function useAuthUser() {
     isAdmin: auth.user?.role === "admin",
   };
 }
-
-export default useAuthUser;

@@ -17,7 +17,7 @@ interface ApplicationActivityChartProps {
   data: IApplicationActivityItem[];
 }
 
-export const ApplicationActivityChart: React.FC<ApplicationActivityChartProps> = ({
+const ApplicationActivityChart: React.FC<ApplicationActivityChartProps> = ({
   data,
 }) => {
   const [isMounted, setIsMounted] = useState(false);

@@ -1,11 +1,11 @@
 "use client";
 
-import { ProfileForm } from "./ProfileForm";
-import { ProfileInformation } from "./ProfileInformation";
-import { ProfileSkeleton } from "@/components/loaders/skeleton/ProfileSkeleton";
+import ProfileForm from "./ProfileForm";
+import ProfileInformation from "./ProfileInformation";
+import ProfileSkeleton from "@/components/loaders/skeleton/ProfileSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import type { ICandidateProfile } from "@/interfaces/candidate.interface";
 import { getProfile, updateProfile } from "@/services/candidate.service";
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_RESUME_SIZE = 5 * 1024 * 1024; // 5 MB
 
-export function CandidateProfile() {
+function CandidateProfile() {
   const { user, refreshUser } = useAuth();
   const [profile, setProfile] = useState<ICandidateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);

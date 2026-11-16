@@ -5,7 +5,7 @@ import { ArrowRight, Building2, FileText } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export interface RecentActivityProps {
+interface RecentActivityProps {
   recentActivity?: {
     recruiters?: Array<{
       id: string;
@@ -26,7 +26,7 @@ export interface RecentActivityProps {
   };
 }
 
-export function RecentActivity({ recentActivity }: RecentActivityProps) {
+export default function RecentActivity({ recentActivity }: RecentActivityProps) {
   const getApplicationStatusBadge = (status: string) => {
     const s = (status || "").toLowerCase().trim();
     if (s === "pending" || s === "in review" || s === "pending review") {

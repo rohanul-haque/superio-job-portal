@@ -42,7 +42,7 @@ const pageTitles: { [key: string]: { title: string; subtitle: string } } = {
   },
 };
 
-export const RecruiterHeader: React.FC<RecruiterHeaderProps> = ({
+const RecruiterHeader: React.FC<RecruiterHeaderProps> = ({
   onToggleSidebar,
 }) => {
   const pathname = usePathname();

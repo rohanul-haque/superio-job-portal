@@ -3,12 +3,12 @@ import type { IAdminRecruiter } from "@/interfaces/admin.interface";
 import { X } from "lucide-react";
 import React from "react";
 
-export interface RecruiterPreviewModalProps {
+interface RecruiterPreviewModalProps {
   recruiter: IAdminRecruiter | null;
   onClose: () => void;
 }
 
-export function RecruiterPreviewModal({
+export default function RecruiterPreviewModal({
   recruiter,
   onClose,
 }: RecruiterPreviewModalProps) {

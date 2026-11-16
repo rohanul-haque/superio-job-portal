@@ -1,16 +1,16 @@
 "use client";
 
-import { AdminStatistics } from "./AdminStatistics";
-import { RecentActivity } from "./RecentActivity";
+import AdminStatistics from "./AdminStatistics";
+import RecentActivity from "./RecentActivity";
 import CategoryDistributionChart from "@/components/admin/CategoryDistributionChart";
 import PlatformGrowthChart from "@/components/admin/PlatformGrowthChart";
 import { ChartSkeleton } from "@/components/loaders/skeleton/DashboardSkeleton";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
-import { useAdminDashboard } from "@/hooks/use-admin";
+import Skeleton from "@/components/ui/skeleton";
+import Spinner from "@/components/ui/spinner";
+import useAdminDashboard from "@/hooks/use-admin";
 import {
   FolderTree,
   RefreshCw,
@@ -20,7 +20,7 @@ import {
 import Link from "next/link";
 import React from "react";
 
-export function AdminDashboard() {
+export default function AdminDashboard() {
   const { data, isLoading, refetch } = useAdminDashboard();
 
   if (isLoading) {

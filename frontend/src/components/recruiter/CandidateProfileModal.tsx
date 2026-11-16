@@ -21,7 +21,7 @@ interface CandidateProfileModalProps {
   onClose: () => void;
 }
 
-export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
+const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
   applicant,
   onClose,
 }) => {

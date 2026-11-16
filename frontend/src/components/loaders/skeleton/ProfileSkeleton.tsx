@@ -1,7 +1,7 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import Skeleton from "@/components/ui/skeleton";
 import React from "react";
 
-export function ProfileSkeleton() {
+function ProfileSkeleton() {
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Avatar & Summary Card Skeleton */}

@@ -1,6 +1,7 @@
 "use client";
 
-import RoleSelector, { RoleType } from "@/components/auth/RoleSelector";
+import RoleSelector from "@/components/auth/RoleSelector";
+import type { RoleType } from "@/types/auth";
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +20,7 @@ interface GetStartedModalProps {
   onClose: () => void;
 }
 
-export const GetStartedModal: React.FC<GetStartedModalProps> = ({
+const GetStartedModal: React.FC<GetStartedModalProps> = ({
   isOpen,
   onClose,
 }) => {

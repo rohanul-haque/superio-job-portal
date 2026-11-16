@@ -1,8 +1,8 @@
-import { CompanyLogoUpload } from "./CompanyLogoUpload";
+import CompanyLogoUpload from "./CompanyLogoUpload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import type { ICompanyProfile } from "@/interfaces/recruiter.interface";
 import {
   Building2,
@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export const COMPANY_SIZE_OPTIONS = [
+const COMPANY_SIZE_OPTIONS = [
   "1-10 Employees",
   "11-50 Employees",
   "51-200 Employees",
@@ -31,7 +31,7 @@ export const COMPANY_SIZE_OPTIONS = [
   "1000+ Employees",
 ];
 
-export interface CompanyProfileFormProps {
+interface CompanyProfileFormProps {
   profile: ICompanyProfile | null;
   name: string;
   setName: (v: string) => void;
@@ -59,7 +59,7 @@ export interface CompanyProfileFormProps {
   onSave: (e: React.FormEvent) => void;
 }
 
-export function CompanyProfileForm({
+export default function CompanyProfileForm({
   profile,
   name,
   setName,

@@ -1,12 +1,12 @@
 "use client";
 
-import { CandidateItemRow } from "./CandidateItemRow";
-import { CandidatePreviewModal } from "./CandidatePreviewModal";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import CandidateItemRow from "./CandidateItemRow";
+import CandidatePreviewModal from "./CandidatePreviewModal";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import type { IAdminCandidate } from "@/interfaces/admin.interface";
 import {
   getCandidates,
@@ -22,7 +22,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function CandidateModerationList() {
+export default function CandidateModerationList() {
   const [candidates, setCandidates] = useState<IAdminCandidate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");

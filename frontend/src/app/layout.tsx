@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/sonner";
+import Toaster from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";

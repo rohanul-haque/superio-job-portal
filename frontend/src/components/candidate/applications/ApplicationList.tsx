@@ -1,11 +1,11 @@
 "use client";
 
-import { ApplicationCard } from "./ApplicationCard";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import ApplicationCard from "./ApplicationCard";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import type { IJobApplication } from "@/interfaces/application.interface";
 import {
   getMyApplications,
@@ -22,7 +22,7 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function ApplicationList() {
+function ApplicationList() {
   const [applications, setApplications] = useState<IJobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");

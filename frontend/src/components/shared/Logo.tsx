@@ -10,7 +10,7 @@ interface LogoProps {
   onClick?: () => void;
 }
 
-export const Logo: React.FC<LogoProps> = ({
+const Logo: React.FC<LogoProps> = ({
   className = "",
   href = "/",
   size = "md",
@@ -39,7 +39,7 @@ export const Logo: React.FC<LogoProps> = ({
   }[size];
 
   const content = (
-    <div className={`flex items-center gap-2.5 ${className}`}>
+    <div className={`flex items-center gap-1 ${className}`}>
       <div
         className={`flex ${sizeClasses.container} shrink-0 items-center justify-center bg-[#4F46E5] text-white shadow-none`}
       >

@@ -3,7 +3,7 @@ import type { IJobsResponseMeta } from "@/responses/job.response";
 import { getAllJobs } from "@/services/job.service";
 import { useCallback, useEffect, useState } from "react";
 
-export function useJobs(initialParams?: IJobFilterParams) {
+export default function useJobs(initialParams?: IJobFilterParams) {
   const [params, setParams] = useState<IJobFilterParams>(initialParams || {});
   const [jobs, setJobs] = useState<IJob[]>([]);
   const [meta, setMeta] = useState<IJobsResponseMeta>({
@@ -45,5 +45,3 @@ export function useJobs(initialParams?: IJobFilterParams) {
     refetch: fetchJobs,
   };
 }
-
-export default useJobs;

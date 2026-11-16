@@ -1,12 +1,12 @@
-import { Spinner } from "@/components/ui/spinner";
-import { cn } from "@/lib/utils";
+import Spinner from "@/components/ui/spinner";
+import cn from "@/lib/utils";
 import React from "react";
 
-export interface ButtonSpinnerProps extends React.SVGAttributes<SVGSVGElement> {
+interface ButtonSpinnerProps extends React.SVGAttributes<SVGSVGElement> {
   size?: "sm" | "md";
 }
 
-export function ButtonSpinner({
+function ButtonSpinner({
   size = "sm",
   className,
   ...props

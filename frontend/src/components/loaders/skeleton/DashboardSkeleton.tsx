@@ -1,6 +1,6 @@
 import { StatsCardSkeleton } from "@/components/loaders/skeleton/CardSkeleton";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
-import { Skeleton } from "@/components/ui/skeleton";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
+import Skeleton from "@/components/ui/skeleton";
 import React from "react";
 
 export function ChartSkeleton({ height = "h-72" }: { height?: string }) {
@@ -64,5 +64,3 @@ export function DashboardSkeleton({
     </div>
   );
 }
-
-export default DashboardSkeleton;

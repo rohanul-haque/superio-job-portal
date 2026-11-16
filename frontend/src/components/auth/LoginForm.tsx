@@ -1,10 +1,11 @@
 "use client";
 
 import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
-import RoleSelector, { RoleType } from "@/components/auth/RoleSelector";
+import RoleSelector from "@/components/auth/RoleSelector";
+import type { RoleType } from "@/types/auth";
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -13,8 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
@@ -51,7 +52,7 @@ const sanitizeReturnUrl = (url: string | null, fallback: string): string => {
   }
 };
 
-export const LoginForm: React.FC<LoginFormProps> = ({
+const LoginForm: React.FC<LoginFormProps> = ({
   initialRole = "candidate",
 }) => {
   const router = useRouter();

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export interface CandidateItemRowProps {
+interface CandidateItemRowProps {
   candidate: IAdminCandidate;
   isBusy: boolean;
   onPreview: (candidate: IAdminCandidate) => void;
@@ -25,7 +25,7 @@ export interface CandidateItemRowProps {
   ) => void;
 }
 
-export function CandidateItemRow({
+export default function CandidateItemRow({
   candidate: c,
   isBusy,
   onPreview,

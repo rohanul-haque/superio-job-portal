@@ -1,11 +1,11 @@
 "use client";
 
-import { AdminJobItemRow } from "./AdminJobItemRow";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import AdminJobItemRow from "./AdminJobItemRow";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import type { IAdminJob } from "@/interfaces/admin.interface";
 import type { ICategory } from "@/types/category";
 import { getAllJobs, moderateJob } from "@/services/admin.service";
@@ -19,7 +19,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function AdminJobsDirectory() {
+export default function AdminJobsDirectory() {
   const [jobs, setJobs] = useState<IAdminJob[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);

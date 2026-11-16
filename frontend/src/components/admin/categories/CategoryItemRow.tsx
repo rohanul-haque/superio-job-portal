@@ -11,13 +11,13 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export interface CategoryItemRowProps {
+interface CategoryItemRowProps {
   category: ICategory;
   onEdit: (category: ICategory) => void;
   onDeleteRequest: (category: ICategory) => void;
 }
 
-export function CategoryItemRow({
+export default function CategoryItemRow({
   category,
   onEdit,
   onDeleteRequest,

@@ -5,12 +5,12 @@ import { Briefcase } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export interface JobDetailsDescriptionProps {
+interface JobDetailsDescriptionProps {
   job: IJob;
   similarJobs?: IJob[];
 }
 
-export function JobDetailsDescription({
+export default function JobDetailsDescription({
   job,
   similarJobs = [],
 }: JobDetailsDescriptionProps) {

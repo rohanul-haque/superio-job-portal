@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import type { IRecruiterApplicant } from "@/interfaces/recruiter.interface";
 import {
   CheckCircle2,
@@ -23,14 +23,14 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export interface ApplicantItemRowProps {
+interface ApplicantItemRowProps {
   applicant: IRecruiterApplicant;
   isMutating: boolean;
   onStatusChange: (applicantId: string, newStatus: string) => void;
   onReview: (applicant: IRecruiterApplicant) => void;
 }
 
-export function ApplicantItemRow({
+export default function ApplicantItemRow({
   applicant,
   isMutating,
   onStatusChange,

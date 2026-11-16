@@ -2,7 +2,7 @@ import Logo from "@/components/shared/Logo";
 import Link from "next/link";
 import React from "react";
 
-export const Footer: React.FC = () => {
+const Footer: React.FC = () => {
   return (
     <footer className="border-t border-[#E5E7EB] bg-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

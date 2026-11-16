@@ -1,17 +1,17 @@
 "use client";
 
 import ApplicationActivityChart from "@/components/candidate/ApplicationActivityChart";
-import { CandidateStatistics } from "./CandidateStatistics";
-import { RecentApplications } from "./RecentApplications";
+import CandidateStatistics from "./CandidateStatistics";
+import RecentApplications from "./RecentApplications";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import { useCandidateDashboard } from "@/hooks/use-candidate";
 import { AlertCircle, FileText, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export function CandidateDashboard() {
+function CandidateDashboard() {
   const { user } = useAuth();
   const { statsData, isLoading, refetch } = useCandidateDashboard();
 

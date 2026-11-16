@@ -1,7 +1,7 @@
 "use client";
 
 import type { ICategory } from "@/types/category";
-import { Skeleton } from "@/components/ui/skeleton";
+import Skeleton from "@/components/ui/skeleton";
 import {
   Briefcase,
   Code,
@@ -104,7 +104,7 @@ const CategoryIconDisplay: React.FC<{
   return getCategoryIcon(name);
 };
 
-export const CategoryGrid: React.FC<CategoryGridProps> = ({
+const CategoryGrid: React.FC<CategoryGridProps> = ({
   categories,
   isLoading = false,
 }) => {

@@ -1,6 +1,6 @@
 import type { IApiResponse } from "@/interfaces/api-response.interface";
 import type { IJobApplication } from "@/interfaces/application.interface";
-import api from "@/services/api";
+import { api } from "@/services/api";
 
 export const applyJob = (jobId: string) => {
   return api.post<IApiResponse<IJobApplication>>("/applications/apply", {

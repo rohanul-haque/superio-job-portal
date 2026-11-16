@@ -22,7 +22,7 @@ interface JobCardProps {
   actionLabel?: string;
 }
 
-export const JobCard: React.FC<JobCardProps> = ({
+const JobCard: React.FC<JobCardProps> = ({
   job,
   featured = false,
   actionLabel = "View Details",

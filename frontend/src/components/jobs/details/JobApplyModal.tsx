@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import type { IJob } from "@/interfaces/job.interface";
 import { ArrowRight, FileText, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export interface JobApplyModalProps {
+interface JobApplyModalProps {
   job: IJob;
   userName?: string;
   isApplyModalOpen: boolean;
@@ -16,7 +16,7 @@ export interface JobApplyModalProps {
   onConfirmApply: () => void;
 }
 
-export function JobApplyModal({
+export default function JobApplyModal({
   job,
   userName,
   isApplyModalOpen,

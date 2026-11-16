@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import Input from "@/components/ui/input";
 import { MapPin, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export const HeroSearch: React.FC = () => {
+const HeroSearch: React.FC = () => {
   const router = useRouter();
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");

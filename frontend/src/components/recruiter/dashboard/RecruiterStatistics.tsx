@@ -1,7 +1,5 @@
-import {
-  RecruiterStatisticsCard,
-  type RecruiterStatCardProps,
-} from "./RecruiterStatisticsCard";
+import RecruiterStatisticsCard from "./RecruiterStatisticsCard";
+import type { LucideIcon } from "lucide-react";
 import {
   Briefcase,
   CheckCircle2,
@@ -11,7 +9,7 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export interface RecruiterStatisticsProps {
+interface RecruiterStatisticsProps {
   stats?: {
     totalJobsPosted: number;
     ongoingJobs: number;
@@ -22,7 +20,17 @@ export interface RecruiterStatisticsProps {
   isLoading?: boolean;
 }
 
-export function RecruiterStatistics({
+interface RecruiterStatItem {
+  label: string;
+  value: number;
+  icon: LucideIcon;
+  color: string;
+  bg: string;
+  border: string;
+  description: string;
+}
+
+export default function RecruiterStatistics({
   stats = {
     totalJobsPosted: 0,
     ongoingJobs: 0,
@@ -32,7 +40,7 @@ export function RecruiterStatistics({
   },
   isLoading = false,
 }: RecruiterStatisticsProps) {
-  const statCards: Omit<RecruiterStatCardProps, "isLoading">[] = [
+  const statCards: RecruiterStatItem[] = [
     {
       label: "Total Jobs Posted",
       value: stats.totalJobsPosted,

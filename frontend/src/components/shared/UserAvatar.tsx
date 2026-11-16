@@ -5,7 +5,7 @@ import type { IAuthUser } from "@/types/auth";
 import { User as UserIcon } from "lucide-react";
 import React from "react";
 
-export interface UserAvatarProps {
+interface UserAvatarProps {
   user?: IAuthUser | null;
   className?: string;
   fallbackClassName?: string;
@@ -18,7 +18,7 @@ export interface UserAvatarProps {
  * 3. If name is unavailable/empty, renders a clean default User icon without broken image icons.
  * 4. Compatible with candidate profilePicture, recruiter company logo, and admin avatars.
  */
-export const UserAvatar: React.FC<UserAvatarProps> = ({
+const UserAvatar: React.FC<UserAvatarProps> = ({
   user,
   className = "h-8 w-8",
   fallbackClassName,

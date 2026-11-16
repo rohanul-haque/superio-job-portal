@@ -58,7 +58,7 @@ const navItems = [
   },
 ];
 
-export const CandidateSidebar: React.FC<CandidateSidebarProps> = ({
+const CandidateSidebar: React.FC<CandidateSidebarProps> = ({
   isOpen,
   onClose,
 }) => {

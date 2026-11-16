@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 import React from "react";
 
-export interface JobDetailsHeaderProps {
+interface JobDetailsHeaderProps {
   job: IJob;
   isBookmarked: boolean;
   hasApplied: boolean;
@@ -26,7 +26,7 @@ export interface JobDetailsHeaderProps {
   onApplyClick: () => void;
 }
 
-export function JobDetailsHeader({
+export default function JobDetailsHeader({
   job,
   isBookmarked,
   hasApplied,

@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-export interface TiptapEditorProps {
+interface TiptapEditorProps {
   value: string;
   onChange: (html: string) => void;
   placeholder?: string;
@@ -37,7 +37,7 @@ export interface TiptapEditorProps {
   error?: string;
 }
 
-export const TiptapEditor: React.FC<TiptapEditorProps> = ({
+const TiptapEditor: React.FC<TiptapEditorProps> = ({
   value,
   onChange,
   placeholder = "Write a detailed job description...",

@@ -1,11 +1,11 @@
 "use client";
 
-import { JobItemRow } from "./JobItemRow";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import JobItemRow from "./JobItemRow";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import type { IJob } from "@/interfaces/job.interface";
 import {
   deleteJob,
@@ -23,7 +23,7 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function ManageJobsList() {
+export default function ManageJobsList() {
   const [jobs, setJobs] = useState<IJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");

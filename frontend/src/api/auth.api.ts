@@ -7,7 +7,7 @@ import type {
   IVerifyEmailCredentialsPayload,
 } from "@/interfaces/auth.interface";
 import type { IVerifyEmailResponse } from "@/responses/auth.response";
-import api from "@/services/api";
+import { api } from "@/services/api";
 
 export const registerCandidate = (payload: ICandidateRegisterPayload) => {
   return api.post<IApiResponse<IAuthUser>>("/auth/candidate/register", payload);

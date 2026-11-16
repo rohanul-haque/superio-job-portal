@@ -1,10 +1,10 @@
 "use client";
 
-import { SavedJobCard } from "./SavedJobCard";
+import SavedJobCard from "./SavedJobCard";
 import { JobCardSkeleton } from "@/components/loaders/skeleton/CardSkeleton";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import type { IBookmark } from "@/types/bookmark";
 import { getMyBookmarks, removeBookmark } from "@/services/bookmark.service";
 import { Bookmark, Briefcase, RefreshCw, Search } from "lucide-react";
@@ -12,7 +12,7 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function SavedJobsList() {
+function SavedJobsList() {
   const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");

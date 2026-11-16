@@ -1,14 +1,8 @@
 import JobsCatalogue from "@/components/jobs/JobsCatalogue";
 import { JobCardSkeleton } from "@/components/shared/skeletons";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { Metadata } from "next";
+import Skeleton from "@/components/ui/skeleton";
 import React, { Suspense } from "react";
 
-export const metadata: Metadata = {
-  title: "Explore Jobs — Hirenest Job Portal",
-  description:
-    "Search, filter, and discover career opportunities across leading global employers on Hirenest.",
-};
 
 export default function AllJobsPage() {
   return (

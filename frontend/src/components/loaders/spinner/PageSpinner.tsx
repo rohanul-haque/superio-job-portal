@@ -1,11 +1,11 @@
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import React from "react";
 
-export interface PageSpinnerProps {
+interface PageSpinnerProps {
   message?: string;
 }
 
-export function PageSpinner({
+function PageSpinner({
   message = "Loading...",
 }: PageSpinnerProps) {
   return (

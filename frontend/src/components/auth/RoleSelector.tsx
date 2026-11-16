@@ -1,8 +1,7 @@
 "use client";
 
+import type { RoleType } from "@/types/auth";
 import React from "react";
-
-export type RoleType = "candidate" | "recruiter";
 
 interface RoleSelectorProps {
   selectedRole: RoleType;
@@ -12,7 +11,7 @@ interface RoleSelectorProps {
   className?: string;
 }
 
-export const RoleSelector: React.FC<RoleSelectorProps> = ({
+const RoleSelector: React.FC<RoleSelectorProps> = ({
   selectedRole,
   onChange,
   candidateLabel = "Candidate",

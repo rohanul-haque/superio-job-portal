@@ -2,7 +2,7 @@
 
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import {
   AlertCircle,
@@ -43,7 +43,7 @@ const sanitizeReturnUrl = (url: string | null, fallback: string): string => {
   }
 };
 
-export const AdminLoginForm: React.FC = () => {
+const AdminLoginForm: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawReturnUrl = searchParams.get("returnUrl");

@@ -1,10 +1,11 @@
 "use client";
 
 import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
-import RoleSelector, { RoleType } from "@/components/auth/RoleSelector";
+import RoleSelector from "@/components/auth/RoleSelector";
+import type { RoleType } from "@/types/auth";
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -13,8 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
 import {
   registerCandidate,
   registerRecruiter,
@@ -35,7 +36,7 @@ interface RegisterFormProps {
   initialRole?: RoleType;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({
+const RegisterForm: React.FC<RegisterFormProps> = ({
   initialRole = "candidate",
 }) => {
   const searchParams = useSearchParams();

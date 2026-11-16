@@ -1,7 +1,7 @@
 import type { IApiResponse } from "@/interfaces/api-response.interface";
 import type { ICandidateProfile } from "@/interfaces/candidate.interface";
 import type { ICandidateDashboardStats } from "@/responses/candidate.response";
-import api from "@/services/api";
+import { api } from "@/services/api";
 
 export const getProfile = () => {
   return api.get<IApiResponse<ICandidateProfile>>("/candidate/profile");

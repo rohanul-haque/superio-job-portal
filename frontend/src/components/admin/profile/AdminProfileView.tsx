@@ -1,11 +1,11 @@
 "use client";
 
-import { AdminPasswordForm } from "./AdminPasswordForm";
-import { AdminPhotoManager } from "./AdminPhotoManager";
-import { AdminProfileForm } from "./AdminProfileForm";
-import { ProfileSkeleton } from "@/components/loaders/skeleton/ProfileSkeleton";
+import AdminPasswordForm from "./AdminPasswordForm";
+import AdminPhotoManager from "./AdminPhotoManager";
+import AdminProfileForm from "./AdminProfileForm";
+import ProfileSkeleton from "@/components/loaders/skeleton/ProfileSkeleton";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import type { IAdminProfile } from "@/interfaces/admin.interface";
 import {
@@ -27,7 +27,7 @@ const ALLOWED_MIME_TYPES = [
   "image/jpg",
 ];
 
-export function AdminProfileView() {
+function AdminProfileView() {
   const { user, refreshUser } = useAuth();
 
   // Profile data state

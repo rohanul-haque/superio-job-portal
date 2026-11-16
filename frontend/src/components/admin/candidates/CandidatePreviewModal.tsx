@@ -3,12 +3,12 @@ import type { IAdminCandidate } from "@/interfaces/admin.interface";
 import { ExternalLink, FileText, X } from "lucide-react";
 import React from "react";
 
-export interface CandidatePreviewModalProps {
+interface CandidatePreviewModalProps {
   candidate: IAdminCandidate | null;
   onClose: () => void;
 }
 
-export function CandidatePreviewModal({
+export default function CandidatePreviewModal({
   candidate,
   onClose,
 }: CandidatePreviewModalProps) {

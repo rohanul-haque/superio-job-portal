@@ -8,14 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Label from "@/components/ui/label";
+import Spinner from "@/components/ui/spinner";
 import type { IAdminProfile } from "@/interfaces/admin.interface";
 import { CheckCircle2, Mail, Save, ShieldCheck, User } from "lucide-react";
 import React from "react";
 
-export interface AdminProfileFormProps {
+interface AdminProfileFormProps {
   profile: IAdminProfile;
   name: string;
   setName: (v: string) => void;
@@ -26,7 +26,7 @@ export interface AdminProfileFormProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-export function AdminProfileForm({
+export default function AdminProfileForm({
   profile,
   name,
   setName,

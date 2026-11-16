@@ -1,13 +1,7 @@
 import AdminLoginForm from "@/components/auth/AdminLoginForm";
 import { AuthCardSkeleton } from "@/components/shared/skeletons";
-import type { Metadata } from "next";
 import React, { Suspense } from "react";
 
-export const metadata: Metadata = {
-  title: "Admin Sign In — Superio Job Portal",
-  description:
-    "Secure single sign-on access gateway for Superio Enterprise Platform Administrators.",
-};
 
 export default function AdminLoginPage() {
   return (

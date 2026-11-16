@@ -16,7 +16,7 @@ import {
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-export function AIRecommendationsTeaser() {
+export default function AIRecommendationsTeaser() {
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   const handleNotifyMe = () => {

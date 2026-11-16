@@ -28,7 +28,7 @@ const COLORS = [
   "#0d9488",
 ];
 
-export const CategoryDistributionChart: React.FC<
+const CategoryDistributionChart: React.FC<
   CategoryDistributionChartProps
 > = ({ data }) => {
   // Display at most the latest 3 categories that have at least one job vacancy (completely exclude count === 0)

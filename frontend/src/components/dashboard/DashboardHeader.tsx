@@ -1,7 +1,7 @@
 "use client";
 
 import UserAvatar from "@/components/shared/UserAvatar";
-import { Separator } from "@/components/ui/separator";
+import Separator from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
 import type { UserRole } from "@/types/auth";
@@ -14,7 +14,7 @@ interface DashboardHeaderProps {
   role: UserRole;
 }
 
-export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ role }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ role }) => {
   const { user } = useAuth();
   const pathname = usePathname();
 

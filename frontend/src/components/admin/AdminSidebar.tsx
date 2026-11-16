@@ -61,7 +61,7 @@ const navItems = [
   },
 ];
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({
+const AdminSidebar: React.FC<AdminSidebarProps> = ({
   isOpen,
   onClose,
 }) => {

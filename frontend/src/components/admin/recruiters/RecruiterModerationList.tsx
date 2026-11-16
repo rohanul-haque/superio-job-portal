@@ -1,12 +1,12 @@
 "use client";
 
-import { RecruiterItemRow } from "./RecruiterItemRow";
-import { RecruiterPreviewModal } from "./RecruiterPreviewModal";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import RecruiterItemRow from "./RecruiterItemRow";
+import RecruiterPreviewModal from "./RecruiterPreviewModal";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import type { IAdminRecruiter } from "@/interfaces/admin.interface";
 import {
   getRecruiters,
@@ -22,7 +22,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function RecruiterModerationList() {
+export default function RecruiterModerationList() {
   const [recruiters, setRecruiters] = useState<IAdminRecruiter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");

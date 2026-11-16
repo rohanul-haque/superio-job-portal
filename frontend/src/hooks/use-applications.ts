@@ -3,7 +3,7 @@ import { getMyApplications } from "@/services/application.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function useApplications(statusFilter?: string) {
+export default function useApplications(statusFilter?: string) {
   const [applications, setApplications] = useState<IJobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

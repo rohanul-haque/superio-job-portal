@@ -1,13 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import { resendVerification } from "@/services/auth.service";
 import { CheckCircle2, MailCheck, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export type EmailVerificationModalMode = "registration" | "login";
+type EmailVerificationModalMode = "registration" | "login";
 
 interface EmailVerificationModalProps {
   isOpen: boolean;
@@ -16,7 +16,7 @@ interface EmailVerificationModalProps {
   email?: string;
 }
 
-export const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
+const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   isOpen,
   onClose,
   mode = "registration",

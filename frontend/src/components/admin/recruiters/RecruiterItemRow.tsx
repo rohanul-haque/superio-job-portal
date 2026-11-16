@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export interface RecruiterItemRowProps {
+interface RecruiterItemRowProps {
   recruiter: IAdminRecruiter;
   isBusy: boolean;
   onPreview: (recruiter: IAdminRecruiter) => void;
@@ -26,7 +26,7 @@ export interface RecruiterItemRowProps {
   ) => void;
 }
 
-export function RecruiterItemRow({
+export default function RecruiterItemRow({
   recruiter: r,
   isBusy,
   onPreview,

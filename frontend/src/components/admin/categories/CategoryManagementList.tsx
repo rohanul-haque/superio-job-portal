@@ -1,12 +1,12 @@
 "use client";
 
-import { CategoryItemRow } from "./CategoryItemRow";
+import CategoryItemRow from "./CategoryItemRow";
 import CategoryModal from "@/components/admin/CategoryModal";
-import { TableSkeleton } from "@/components/loaders/skeleton/TableSkeleton";
+import TableSkeleton from "@/components/loaders/skeleton/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import Input from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 import type { ICategory } from "@/types/category";
 import {
   deleteCategory,
@@ -23,7 +23,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function CategoryManagementList() {
+export default function CategoryManagementList() {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");

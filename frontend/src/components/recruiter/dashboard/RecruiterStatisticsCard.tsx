@@ -1,8 +1,8 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import Skeleton from "@/components/ui/skeleton";
 import type { LucideIcon } from "lucide-react";
 import React from "react";
 
-export interface RecruiterStatCardProps {
+interface RecruiterStatCardProps {
   label: string;
   value: number;
   icon: LucideIcon;
@@ -13,7 +13,7 @@ export interface RecruiterStatCardProps {
   isLoading?: boolean;
 }
 
-export function RecruiterStatisticsCard({
+export default function RecruiterStatisticsCard({
   label,
   value,
   icon: Icon,

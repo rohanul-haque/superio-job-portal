@@ -16,7 +16,7 @@ interface PlatformGrowthChartProps {
   data: IGrowthChartItem[];
 }
 
-export const PlatformGrowthChart: React.FC<PlatformGrowthChartProps> = ({
+const PlatformGrowthChart: React.FC<PlatformGrowthChartProps> = ({
   data,
 }) => {
   if (!data || data.length === 0) {

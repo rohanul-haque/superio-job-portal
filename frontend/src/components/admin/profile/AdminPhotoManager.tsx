@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
 import {
   Camera,
   CheckCircle2,
@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import React from "react";
 
-export interface AdminPhotoManagerProps {
+interface AdminPhotoManagerProps {
   previewUrl: string | null;
   selectedImage: File | null;
   existingImageUrl?: string | null;
@@ -34,7 +34,7 @@ export interface AdminPhotoManagerProps {
   onRemoveImage: () => void;
 }
 
-export function AdminPhotoManager({
+export default function AdminPhotoManager({
   previewUrl,
   selectedImage,
   existingImageUrl,

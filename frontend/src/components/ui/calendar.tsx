@@ -1,10 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import cn from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
 
-export interface CalendarProps {
+interface CalendarProps {
   mode?: "single";
   selected?: Date | undefined;
   onSelect?: (date: Date | undefined) => void;
@@ -37,7 +37,7 @@ function isSameDay(d1: Date, d2: Date): boolean {
   );
 }
 
-export function Calendar({
+export default function Calendar({
   selected,
   onSelect,
   disabled,

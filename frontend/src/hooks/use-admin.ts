@@ -3,7 +3,7 @@ import { getDashboardStats } from "@/services/admin.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function useAdminDashboard() {
+export default function useAdminDashboard() {
   const [data, setData] = useState<IAdminDashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

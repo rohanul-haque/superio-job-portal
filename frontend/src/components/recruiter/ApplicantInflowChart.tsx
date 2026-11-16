@@ -17,7 +17,7 @@ interface ApplicantInflowChartProps {
   data: IApplicantInflowChartItem[];
 }
 
-export const ApplicantInflowChart: React.FC<ApplicantInflowChartProps> = ({
+const ApplicantInflowChart: React.FC<ApplicantInflowChartProps> = ({
   data,
 }) => {
   const [isMounted, setIsMounted] = useState(false);

@@ -12,7 +12,7 @@ import type {
 } from "@/interfaces/admin.interface";
 import type { IApiResponse } from "@/interfaces/api-response.interface";
 import type { IAdminDashboardStats } from "@/responses/admin.response";
-import api from "@/services/api";
+import { api } from "@/services/api";
 
 export const getDashboardStats = () => {
   return api.get<IApiResponse<IAdminDashboardStats>>("/admin/dashboard-stats");

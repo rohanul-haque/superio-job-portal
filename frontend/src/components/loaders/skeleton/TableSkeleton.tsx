@@ -1,12 +1,12 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import Skeleton from "@/components/ui/skeleton";
 import React from "react";
 
-export interface TableSkeletonProps {
+interface TableSkeletonProps {
   rows?: number;
   columns?: number;
 }
 
-export function TableSkeleton({
+function TableSkeleton({
   rows = 5,
   columns = 4,
 }: TableSkeletonProps) {

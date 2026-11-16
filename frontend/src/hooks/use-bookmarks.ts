@@ -3,7 +3,7 @@ import { getMyBookmarks } from "@/services/bookmark.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function useBookmarks() {
+export default function useBookmarks() {
   const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

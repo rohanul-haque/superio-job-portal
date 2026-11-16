@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import React from "react";
 
-export interface JobItemRowProps {
+interface JobItemRowProps {
   job: IJob;
   isBusy: boolean;
   onToggleVisibility: (job: IJob) => void;
@@ -23,7 +23,7 @@ export interface JobItemRowProps {
   onDeleteRequest: (job: IJob) => void;
 }
 
-export function JobItemRow({
+export default function JobItemRow({
   job,
   isBusy,
   onToggleVisibility,

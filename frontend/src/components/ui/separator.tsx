@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
+import cn from "@/lib/utils";
 import * as React from "react";
 
-export interface SeparatorProps extends React.HTMLAttributes<HTMLDivElement> {
+interface SeparatorProps extends React.HTMLAttributes<HTMLDivElement> {
   orientation?: "horizontal" | "vertical";
   decorative?: boolean;
 }
@@ -26,6 +26,5 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>(
 );
 Separator.displayName = "Separator";
 
-export { Separator };
 export default Separator;
 

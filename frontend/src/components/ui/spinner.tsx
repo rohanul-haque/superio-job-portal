@@ -1,8 +1,8 @@
-import { cn } from "@/lib/utils";
+import cn from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import React from "react";
 
-export interface SpinnerProps extends React.SVGAttributes<SVGSVGElement> {
+interface SpinnerProps extends React.SVGAttributes<SVGSVGElement> {
   size?: "sm" | "md" | "lg" | "xl";
 }
 
@@ -13,7 +13,7 @@ const sizeClasses = {
   xl: "h-8 w-8",
 };
 
-export const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
+const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
   ({ size = "md", className, ...props }, ref) => {
     return (
       <Loader2

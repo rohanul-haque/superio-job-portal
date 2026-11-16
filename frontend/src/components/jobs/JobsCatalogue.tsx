@@ -4,7 +4,7 @@ import JobCard from "@/components/jobs/JobCard";
 import { JobCardSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import Input from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -56,7 +56,7 @@ const POPULAR_LOCATIONS = [
   "Austin, USA",
 ];
 
-export const JobsCatalogue: React.FC = () => {
+const JobsCatalogue: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
