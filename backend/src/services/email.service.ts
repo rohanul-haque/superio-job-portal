@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import config from "../config";
-import resend from "../lib/resend";
+import transporter from "../lib/email-transporter";
 import getPasswordResetEmailTemplate from "../templates/email/password-reset-email";
 import getVerificationEmailTemplate from "../templates/email/verification-email";
 import AppError from "../utils/AppError";
@@ -16,6 +16,15 @@ export interface ISendPasswordResetEmailOptions {
   name: string;
 }
 
+const getSenderAddress = (): string => {
+  if (config.BREVO_FROM_EMAIL) {
+    return config.BREVO_FROM_NAME
+      ? `"${config.BREVO_FROM_NAME}" <${config.BREVO_FROM_EMAIL}>`
+      : config.BREVO_FROM_EMAIL;
+  }
+  return `"HireNest" <no-reply@hirenest.com>`;
+};
+
 export const sendVerificationEmail = async ({
   to,
   name,
@@ -23,50 +32,36 @@ export const sendVerificationEmail = async ({
 }: ISendVerificationEmailOptions): Promise<void> => {
   const verificationUrl = `${config.FRONTEND_URL}/verify-email`;
   const html = getVerificationEmailTemplate({ name, role, verificationUrl });
-  const from =
-    config.RESEND_FROM_EMAIL ||
-    config.EMAIL_FROM ||
-    "Superio Job Portal <onboarding@resend.dev>";
+  const from = getSenderAddress();
   const subject = `[Superio] Verify your email address (${role.toUpperCase()})`;
 
   try {
-    if (resend) {
-      const { data, error } = await resend.emails.send({
+    if (config.BREVO_SMTP_USER && config.BREVO_SMTP_KEY) {
+      const info = await transporter.sendMail({
         from,
         to,
         subject,
         html,
       });
 
-      if (error) {
-        console.error(
-          `[Resend Error] Failed to send verification email to ${to}:`,
-          error,
-        );
-        throw new AppError(
-          StatusCodes.INTERNAL_SERVER_ERROR,
-          "Failed to dispatch verification email. Please try again later.",
-        );
-      }
-
       console.log(
-        `[Email] Verification email dispatched to ${to} via Resend (ID: ${data?.id})`,
+        `[Email] Verification email dispatched to ${to} via Brevo SMTP (MessageID: ${info.messageId})`,
       );
     } else {
       console.log(
-        "\n================== EMAIL VERIFICATION (DEV FALLBACK - RESEND NOT CONFIGURED) ==================",
+        "\n================== EMAIL VERIFICATION (DEV FALLBACK - BREVO SMTP NOT CONFIGURED) ==================",
       );
       console.log(`To: ${to} (${name}) [Role: ${role}]`);
       console.log(`Verification URL (Zero-Token): ${verificationUrl}`);
       console.log(
-        "=================================================================================================\n",
+        "====================================================================================================\n",
       );
     }
   } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    console.error(`[Email Error] Failed to send email to ${to}:`, error);
+    console.error(
+      `[Email Error] Failed to send verification email to ${to}:`,
+      error,
+    );
     throw new AppError(
       StatusCodes.INTERNAL_SERVER_ERROR,
       "Failed to dispatch verification email. Please try again later.",
@@ -80,40 +75,29 @@ export const sendPasswordResetEmail = async ({
 }: ISendPasswordResetEmailOptions): Promise<void> => {
   const resetUrl = `${config.FRONTEND_URL}/reset-password`;
   const html = getPasswordResetEmailTemplate({ name, resetUrl });
-  const from =
-    config.RESEND_FROM_EMAIL ||
-    config.EMAIL_FROM ||
-    "Superio Job Portal <onboarding@resend.dev>";
+  const from = getSenderAddress();
   const subject = "[Superio] Reset your password";
 
   try {
-    if (resend) {
-      const { data, error } = await resend.emails.send({
+    if (config.BREVO_SMTP_USER && config.BREVO_SMTP_KEY) {
+      const info = await transporter.sendMail({
         from,
         to,
         subject,
         html,
       });
 
-      if (error) {
-        console.error(
-          `[Resend Error] Failed to send password reset email to ${to}:`,
-          error,
-        );
-        return;
-      }
-
       console.log(
-        `[Email] Password reset email sent successfully to ${to} via Resend (ID: ${data?.id})`,
+        `[Email] Password reset email sent successfully to ${to} via Brevo SMTP (MessageID: ${info.messageId})`,
       );
     } else {
       console.log(
-        "\n================== PASSWORD RESET (DEV FALLBACK - RESEND NOT CONFIGURED) ==================",
+        "\n================== PASSWORD RESET (DEV FALLBACK - BREVO SMTP NOT CONFIGURED) ==================",
       );
       console.log(`To: ${to} (${name})`);
       console.log(`Reset URL (Zero-Token): ${resetUrl}`);
       console.log(
-        "===========================================================================================\n",
+        "===============================================================================================\n",
       );
     }
   } catch (error) {
