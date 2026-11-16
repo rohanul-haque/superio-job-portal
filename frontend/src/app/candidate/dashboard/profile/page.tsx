@@ -504,11 +504,11 @@ export default function CandidateProfilePage() {
                 id="avatar-image-input"
               />
 
-              <Avatar className="h-20 w-20 shrink-0 rounded-2xl border-2 border-slate-200">
+              <Avatar className="h-20 w-20 shrink-0 rounded-2xl border border-[#E5E7EB] bg-white p-1">
                 <AvatarImage
                   src={imagePreview || undefined}
                   alt={name || "Profile"}
-                  className="rounded-2xl object-cover"
+                  className="rounded-xl object-contain h-full w-full"
                 />
                 <AvatarFallback className="rounded-2xl bg-blue-50 text-blue-700 font-bold text-xl flex items-center justify-center">
                   {name ? (

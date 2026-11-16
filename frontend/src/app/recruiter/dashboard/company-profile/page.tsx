@@ -247,12 +247,18 @@ export default function RecruiterCompanyProfilePage() {
             <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-slate-100">
               {/* Logo Preview */}
               <div className="relative group">
-                <div className="flex h-24 w-24 sm:h-28 sm:w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 shadow-inner">
+                <div
+                  className={`flex h-24 w-24 sm:h-28 sm:w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl ${
+                    logoPreview
+                      ? "border border-[#E5E7EB] bg-white p-2.5 shadow-none"
+                      : "border-2 border-dashed border-slate-300 bg-slate-50 shadow-inner"
+                  }`}
+                >
                   {logoPreview ? (
                     <img
                       src={logoPreview}
                       alt="Company Logo Preview"
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <Building2 className="h-10 w-10 text-slate-400" />

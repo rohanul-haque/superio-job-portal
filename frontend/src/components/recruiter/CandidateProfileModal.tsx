@@ -52,13 +52,13 @@ export const CandidateProfileModal: React.FC<CandidateProfileModalProps> = ({
 
         {/* Header Profile Info */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 pb-6 border-b border-slate-100">
-          <Avatar className="h-16 w-16 shrink-0 rounded-2xl border border-slate-200">
+          <Avatar className="h-16 w-16 shrink-0 rounded-2xl border border-[#E5E7EB] bg-white p-1">
             <AvatarImage
               src={candidate.profilePicture?.url}
               alt={candidate.name}
-              className="rounded-2xl object-cover"
+              className="rounded-xl object-contain h-full w-full"
             />
-            <AvatarFallback className="rounded-2xl bg-slate-100 text-2xl font-bold text-slate-600">
+            <AvatarFallback className="rounded-xl bg-slate-100 text-2xl font-bold text-slate-600">
               {candidate.name.charAt(0)}
             </AvatarFallback>
           </Avatar>

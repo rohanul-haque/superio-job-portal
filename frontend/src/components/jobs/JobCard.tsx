@@ -65,13 +65,13 @@ export const JobCard: React.FC<JobCardProps> = ({
         {/* Header: Company Logo/Avatar & Badges */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-base shadow-none overflow-hidden">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-700 font-bold text-base shadow-none overflow-hidden">
               {job.company?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={job.company.image}
                   alt={job.company.name || "Company"}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               ) : (
                 <Building2 className="h-6 w-6 text-slate-400" />

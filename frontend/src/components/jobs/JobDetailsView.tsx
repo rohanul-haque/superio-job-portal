@@ -245,13 +245,13 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
           {/* Top Section – Left Side */}
           <div className="flex items-start gap-4 sm:gap-5 flex-1 min-w-0">
             {/* Company Avatar / Logo */}
-            <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-xl shadow-none overflow-hidden">
+            <div className="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-white p-2.5 sm:p-3 text-slate-700 font-bold text-xl shadow-none overflow-hidden">
               {job.company?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={job.company.image}
                   alt={job.company.name || "Company"}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               ) : (
                 <Building2 className="h-8 w-8 text-slate-400" />
@@ -475,13 +475,13 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
             </h3>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-slate-50 text-slate-700 font-bold text-base overflow-hidden shadow-none">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white p-1.5 text-slate-700 font-bold text-base overflow-hidden shadow-none">
                 {job.company?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={job.company.image}
                     alt={job.company.name || "Company"}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain"
                   />
                 ) : (
                   <Building2 className="h-6 w-6 text-slate-400" />
