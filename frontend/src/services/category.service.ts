@@ -1,40 +1,42 @@
-import { categoryApi } from "@/api/category.api";
+import {
+  createCategory as createCategoryApi,
+  deleteCategory as deleteCategoryApi,
+  getAllCategories as getAllCategoriesApi,
+  getCategoryById as getCategoryByIdApi,
+  updateCategory as updateCategoryApi,
+} from "@/api/category.api";
 import type { ICategory } from "@/types/category";
 
-export const categoryService = {
-  async getAllCategories(params?: {
-    search?: string;
-    isActive?: string;
-    isDeleted?: string;
-  }): Promise<ICategory[]> {
-    const res = await categoryApi.getAllCategories(params);
-    return res.data.data || [];
-  },
-
-  async getCategoryById(id: string): Promise<ICategory> {
-    const res = await categoryApi.getCategoryById(id);
-    return res.data.data;
-  },
-
-  async createCategory(
-    data: FormData | { name: string; isActive?: boolean },
-  ): Promise<ICategory> {
-    const res = await categoryApi.createCategory(data);
-    return res.data.data;
-  },
-
-  async updateCategory(
-    id: string,
-    data: FormData | { name?: string; isActive?: boolean },
-  ): Promise<ICategory> {
-    const res = await categoryApi.updateCategory(id, data);
-    return res.data.data;
-  },
-
-  async deleteCategory(id: string): Promise<ICategory> {
-    const res = await categoryApi.deleteCategory(id);
-    return res.data.data;
-  },
+export const getAllCategories = async (params?: {
+  search?: string;
+  isActive?: string;
+  isDeleted?: string;
+}): Promise<ICategory[]> => {
+  const res = await getAllCategoriesApi(params);
+  return res.data.data || [];
 };
 
-export default categoryService;
+export const getCategoryById = async (id: string): Promise<ICategory> => {
+  const res = await getCategoryByIdApi(id);
+  return res.data.data;
+};
+
+export const createCategory = async (
+  data: FormData | { name: string; isActive?: boolean },
+): Promise<ICategory> => {
+  const res = await createCategoryApi(data);
+  return res.data.data;
+};
+
+export const updateCategory = async (
+  id: string,
+  data: FormData | { name?: string; isActive?: boolean },
+): Promise<ICategory> => {
+  const res = await updateCategoryApi(id, data);
+  return res.data.data;
+};
+
+export const deleteCategory = async (id: string): Promise<ICategory> => {
+  const res = await deleteCategoryApi(id);
+  return res.data.data;
+};

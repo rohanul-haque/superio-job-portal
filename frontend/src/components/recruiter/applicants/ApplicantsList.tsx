@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/select";
 import type { IJob } from "@/interfaces/job.interface";
 import type { IRecruiterApplicant } from "@/interfaces/recruiter.interface";
-import recruiterService from "@/services/recruiter.service";
+import {
+  getApplicants,
+  getMyJobs,
+  updateApplicantStatus,
+} from "@/services/recruiter.service";
 import { Briefcase, Filter, Search, Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
@@ -43,8 +47,8 @@ function ApplicantsListInner() {
     setIsLoading(true);
     try {
       const [jobsData, applicantsData] = await Promise.all([
-        recruiterService.getMyJobs(),
-        recruiterService.getApplicants({
+        getMyJobs(),
+        getApplicants({
           jobId: selectedJobId !== "all" ? selectedJobId : undefined,
         }),
       ]);
@@ -66,7 +70,7 @@ function ApplicantsListInner() {
   const handleStatusChange = async (applicantId: string, newStatus: string) => {
     setIsUpdatingStatus(applicantId);
     try {
-      await recruiterService.updateApplicantStatus(applicantId, newStatus);
+      await updateApplicantStatus(applicantId, newStatus);
       toast.success("Status Updated", {
         description: `Candidate status moved to "${newStatus}".`,
       });

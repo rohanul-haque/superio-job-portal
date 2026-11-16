@@ -1,4 +1,14 @@
-import { authApi } from "@/api/auth.api";
+import {
+  getMe as getMeApi,
+  login as loginApi,
+  logout as logoutApi,
+  refreshToken as refreshTokenApi,
+  registerCandidate as registerCandidateApi,
+  registerRecruiter as registerRecruiterApi,
+  resendVerification as resendVerificationApi,
+  verifyEmail as verifyEmailApi,
+  verifyEmailWithCredentials as verifyEmailWithCredentialsApi,
+} from "@/api/auth.api";
 import type {
   IAuthUser,
   ICandidateRegisterPayload,
@@ -8,70 +18,68 @@ import type {
 } from "@/interfaces/auth.interface";
 import type { IVerifyEmailResponse } from "@/responses/auth.response";
 
-export const authService = {
-  async registerCandidate(
-    payload: ICandidateRegisterPayload,
-  ): Promise<IAuthUser> {
-    const res = await authApi.registerCandidate(payload);
-    return res.data.data;
-  },
-
-  async registerRecruiter(
-    payload: IRecruiterRegisterPayload,
-  ): Promise<IAuthUser> {
-    const res = await authApi.registerRecruiter(payload);
-    return res.data.data;
-  },
-
-  /**
-   * Same-Browser Verification: relies on the HTTP-only emailVerificationToken cookie.
-   */
-  async verifyEmail(): Promise<IVerifyEmailResponse> {
-    const res = await authApi.verifyEmail();
-    return {
-      user: res.data.data,
-      role: res.data.data.role,
-      message: res.data.message,
-    };
-  },
-
-  /**
-   * Cross-Device / New-Browser Verification: login-gated via credentials.
-   * Sets authenticated session cookies upon verification.
-   */
-  async verifyEmailWithCredentials(
-    payload: IVerifyEmailCredentialsPayload,
-  ): Promise<IVerifyEmailResponse> {
-    const res = await authApi.verifyEmailWithCredentials(payload);
-    return {
-      user: res.data.data,
-      role: res.data.data.role,
-      message: res.data.message,
-    };
-  },
-
-  async resendVerification(email: string): Promise<string> {
-    const res = await authApi.resendVerification(email);
-    return res.data.message;
-  },
-
-  async login(payload: ILoginPayload): Promise<{ user: IAuthUser }> {
-    const res = await authApi.login(payload);
-    return res.data.data;
-  },
-
-  async refreshToken(): Promise<void> {
-    await authApi.refreshToken();
-  },
-
-  async logout(): Promise<void> {
-    await authApi.logout();
-  },
-
-  async getMe(): Promise<IAuthUser> {
-    const res = await authApi.getMe();
-    return res.data.data;
-  },
+export const registerCandidate = async (
+  payload: ICandidateRegisterPayload,
+): Promise<IAuthUser> => {
+  const res = await registerCandidateApi(payload);
+  return res.data.data;
 };
 
-export default authService;
+export const registerRecruiter = async (
+  payload: IRecruiterRegisterPayload,
+): Promise<IAuthUser> => {
+  const res = await registerRecruiterApi(payload);
+  return res.data.data;
+};
+
+/**
+ * Same-Browser Verification: relies on the HTTP-only emailVerificationToken cookie.
+ */
+export const verifyEmail = async (): Promise<IVerifyEmailResponse> => {
+  const res = await verifyEmailApi();
+  return {
+    user: res.data.data,
+    role: res.data.data.role,
+    message: res.data.message,
+  };
+};
+
+/**
+ * Cross-Device / New-Browser Verification: login-gated via credentials.
+ * Sets authenticated session cookies upon verification.
+ */
+export const verifyEmailWithCredentials = async (
+  payload: IVerifyEmailCredentialsPayload,
+): Promise<IVerifyEmailResponse> => {
+  const res = await verifyEmailWithCredentialsApi(payload);
+  return {
+    user: res.data.data,
+    role: res.data.data.role,
+    message: res.data.message,
+  };
+};
+
+export const resendVerification = async (email: string): Promise<string> => {
+  const res = await resendVerificationApi(email);
+  return res.data.message;
+};
+
+export const login = async (
+  payload: ILoginPayload,
+): Promise<{ user: IAuthUser }> => {
+  const res = await loginApi(payload);
+  return res.data.data;
+};
+
+export const refreshToken = async (): Promise<void> => {
+  await refreshTokenApi();
+};
+
+export const logout = async (): Promise<void> => {
+  await logoutApi();
+};
+
+export const getMe = async (): Promise<IAuthUser> => {
+  const res = await getMeApi();
+  return res.data.data;
+};

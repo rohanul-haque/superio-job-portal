@@ -1,4 +1,20 @@
-import { adminApi } from "@/api/admin.api";
+import {
+  changePassword as changePasswordApi,
+  getCandidates as getCandidatesApi,
+  getDashboardStats as getDashboardStatsApi,
+  getAllJobs as getAllJobsApi,
+  getProfile as getProfileApi,
+  getRecruiters as getRecruitersApi,
+  getTrashItems as getTrashItemsApi,
+  moderateCandidate as moderateCandidateApi,
+  moderateJob as moderateJobApi,
+  moderateRecruiter as moderateRecruiterApi,
+  permanentlyDeleteTrashItem as permanentlyDeleteTrashItemApi,
+  removeProfileImage as removeProfileImageApi,
+  restoreTrashItem as restoreTrashItemApi,
+  updateProfile as updateProfileApi,
+  uploadProfileImage as uploadProfileImageApi,
+} from "@/api/admin.api";
 import type {
   IAdminCandidate,
   IAdminJob,
@@ -13,132 +29,143 @@ import type {
 } from "@/interfaces/admin.interface";
 import type { IAdminDashboardStats } from "@/responses/admin.response";
 
-export const adminService = {
-  async getDashboardStats(): Promise<IAdminDashboardStats> {
-    const res = await adminApi.getDashboardStats();
-    return res.data.data;
-  },
-
-  async getCandidates(params?: {
-    search?: string;
-    status?: string;
-    page?: number | string;
-    limit?: number | string;
-  }): Promise<{ candidates: IAdminCandidate[]; meta: { total: number; totalPages: number } }> {
-    const res = await adminApi.getCandidates(params);
-    return {
-      candidates: res.data.data || [],
-      meta: {
-        total: res.data.meta?.total || 0,
-        totalPages: res.data.meta?.totalPage || 1,
-      },
-    };
-  },
-
-  async moderateCandidate(
-    id: string,
-    payload: IModerateUserPayload,
-  ): Promise<IAdminCandidate> {
-    const res = await adminApi.moderateCandidate(id, payload);
-    return res.data.data;
-  },
-
-  async getRecruiters(params?: {
-    search?: string;
-    status?: string;
-    page?: number | string;
-    limit?: number | string;
-  }): Promise<{ recruiters: IAdminRecruiter[]; meta: { total: number; totalPages: number } }> {
-    const res = await adminApi.getRecruiters(params);
-    return {
-      recruiters: res.data.data || [],
-      meta: {
-        total: res.data.meta?.total || 0,
-        totalPages: res.data.meta?.totalPage || 1,
-      },
-    };
-  },
-
-  async moderateRecruiter(
-    id: string,
-    payload: IModerateUserPayload,
-  ): Promise<IAdminRecruiter> {
-    const res = await adminApi.moderateRecruiter(id, payload);
-    return res.data.data;
-  },
-
-  async getAllJobs(params?: {
-    search?: string;
-    categoryId?: string;
-    hiringStatus?: string;
-    visible?: string;
-    page?: number | string;
-    limit?: number | string;
-  }): Promise<{ jobs: IAdminJob[]; meta: { total: number; totalPages: number } }> {
-    const res = await adminApi.getAllJobs(params);
-    return {
-      jobs: res.data.data || [],
-      meta: {
-        total: res.data.meta?.total || 0,
-        totalPages: res.data.meta?.totalPage || 1,
-      },
-    };
-  },
-
-  async moderateJob(
-    id: string,
-    payload: IModerateJobPayload,
-  ): Promise<IAdminJob> {
-    const res = await adminApi.moderateJob(id, payload);
-    return res.data.data;
-  },
-
-  async getTrashItems(params?: { type?: string }): Promise<ITrashItem[]> {
-    const res = await adminApi.getTrashItems(params);
-    return res.data.data || [];
-  },
-
-  async restoreTrashItem(payload: IRestoreTrashPayload): Promise<{ message?: string }> {
-    const res = await adminApi.restoreTrashItem(payload);
-    return { message: res.data.message };
-  },
-
-  async permanentlyDeleteTrashItem(
-    type: string,
-    id: string,
-  ): Promise<{ message?: string }> {
-    const res = await adminApi.permanentlyDeleteTrashItem(type, id);
-    return { message: res.data.message };
-  },
-
-  async getProfile(): Promise<IAdminProfile> {
-    const res = await adminApi.getProfile();
-    return res.data.data;
-  },
-
-  async updateProfile(
-    payload: IUpdateAdminProfilePayload,
-  ): Promise<IAdminProfile> {
-    const res = await adminApi.updateProfile(payload);
-    return res.data.data;
-  },
-
-  async uploadProfileImage(file: File): Promise<IAdminProfile> {
-    const res = await adminApi.uploadProfileImage(file);
-    return res.data.data;
-  },
-
-  async removeProfileImage(): Promise<IAdminProfile> {
-    const res = await adminApi.removeProfileImage();
-    return res.data.data;
-  },
-
-  async changePassword(
-    payload: IChangeAdminPasswordPayload,
-  ): Promise<{ message?: string }> {
-    const res = await adminApi.changePassword(payload);
-    return { message: res.data.message };
-  },
+export const getDashboardStats = async (): Promise<IAdminDashboardStats> => {
+  const res = await getDashboardStatsApi();
+  return res.data.data;
 };
 
-export default adminService;
+export const getCandidates = async (params?: {
+  search?: string;
+  status?: string;
+  page?: number | string;
+  limit?: number | string;
+}): Promise<{
+  candidates: IAdminCandidate[];
+  meta: { total: number; totalPages: number };
+}> => {
+  const res = await getCandidatesApi(params);
+  return {
+    candidates: res.data.data || [],
+    meta: {
+      total: res.data.meta?.total || 0,
+      totalPages: res.data.meta?.totalPage || 1,
+    },
+  };
+};
+
+export const moderateCandidate = async (
+  id: string,
+  payload: IModerateUserPayload,
+): Promise<IAdminCandidate> => {
+  const res = await moderateCandidateApi(id, payload);
+  return res.data.data;
+};
+
+export const getRecruiters = async (params?: {
+  search?: string;
+  status?: string;
+  page?: number | string;
+  limit?: number | string;
+}): Promise<{
+  recruiters: IAdminRecruiter[];
+  meta: { total: number; totalPages: number };
+}> => {
+  const res = await getRecruitersApi(params);
+  return {
+    recruiters: res.data.data || [],
+    meta: {
+      total: res.data.meta?.total || 0,
+      totalPages: res.data.meta?.totalPage || 1,
+    },
+  };
+};
+
+export const moderateRecruiter = async (
+  id: string,
+  payload: IModerateUserPayload,
+): Promise<IAdminRecruiter> => {
+  const res = await moderateRecruiterApi(id, payload);
+  return res.data.data;
+};
+
+export const getAllJobs = async (params?: {
+  search?: string;
+  categoryId?: string;
+  hiringStatus?: string;
+  visible?: string;
+  page?: number | string;
+  limit?: number | string;
+}): Promise<{
+  jobs: IAdminJob[];
+  meta: { total: number; totalPages: number };
+}> => {
+  const res = await getAllJobsApi(params);
+  return {
+    jobs: res.data.data || [],
+    meta: {
+      total: res.data.meta?.total || 0,
+      totalPages: res.data.meta?.totalPage || 1,
+    },
+  };
+};
+
+export const moderateJob = async (
+  id: string,
+  payload: IModerateJobPayload,
+): Promise<IAdminJob> => {
+  const res = await moderateJobApi(id, payload);
+  return res.data.data;
+};
+
+export const getTrashItems = async (params?: {
+  type?: string;
+}): Promise<ITrashItem[]> => {
+  const res = await getTrashItemsApi(params);
+  return res.data.data || [];
+};
+
+export const restoreTrashItem = async (
+  payload: IRestoreTrashPayload,
+): Promise<{ message?: string }> => {
+  const res = await restoreTrashItemApi(payload);
+  return { message: res.data.message };
+};
+
+export const permanentlyDeleteTrashItem = async (
+  type: string,
+  id: string,
+): Promise<{ message?: string }> => {
+  const res = await permanentlyDeleteTrashItemApi(type, id);
+  return { message: res.data.message };
+};
+
+export const getProfile = async (): Promise<IAdminProfile> => {
+  const res = await getProfileApi();
+  return res.data.data;
+};
+
+export const updateProfile = async (
+  payload: IUpdateAdminProfilePayload,
+): Promise<IAdminProfile> => {
+  const res = await updateProfileApi(payload);
+  return res.data.data;
+};
+
+export const uploadProfileImage = async (
+  file: File,
+): Promise<IAdminProfile> => {
+  const res = await uploadProfileImageApi(file);
+  return res.data.data;
+};
+
+export const removeProfileImage = async (): Promise<IAdminProfile> => {
+  const res = await removeProfileImageApi();
+  return res.data.data;
+};
+
+export const changePassword = async (
+  payload: IChangeAdminPasswordPayload,
+): Promise<{ message?: string }> => {
+  const res = await changePasswordApi(payload);
+  return { message: res.data.message };
+};

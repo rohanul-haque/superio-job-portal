@@ -1,6 +1,6 @@
 import type { ICandidateProfile } from "@/interfaces/candidate.interface";
 import type { ICandidateDashboardStats } from "@/responses/candidate.response";
-import candidateService from "@/services/candidate.service";
+import { getDashboardStats, getProfile } from "@/services/candidate.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -13,7 +13,7 @@ export function useCandidateDashboard() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await candidateService.getDashboardStats();
+      const data = await getDashboardStats();
       setStatsData(data);
     } catch (err: unknown) {
       let msg = "Failed to load dashboard metrics.";
@@ -46,7 +46,7 @@ export function useCandidateProfile() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await candidateService.getProfile();
+      const data = await getProfile();
       setProfile(data);
     } catch (err: unknown) {
       let msg = "Failed to load candidate profile.";

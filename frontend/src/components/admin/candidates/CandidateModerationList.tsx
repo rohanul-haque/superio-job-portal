@@ -8,7 +8,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import type { IAdminCandidate } from "@/interfaces/admin.interface";
-import adminService from "@/services/admin.service";
+import {
+  getCandidates,
+  moderateCandidate,
+} from "@/services/admin.service";
 import {
   AlertTriangle,
   Filter,
@@ -37,7 +40,7 @@ export function CandidateModerationList() {
   const fetchCandidates = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await adminService.getCandidates({
+      const data = await getCandidates({
         search: searchQuery.trim() || undefined,
         status: statusFilter !== "all" ? statusFilter : undefined,
       });
@@ -64,7 +67,7 @@ export function CandidateModerationList() {
 
     setActionLoadingId(candidate.id);
     try {
-      await adminService.moderateCandidate(candidate.id, { action });
+      await moderateCandidate(candidate.id, { action });
       toast.success(
         action === "delete"
           ? `Candidate moved to Trash Center.`

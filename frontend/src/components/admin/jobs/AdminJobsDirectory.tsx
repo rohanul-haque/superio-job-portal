@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import type { IAdminJob } from "@/interfaces/admin.interface";
 import type { ICategory } from "@/types/category";
-import adminService from "@/services/admin.service";
-import categoryService from "@/services/category.service";
+import { getAllJobs, moderateJob } from "@/services/admin.service";
+import { getAllCategories } from "@/services/category.service";
 import {
   AlertTriangle,
   Briefcase,
@@ -36,8 +36,7 @@ export function AdminJobsDirectory() {
 
   // Load categories
   useEffect(() => {
-    categoryService
-      .getAllCategories({ isActive: "all", isDeleted: "false" })
+    getAllCategories({ isActive: "all", isDeleted: "false" })
       .then(setCategories)
       .catch((err) => console.error("Failed to load categories:", err));
   }, []);
@@ -45,7 +44,7 @@ export function AdminJobsDirectory() {
   const fetchJobs = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await adminService.getAllJobs({
+      const data = await getAllJobs({
         search: searchQuery.trim() || undefined,
         categoryId: selectedCategory !== "all" ? selectedCategory : undefined,
         hiringStatus:
@@ -73,7 +72,7 @@ export function AdminJobsDirectory() {
     setActionLoadingId(job.id);
     const newVisibility = !job.visible;
     try {
-      await adminService.moderateJob(job.id, { visible: newVisibility });
+      await moderateJob(job.id, { visible: newVisibility });
       setJobs((prev) =>
         prev.map((j) => (j.id === job.id ? { ...j, visible: newVisibility } : j))
       );
@@ -95,7 +94,7 @@ export function AdminJobsDirectory() {
     setActionLoadingId(job.id);
     const newStatus = job.hiringStatus === "Ongoing" ? "Closed" : "Ongoing";
     try {
-      await adminService.moderateJob(job.id, { hiringStatus: newStatus });
+      await moderateJob(job.id, { hiringStatus: newStatus });
       setJobs((prev) =>
         prev.map((j) =>
           j.id === job.id ? { ...j, hiringStatus: newStatus } : j
@@ -116,7 +115,7 @@ export function AdminJobsDirectory() {
 
     setActionLoadingId(jobToDelete.id);
     try {
-      await adminService.moderateJob(jobToDelete.id, { isDeleted: true });
+      await moderateJob(jobToDelete.id, { isDeleted: true });
       toast.success("Job moved to Trash Center", {
         description: `"${jobToDelete.title}" can be restored anytime from Trash.`,
       });

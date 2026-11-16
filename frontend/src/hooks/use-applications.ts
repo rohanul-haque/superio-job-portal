@@ -1,5 +1,5 @@
 import type { IJobApplication } from "@/interfaces/application.interface";
-import applicationService from "@/services/application.service";
+import { getMyApplications } from "@/services/application.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,8 +12,9 @@ export function useApplications(statusFilter?: string) {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await applicationService.getMyApplications({
-        status: statusFilter && statusFilter !== "all" ? statusFilter : undefined,
+      const data = await getMyApplications({
+        status:
+          statusFilter && statusFilter !== "all" ? statusFilter : undefined,
       });
       setApplications(data);
     } catch (err: unknown) {

@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authService } from "@/services/auth.service";
+import {
+  registerCandidate,
+  registerRecruiter,
+} from "@/services/auth.service";
 import {
   AlertCircle,
   ArrowRight,
@@ -85,13 +88,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
     try {
       if (selectedRole === "candidate") {
-        await authService.registerCandidate({
+        await registerCandidate({
           name: name.trim(),
           email: targetEmail,
           password,
         });
       } else {
-        await authService.registerRecruiter({
+        await registerRecruiter({
           name: name.trim(),
           email: targetEmail,
           password,

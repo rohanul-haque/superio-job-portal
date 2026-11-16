@@ -7,7 +7,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import type { IJobApplication } from "@/interfaces/application.interface";
-import applicationService from "@/services/application.service";
+import {
+  getMyApplications,
+  withdrawApplication,
+} from "@/services/application.service";
 import {
   AlertTriangle,
   Briefcase,
@@ -33,7 +36,7 @@ export function ApplicationList() {
   const fetchApplications = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await applicationService.getMyApplications({
+      const data = await getMyApplications({
         status: selectedStatus !== "all" ? selectedStatus : undefined,
       });
       setApplications(data);
@@ -55,7 +58,7 @@ export function ApplicationList() {
 
     setIsWithdrawing(true);
     try {
-      await applicationService.withdrawApplication(applicationToWithdraw.id);
+      await withdrawApplication(applicationToWithdraw.id);
       toast.success("Application withdrawn", {
         description: `Your application for "${applicationToWithdraw.job.title}" has been withdrawn.`,
       });

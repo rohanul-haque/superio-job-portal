@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import type { IBookmark } from "@/types/bookmark";
-import bookmarkService from "@/services/bookmark.service";
+import { getMyBookmarks, removeBookmark } from "@/services/bookmark.service";
 import { Bookmark, Briefcase, RefreshCw, Search } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
@@ -21,7 +21,7 @@ export function SavedJobsList() {
   const fetchBookmarks = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await bookmarkService.getMyBookmarks();
+      const data = await getMyBookmarks();
       setBookmarks(data);
     } catch (err: unknown) {
       let msg = "Failed to load saved jobs.";
@@ -39,7 +39,7 @@ export function SavedJobsList() {
   const handleRemoveBookmark = async (jobId: string) => {
     setRemovingId(jobId);
     try {
-      await bookmarkService.removeBookmark(jobId);
+      await removeBookmark(jobId);
       toast.success("Bookmark removed", {
         description: "The job was removed from your saved list.",
       });

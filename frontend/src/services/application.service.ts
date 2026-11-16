@@ -1,23 +1,25 @@
-import { applicationApi } from "@/api/application.api";
+import {
+  applyJob as applyJobApi,
+  getMyApplications as getMyApplicationsApi,
+  withdrawApplication as withdrawApplicationApi,
+} from "@/api/application.api";
 import type { IJobApplication } from "@/interfaces/application.interface";
 
-export const applicationService = {
-  async applyJob(jobId: string): Promise<IJobApplication> {
-    const res = await applicationApi.applyJob(jobId);
-    return res.data.data;
-  },
-
-  async getMyApplications(params?: {
-    status?: string;
-  }): Promise<IJobApplication[]> {
-    const res = await applicationApi.getMyApplications(params);
-    return res.data.data || [];
-  },
-
-  async withdrawApplication(id: string): Promise<IJobApplication> {
-    const res = await applicationApi.withdrawApplication(id);
-    return res.data.data;
-  },
+export const applyJob = async (jobId: string): Promise<IJobApplication> => {
+  const res = await applyJobApi(jobId);
+  return res.data.data;
 };
 
-export default applicationService;
+export const getMyApplications = async (params?: {
+  status?: string;
+}): Promise<IJobApplication[]> => {
+  const res = await getMyApplicationsApi(params);
+  return res.data.data || [];
+};
+
+export const withdrawApplication = async (
+  id: string,
+): Promise<IJobApplication> => {
+  const res = await withdrawApplicationApi(id);
+  return res.data.data;
+};

@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import categoryService from "@/services/category.service";
-import jobService from "@/services/job.service";
+import { getAllCategories } from "@/services/category.service";
+import { getAllJobs } from "@/services/job.service";
 import type { ICategory } from "@/types/category";
 import type { IJob, IJobsResponseMeta } from "@/types/job";
 import {
@@ -117,7 +117,7 @@ export const JobsCatalogue: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const catRes = await categoryService.getAllCategories({
+        const catRes = await getAllCategories({
           isActive: "true",
         });
         setCategories(catRes || []);
@@ -160,7 +160,7 @@ export const JobsCatalogue: React.FC = () => {
       if (maxSalary && !isNaN(Number(maxSalary)))
         params.maxSalary = Number(maxSalary);
 
-      const res = await jobService.getAllJobs(params);
+      const res = await getAllJobs(params);
       setJobs(res.jobs);
       setMeta(res.meta);
     } catch (err) {

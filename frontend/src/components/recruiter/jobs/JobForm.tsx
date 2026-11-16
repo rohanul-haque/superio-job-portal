@@ -23,9 +23,9 @@ import { Spinner } from "@/components/ui/spinner";
 import type { ICategory } from "@/types/category";
 import type { ExperienceLevel, JobType } from "@/types/job.type";
 import { cn } from "@/lib/utils";
-import categoryService from "@/services/category.service";
-import jobService from "@/services/job.service";
-import recruiterService from "@/services/recruiter.service";
+import { getAllCategories } from "@/services/category.service";
+import { getJobById } from "@/services/job.service";
+import { createJob, updateJob } from "@/services/recruiter.service";
 import {
   AlertCircle,
   Calendar as CalendarIcon,
@@ -91,7 +91,7 @@ export function JobForm({ mode, jobId }: JobFormProps) {
   useEffect(() => {
     const initData = async () => {
       try {
-        const catData = await categoryService.getAllCategories({
+        const catData = await getAllCategories({
           isActive: "true",
         });
         setCategories(catData);
@@ -107,7 +107,7 @@ export function JobForm({ mode, jobId }: JobFormProps) {
           const d = String(defaultDate.getDate()).padStart(2, "0");
           setDeadline(`${y}-${m}-${d}`);
         } else if (mode === "edit" && jobId) {
-          const jobData = await jobService.getJobById(jobId);
+          const jobData = await getJobById(jobId);
           const currentJob = jobData.job;
           if (currentJob) {
             setTitle(currentJob.title || "");
@@ -207,12 +207,12 @@ export function JobForm({ mode, jobId }: JobFormProps) {
       };
 
       if (mode === "create") {
-        await recruiterService.createJob(payload);
+        await createJob(payload);
         toast.success("Job published successfully!", {
           description: `"${title}" is now open for candidate applications.`,
         });
       } else if (mode === "edit" && jobId) {
-        await recruiterService.updateJob(jobId, payload);
+        await updateJob(jobId, payload);
         toast.success("Job updated successfully!", {
           description: `Modifications to "${title}" have been saved.`,
         });

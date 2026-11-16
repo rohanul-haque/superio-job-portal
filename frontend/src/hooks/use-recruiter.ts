@@ -1,7 +1,12 @@
 import type { IJob } from "@/interfaces/job.interface";
 import type { ICompanyProfile, IRecruiterApplicant } from "@/interfaces/recruiter.interface";
 import type { IRecruiterDashboardStats } from "@/responses/recruiter.response";
-import recruiterService from "@/services/recruiter.service";
+import {
+  getApplicants,
+  getDashboardStats,
+  getMyJobs,
+  getProfile,
+} from "@/services/recruiter.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -14,7 +19,7 @@ export function useRecruiterDashboard() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await recruiterService.getDashboardStats();
+      const data = await getDashboardStats();
       setStatsData(data);
     } catch (err: unknown) {
       let msg = "Failed to load dashboard metrics.";
@@ -47,7 +52,7 @@ export function useRecruiterJobs() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await recruiterService.getMyJobs();
+      const data = await getMyJobs();
       setJobs(data);
     } catch (err: unknown) {
       let msg = "Failed to load posted jobs.";
@@ -79,7 +84,7 @@ export function useRecruiterApplicants(jobId?: string) {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await recruiterService.getApplicants({ jobId });
+      const data = await getApplicants({ jobId });
       setApplicants(data);
     } catch (err: unknown) {
       let msg = "Failed to load applicants.";
@@ -111,7 +116,7 @@ export function useCompanyProfile() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await recruiterService.getProfile();
+      const data = await getProfile();
       setProfile(data);
     } catch (err: unknown) {
       let msg = "Failed to load company profile.";

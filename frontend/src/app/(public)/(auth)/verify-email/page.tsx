@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authService } from "@/services/auth.service";
+import {
+  resendVerification,
+  verifyEmail,
+  verifyEmailWithCredentials,
+} from "@/services/auth.service";
 import type { IVerifyEmailResponse } from "@/types/auth";
 import {
   AlertCircle,
@@ -63,7 +67,7 @@ function VerifyEmailContent() {
 
     const attemptCookieVerification = async () => {
       try {
-        const result = await authService.verifyEmail();
+        const result = await verifyEmail();
         if (isMounted) {
           setVerifiedData({
             name: result.user.name,
@@ -115,7 +119,7 @@ function VerifyEmailContent() {
     setErrorMessage(null);
 
     try {
-      const result = await authService.verifyEmailWithCredentials({
+      const result = await verifyEmailWithCredentials({
         email: email.trim(),
         password,
       });
@@ -148,7 +152,7 @@ function VerifyEmailContent() {
 
     setIsResending(true);
     try {
-      const message = await authService.resendVerification(targetEmail);
+      const message = await resendVerification(targetEmail);
       toast.success(
         message || "A fresh verification email has been dispatched via Gmail.",
       );

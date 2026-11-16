@@ -1,5 +1,5 @@
 import type { IBookmark } from "@/types/bookmark";
-import bookmarkService from "@/services/bookmark.service";
+import { getMyBookmarks } from "@/services/bookmark.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,7 +12,7 @@ export function useBookmarks() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await bookmarkService.getMyBookmarks();
+      const data = await getMyBookmarks();
       setBookmarks(data);
     } catch (err: unknown) {
       let msg = "Failed to load bookmarks.";

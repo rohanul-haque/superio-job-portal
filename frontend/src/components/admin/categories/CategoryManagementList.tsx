@@ -8,7 +8,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import type { ICategory } from "@/types/category";
-import categoryService from "@/services/category.service";
+import {
+  deleteCategory,
+  getAllCategories,
+} from "@/services/category.service";
 import {
   AlertTriangle,
   Filter,
@@ -37,7 +40,7 @@ export function CategoryManagementList() {
   const fetchCategories = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await categoryService.getAllCategories({
+      const data = await getAllCategories({
         search: searchQuery.trim() || undefined,
         isActive: statusFilter,
         isDeleted: "false",
@@ -74,7 +77,7 @@ export function CategoryManagementList() {
 
     setDeletingId(categoryToDelete.id);
     try {
-      await categoryService.deleteCategory(categoryToDelete.id);
+      await deleteCategory(categoryToDelete.id);
       toast.success("Category soft-deleted", {
         description: `Category "${categoryToDelete.name}" was marked as deleted.`,
       });

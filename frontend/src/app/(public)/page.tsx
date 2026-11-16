@@ -10,8 +10,8 @@ import JobCard from "@/components/jobs/JobCard";
 import { JobCardSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import categoryService from "@/services/category.service";
-import jobService from "@/services/job.service";
+import { getAllCategories } from "@/services/category.service";
+import { getAllJobs } from "@/services/job.service";
 import type { ICategory } from "@/types/category";
 import type { IJob } from "@/types/job";
 import { ArrowRight, Briefcase, Sparkles } from "lucide-react";
@@ -28,7 +28,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const catRes = await categoryService.getAllCategories({
+        const catRes = await getAllCategories({
           isActive: "true",
         });
         // Sort by latest created categories first and take exactly 8
@@ -45,7 +45,7 @@ export default function HomePage() {
       }
 
       try {
-        const jobRes = await jobService.getAllJobs({
+        const jobRes = await getAllJobs({
           limit: 6,
           sortBy: "newest",
           hiringStatus: "Ongoing",

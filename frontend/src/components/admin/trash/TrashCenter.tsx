@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import type { ITrashItem } from "@/interfaces/admin.interface";
-import adminService from "@/services/admin.service";
+import {
+  getTrashItems,
+  permanentlyDeleteTrashItem,
+  restoreTrashItem,
+} from "@/services/admin.service";
 import {
   AlertTriangle,
   Archive,
@@ -27,7 +31,7 @@ export function TrashCenter() {
   const fetchTrashItems = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await adminService.getTrashItems({
+      const data = await getTrashItems({
         type: selectedType !== "all" ? selectedType : undefined,
       });
       setTrashItems(data);
@@ -47,7 +51,7 @@ export function TrashCenter() {
   const handleRestore = async (item: ITrashItem) => {
     setActionLoadingId(item.id);
     try {
-      const res = await adminService.restoreTrashItem({
+      const res = await restoreTrashItem({
         type: item.type,
         id: item.id,
       });
@@ -70,7 +74,7 @@ export function TrashCenter() {
 
     setActionLoadingId(itemToPurge.id);
     try {
-      await adminService.permanentlyDeleteTrashItem(
+      await permanentlyDeleteTrashItem(
         itemToPurge.type,
         itemToPurge.id
       );

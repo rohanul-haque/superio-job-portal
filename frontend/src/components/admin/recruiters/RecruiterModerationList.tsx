@@ -8,7 +8,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import type { IAdminRecruiter } from "@/interfaces/admin.interface";
-import adminService from "@/services/admin.service";
+import {
+  getRecruiters,
+  moderateRecruiter,
+} from "@/services/admin.service";
 import {
   AlertTriangle,
   Building2,
@@ -37,7 +40,7 @@ export function RecruiterModerationList() {
   const fetchRecruiters = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await adminService.getRecruiters({
+      const data = await getRecruiters({
         search: searchQuery.trim() || undefined,
         status: statusFilter !== "all" ? statusFilter : undefined,
       });
@@ -64,7 +67,7 @@ export function RecruiterModerationList() {
 
     setActionLoadingId(recruiter.id);
     try {
-      await adminService.moderateRecruiter(recruiter.id, { action });
+      await moderateRecruiter(recruiter.id, { action });
       toast.success(
         action === "delete"
           ? `Recruiter moved to Trash Center.`

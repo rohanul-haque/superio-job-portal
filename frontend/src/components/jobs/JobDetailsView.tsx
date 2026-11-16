@@ -8,9 +8,9 @@ import { JobDetailsSkeleton } from "@/components/loaders/skeleton/JobListSkeleto
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import type { IJob } from "@/interfaces/job.interface";
-import applicationService from "@/services/application.service";
-import bookmarkService from "@/services/bookmark.service";
-import jobService from "@/services/job.service";
+import { applyJob } from "@/services/application.service";
+import { toggleBookmark } from "@/services/bookmark.service";
+import { getJobById } from "@/services/job.service";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -43,7 +43,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        const res = await jobService.getJobById(id);
+        const res = await getJobById(id);
         setJob(res.job);
         setSimilarJobs(res.similarJobs || []);
       } catch (err: unknown) {
@@ -71,7 +71,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
     try {
       const nextState = !isBookmarked;
       setIsBookmarked(nextState);
-      await bookmarkService.toggleBookmark(id);
+      await toggleBookmark(id);
       if (nextState) {
         toast.success("Job saved to your bookmarks!");
       } else {
@@ -109,7 +109,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
   const handleConfirmApplication = async () => {
     setIsApplying(true);
     try {
-      await applicationService.applyJob(id);
+      await applyJob(id);
       setHasApplied(true);
       setIsApplyModalOpen(false);
       toast.success("Application submitted successfully!", {

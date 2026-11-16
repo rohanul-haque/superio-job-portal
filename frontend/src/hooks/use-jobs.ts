@@ -1,6 +1,6 @@
 import type { IJob, IJobFilterParams } from "@/interfaces/job.interface";
 import type { IJobsResponseMeta } from "@/responses/job.response";
-import jobService from "@/services/job.service";
+import { getAllJobs } from "@/services/job.service";
 import { useCallback, useEffect, useState } from "react";
 
 export function useJobs(initialParams?: IJobFilterParams) {
@@ -19,7 +19,7 @@ export function useJobs(initialParams?: IJobFilterParams) {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await jobService.getAllJobs(params);
+      const data = await getAllJobs(params);
       setJobs(data.jobs);
       setMeta(data.meta);
     } catch (err: unknown) {

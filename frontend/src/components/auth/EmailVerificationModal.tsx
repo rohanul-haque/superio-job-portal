@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { authService } from "@/services/auth.service";
+import { resendVerification } from "@/services/auth.service";
 import { CheckCircle2, MailCheck, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -72,7 +72,7 @@ export const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
     setResendSuccessMessage(null);
 
     try {
-      await authService.resendVerification(email.trim());
+      await resendVerification(email.trim());
 
       const successMsg =
         "A new verification email has been sent successfully. Please check your inbox. The verification link is valid for 5 minutes.";

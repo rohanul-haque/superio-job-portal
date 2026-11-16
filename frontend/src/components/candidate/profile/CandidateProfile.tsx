@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import type { ICandidateProfile } from "@/interfaces/candidate.interface";
-import candidateService from "@/services/candidate.service";
+import { getProfile, updateProfile } from "@/services/candidate.service";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -42,7 +42,7 @@ export function CandidateProfile() {
   const fetchProfile = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await candidateService.getProfile();
+      const data = await getProfile();
       setProfile(data);
       setName(data.name || "");
       setTitle(data.title || "");
@@ -173,7 +173,7 @@ export function CandidateProfile() {
         formData.append("resume", selectedResume);
       }
 
-      const updated = await candidateService.updateProfile(formData);
+      const updated = await updateProfile(formData);
       setProfile(updated);
       setSelectedImage(null);
       setSelectedResume(null);

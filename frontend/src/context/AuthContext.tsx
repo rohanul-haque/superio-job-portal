@@ -14,7 +14,11 @@ import {
   setExplicitLogout,
   setSessionActive,
 } from "../services/api";
-import { authService } from "../services/auth.service";
+import {
+  getMe,
+  login as loginRequest,
+  logout as logoutRequest,
+} from "../services/auth.service";
 import type { IAuthUser, ILoginPayload, UserRole } from "../types/auth";
 
 interface AuthContextType {
@@ -45,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Initialize authentication on application mount via backend cookie session
   const initializeAuth = useCallback(async () => {
     try {
-      const currentUser = await authService.getMe();
+      const currentUser = await getMe();
       setUser(currentUser);
       setSessionActive(true);
     } catch {
@@ -87,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoading(true);
     setExplicitLogout(false);
     try {
-      const response = await authService.login(credentials);
+      const response = await loginRequest(credentials);
       setUser(response.user);
       setSessionActive(true);
       toast.success(`Welcome back, ${response.user.name}!`);
@@ -109,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
 
     try {
-      await authService.logout();
+      await logoutRequest();
     } catch (error) {
       console.error("Error during server logout:", error);
     } finally {
@@ -124,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const refreshUser = async () => {
     try {
-      const currentUser = await authService.getMe();
+      const currentUser = await getMe();
       setUser(currentUser);
       setSessionActive(true);
     } catch (err) {

@@ -1,5 +1,5 @@
 import type { IAdminDashboardStats } from "@/responses/admin.response";
-import adminService from "@/services/admin.service";
+import { getDashboardStats } from "@/services/admin.service";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,7 +12,7 @@ export function useAdminDashboard() {
     setIsLoading(true);
     setError(null);
     try {
-      const stats = await adminService.getDashboardStats();
+      const stats = await getDashboardStats();
       setData(stats);
     } catch (err: unknown) {
       let msg = "Failed to load admin telemetry.";

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import categoryService from "@/services/category.service";
+import { createCategory, updateCategory } from "@/services/category.service";
 import type { ICategory } from "@/types/category";
 import {
   AlertCircle,
@@ -160,12 +160,12 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
       }
 
       if (isEditMode && category) {
-        await categoryService.updateCategory(category.id, formData);
+        await updateCategory(category.id, formData);
         toast.success("Category updated successfully!", {
           description: `Category "${trimmedName}" has been updated.`,
         });
       } else {
-        await categoryService.createCategory(formData);
+        await createCategory(formData);
         toast.success("Category created successfully!", {
           description: `Category "${trimmedName}" has been created with an automatic slug.`,
         });

@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import type { IAdminProfile } from "@/interfaces/admin.interface";
-import adminService from "@/services/admin.service";
+import {
+  changePassword,
+  getProfile,
+  removeProfileImage,
+  updateProfile,
+  uploadProfileImage,
+} from "@/services/admin.service";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -52,7 +58,7 @@ export function AdminProfileView() {
     setIsLoadingProfile(true);
     setLoadError(null);
     try {
-      const data = await adminService.getProfile();
+      const data = await getProfile();
       setProfile(data);
       setName(data.name || "");
       setEmail(data.email || "");
@@ -115,7 +121,7 @@ export function AdminProfileView() {
 
     setIsUploadingImage(true);
     try {
-      const updated = await adminService.uploadProfileImage(selectedImage);
+      const updated = await uploadProfileImage(selectedImage);
       setProfile(updated);
       setSelectedImage(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -155,7 +161,7 @@ export function AdminProfileView() {
   const handleRemoveImage = async () => {
     setIsRemovingImage(true);
     try {
-      const updated = await adminService.removeProfileImage();
+      const updated = await removeProfileImage();
       setProfile(updated);
       setSelectedImage(null);
       setPreviewUrl(null);
@@ -211,7 +217,7 @@ export function AdminProfileView() {
 
     setIsUpdatingProfile(true);
     try {
-      const updated = await adminService.updateProfile({
+      const updated = await updateProfile({
         name: trimmedName,
         email: trimmedEmail,
       });
@@ -269,7 +275,7 @@ export function AdminProfileView() {
 
     setIsChangingPassword(true);
     try {
-      const res = await adminService.changePassword({
+      const res = await changePassword({
         currentPassword,
         newPassword,
         confirmPassword,

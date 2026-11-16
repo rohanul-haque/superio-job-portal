@@ -1,63 +1,77 @@
-import { recruiterApi } from "@/api/recruiter.api";
-import type { ICreateJobPayload, IJob, IUpdateJobPayload } from "@/interfaces/job.interface";
+import {
+  createJob as createJobApi,
+  deleteJob as deleteJobApi,
+  getApplicants as getApplicantsApi,
+  getDashboardStats as getDashboardStatsApi,
+  getMyJobs as getMyJobsApi,
+  getProfile as getProfileApi,
+  updateApplicantStatus as updateApplicantStatusApi,
+  updateJob as updateJobApi,
+  updateProfile as updateProfileApi,
+} from "@/api/recruiter.api";
+import type {
+  ICreateJobPayload,
+  IJob,
+  IUpdateJobPayload,
+} from "@/interfaces/job.interface";
 import type {
   ICompanyProfile,
   IRecruiterApplicant,
 } from "@/interfaces/recruiter.interface";
 import type { IRecruiterDashboardStats } from "@/responses/recruiter.response";
 
-export const recruiterService = {
-  async getProfile(): Promise<ICompanyProfile> {
-    const res = await recruiterApi.getProfile();
-    return res.data.data;
-  },
-
-  async updateProfile(
-    data: FormData | Record<string, unknown>,
-  ): Promise<ICompanyProfile> {
-    const res = await recruiterApi.updateProfile(data);
-    return res.data.data;
-  },
-
-  async getDashboardStats(): Promise<IRecruiterDashboardStats> {
-    const res = await recruiterApi.getDashboardStats();
-    return res.data.data;
-  },
-
-  async getApplicants(params?: {
-    jobId?: string;
-    status?: string;
-  }): Promise<IRecruiterApplicant[]> {
-    const res = await recruiterApi.getApplicants(params);
-    return res.data.data || [];
-  },
-
-  async updateApplicantStatus(
-    id: string,
-    status: string,
-  ): Promise<IRecruiterApplicant> {
-    const res = await recruiterApi.updateApplicantStatus(id, status);
-    return res.data.data;
-  },
-
-  async getMyJobs(): Promise<IJob[]> {
-    const res = await recruiterApi.getMyJobs();
-    return res.data.data || [];
-  },
-
-  async createJob(data: ICreateJobPayload): Promise<IJob> {
-    const res = await recruiterApi.createJob(data);
-    return res.data.data;
-  },
-
-  async updateJob(id: string, data: IUpdateJobPayload): Promise<IJob> {
-    const res = await recruiterApi.updateJob(id, data);
-    return res.data.data;
-  },
-
-  async deleteJob(id: string): Promise<void> {
-    await recruiterApi.deleteJob(id);
-  },
+export const getProfile = async (): Promise<ICompanyProfile> => {
+  const res = await getProfileApi();
+  return res.data.data;
 };
 
-export default recruiterService;
+export const updateProfile = async (
+  data: FormData | Record<string, unknown>,
+): Promise<ICompanyProfile> => {
+  const res = await updateProfileApi(data);
+  return res.data.data;
+};
+
+export const getDashboardStats =
+  async (): Promise<IRecruiterDashboardStats> => {
+    const res = await getDashboardStatsApi();
+    return res.data.data;
+  };
+
+export const getApplicants = async (params?: {
+  jobId?: string;
+  status?: string;
+}): Promise<IRecruiterApplicant[]> => {
+  const res = await getApplicantsApi(params);
+  return res.data.data || [];
+};
+
+export const updateApplicantStatus = async (
+  id: string,
+  status: string,
+): Promise<IRecruiterApplicant> => {
+  const res = await updateApplicantStatusApi(id, status);
+  return res.data.data;
+};
+
+export const getMyJobs = async (): Promise<IJob[]> => {
+  const res = await getMyJobsApi();
+  return res.data.data || [];
+};
+
+export const createJob = async (data: ICreateJobPayload): Promise<IJob> => {
+  const res = await createJobApi(data);
+  return res.data.data;
+};
+
+export const updateJob = async (
+  id: string,
+  data: IUpdateJobPayload,
+): Promise<IJob> => {
+  const res = await updateJobApi(id, data);
+  return res.data.data;
+};
+
+export const deleteJob = async (id: string): Promise<void> => {
+  await deleteJobApi(id);
+};

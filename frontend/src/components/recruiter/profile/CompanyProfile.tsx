@@ -5,7 +5,7 @@ import { ProfileSkeleton } from "@/components/loaders/skeleton/ProfileSkeleton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import type { ICompanyProfile } from "@/interfaces/recruiter.interface";
-import recruiterService from "@/services/recruiter.service";
+import { getProfile, updateProfile } from "@/services/recruiter.service";
 import { RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -37,7 +37,7 @@ export function CompanyProfile() {
   const fetchProfile = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await recruiterService.getProfile();
+      const data = await getProfile();
       setProfile(data);
       setName(data.name || "");
       setDescription(data.description || "");
@@ -133,7 +133,7 @@ export function CompanyProfile() {
         formData.append("image", selectedLogo);
       }
 
-      const updated = await recruiterService.updateProfile(formData);
+      const updated = await updateProfile(formData);
       setProfile(updated);
       setSelectedLogo(null);
       setLogoPreview(updated.image || null);

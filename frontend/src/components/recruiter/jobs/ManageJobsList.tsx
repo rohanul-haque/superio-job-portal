@@ -7,7 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import type { IJob } from "@/interfaces/job.interface";
-import recruiterService from "@/services/recruiter.service";
+import {
+  deleteJob,
+  getMyJobs,
+  updateJob,
+} from "@/services/recruiter.service";
 import {
   AlertTriangle,
   Briefcase,
@@ -32,7 +36,7 @@ export function ManageJobsList() {
   const fetchJobs = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await recruiterService.getMyJobs();
+      const data = await getMyJobs();
       setJobs(data);
     } catch (err: unknown) {
       let msg = "Failed to load jobs.";
@@ -51,7 +55,7 @@ export function ManageJobsList() {
     setUpdatingId(job.id);
     const newVisibility = !job.visible;
     try {
-      await recruiterService.updateJob(job.id, { visible: newVisibility });
+      await updateJob(job.id, { visible: newVisibility });
       setJobs((prev) =>
         prev.map((j) => (j.id === job.id ? { ...j, visible: newVisibility } : j))
       );
@@ -73,7 +77,7 @@ export function ManageJobsList() {
     setUpdatingId(job.id);
     const newStatus = job.hiringStatus === "Ongoing" ? "Closed" : "Ongoing";
     try {
-      await recruiterService.updateJob(job.id, { hiringStatus: newStatus });
+      await updateJob(job.id, { hiringStatus: newStatus });
       setJobs((prev) =>
         prev.map((j) =>
           j.id === job.id ? { ...j, hiringStatus: newStatus } : j
@@ -93,7 +97,7 @@ export function ManageJobsList() {
     if (!jobToDelete) return;
     setIsDeleting(true);
     try {
-      await recruiterService.deleteJob(jobToDelete.id);
+      await deleteJob(jobToDelete.id);
       toast.success("Job soft-deleted successfully", {
         description: `"${jobToDelete.title}" has been moved to archive.`,
       });
