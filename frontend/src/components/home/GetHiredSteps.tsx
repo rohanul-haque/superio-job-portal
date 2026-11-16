@@ -1,5 +1,8 @@
+"use client";
+
+import { motion, useReducedMotion } from "framer-motion";
+import { Briefcase, FileText, Send, User } from "lucide-react";
 import React from "react";
-import { User, FileText, Briefcase, Send } from "lucide-react";
 
 interface StepItem {
   id: number;
@@ -74,10 +77,18 @@ const STEPS: StepItem[] = [
 ];
 
 export const GetHiredSteps: React.FC = () => {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full py-8 sm:py-12 overflow-hidden">
       {/* Section Header */}
-      <div className="text-center mb-12 sm:mb-16 max-w-2xl mx-auto">
+      <motion.div
+        initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.25, 0.1, 0.25, 1.0] }}
+        className="text-center mb-12 sm:mb-16 max-w-2xl mx-auto"
+      >
         <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0F172A]">
           Get Hired in{" "}
           <span className="text-[#4F46E5] bg-gradient-to-r from-[#4F46E5] to-[#6366F1] bg-clip-text text-transparent">
@@ -88,15 +99,27 @@ export const GetHiredSteps: React.FC = () => {
           The quickest and most effective way to get hired by the top firm
           working in your career interest areas.
         </p>
-      </div>
+      </motion.div>
 
       {/* Steps Container */}
       <div>
         {/* 4 Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
-          {STEPS.map((step) => (
-            <div
+          {STEPS.map((step, index) => (
+            <motion.div
               key={step.id}
+              initial={
+                shouldReduceMotion
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 24 }
+              }
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{
+                duration: shouldReduceMotion ? 0 : 0.5,
+                delay: shouldReduceMotion ? 0 : index * 0.1,
+                ease: [0.25, 0.1, 0.25, 1.0],
+              }}
               className="group relative bg-white rounded-2xl p-6 sm:p-7 border border-[#E5E7EB] shadow-none hover:border-[#4F46E5] transition-all duration-300 flex flex-col justify-start text-left"
             >
               {/* Circular Icon Badge */}
@@ -115,7 +138,7 @@ export const GetHiredSteps: React.FC = () => {
               <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-normal">
                 {step.description}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
