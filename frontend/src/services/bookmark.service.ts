@@ -1,31 +1,25 @@
-import type { IApiResponse } from "../types/auth";
-import type { IBookmark } from "../types/bookmark";
-import api from "./api";
+import { bookmarkApi } from "@/api/bookmark.api";
+import type { IBookmark } from "@/types/bookmark";
 
 export const bookmarkService = {
   async toggleBookmark(
     jobId: string,
   ): Promise<{ isBookmarked: boolean; message: string }> {
-    const res = await api.post<
-      IApiResponse<{ isBookmarked: boolean; message: string }>
-    >("/bookmarks/toggle", { jobId });
+    const res = await bookmarkApi.toggleBookmark(jobId);
     return res.data.data;
   },
 
   async getMyBookmarks(): Promise<IBookmark[]> {
-    const res = await api.get<IApiResponse<IBookmark[]>>("/bookmarks");
+    const res = await bookmarkApi.getMyBookmarks();
     return res.data.data || [];
   },
 
   async removeBookmark(
     jobId: string,
   ): Promise<{ success: boolean; message: string }> {
-    const res = await api.delete<
-      IApiResponse<{ success: boolean; message: string }>
-    >(`/bookmarks/${jobId}`);
+    const res = await bookmarkApi.removeBookmark(jobId);
     return res.data.data;
   },
 };
 
 export default bookmarkService;
-

@@ -1,30 +1,21 @@
-import type { IApiResponse } from "../types/auth";
-import type { IJobApplication } from "../types/application";
-import api from "./api";
+import { applicationApi } from "@/api/application.api";
+import type { IJobApplication } from "@/interfaces/application.interface";
 
 export const applicationService = {
   async applyJob(jobId: string): Promise<IJobApplication> {
-    const res = await api.post<IApiResponse<IJobApplication>>(
-      "/applications/apply",
-      { jobId },
-    );
+    const res = await applicationApi.applyJob(jobId);
     return res.data.data;
   },
 
   async getMyApplications(params?: {
     status?: string;
   }): Promise<IJobApplication[]> {
-    const res = await api.get<IApiResponse<IJobApplication[]>>(
-      "/applications/my-applications",
-      { params },
-    );
+    const res = await applicationApi.getMyApplications(params);
     return res.data.data || [];
   },
 
   async withdrawApplication(id: string): Promise<IJobApplication> {
-    const res = await api.patch<IApiResponse<IJobApplication>>(
-      `/applications/${id}/withdraw`,
-    );
+    const res = await applicationApi.withdrawApplication(id);
     return res.data.data;
   },
 };

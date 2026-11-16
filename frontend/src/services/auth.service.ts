@@ -1,32 +1,25 @@
+import { authApi } from "@/api/auth.api";
 import type {
-  IApiResponse,
   IAuthUser,
   ICandidateRegisterPayload,
   ILoginPayload,
   IRecruiterRegisterPayload,
   IVerifyEmailCredentialsPayload,
-  IVerifyEmailResponse,
-} from "../types/auth";
-import api from "./api";
+} from "@/interfaces/auth.interface";
+import type { IVerifyEmailResponse } from "@/responses/auth.response";
 
 export const authService = {
   async registerCandidate(
     payload: ICandidateRegisterPayload,
   ): Promise<IAuthUser> {
-    const res = await api.post<IApiResponse<IAuthUser>>(
-      "/auth/candidate/register",
-      payload,
-    );
+    const res = await authApi.registerCandidate(payload);
     return res.data.data;
   },
 
   async registerRecruiter(
     payload: IRecruiterRegisterPayload,
   ): Promise<IAuthUser> {
-    const res = await api.post<IApiResponse<IAuthUser>>(
-      "/auth/recruiter/register",
-      payload,
-    );
+    const res = await authApi.registerRecruiter(payload);
     return res.data.data;
   },
 
@@ -34,10 +27,7 @@ export const authService = {
    * Same-Browser Verification: relies on the HTTP-only emailVerificationToken cookie.
    */
   async verifyEmail(): Promise<IVerifyEmailResponse> {
-    const res =
-      await api.post<IApiResponse<IVerifyEmailResponse["user"]>>(
-        "/auth/verify-email",
-      );
+    const res = await authApi.verifyEmail();
     return {
       user: res.data.data,
       role: res.data.data.role,
@@ -52,10 +42,7 @@ export const authService = {
   async verifyEmailWithCredentials(
     payload: IVerifyEmailCredentialsPayload,
   ): Promise<IVerifyEmailResponse> {
-    const res = await api.post<IApiResponse<IVerifyEmailResponse["user"]>>(
-      "/auth/verify-email/credentials",
-      payload,
-    );
+    const res = await authApi.verifyEmailWithCredentials(payload);
     return {
       user: res.data.data,
       role: res.data.data.role,
@@ -64,31 +51,25 @@ export const authService = {
   },
 
   async resendVerification(email: string): Promise<string> {
-    const res = await api.post<IApiResponse<{ email: string }>>(
-      "/auth/resend-verification",
-      { email },
-    );
+    const res = await authApi.resendVerification(email);
     return res.data.message;
   },
 
   async login(payload: ILoginPayload): Promise<{ user: IAuthUser }> {
-    const res = await api.post<IApiResponse<{ user: IAuthUser }>>(
-      "/auth/login",
-      payload,
-    );
+    const res = await authApi.login(payload);
     return res.data.data;
   },
 
   async refreshToken(): Promise<void> {
-    await api.post<IApiResponse<null>>("/auth/refresh-token", {});
+    await authApi.refreshToken();
   },
 
   async logout(): Promise<void> {
-    await api.post<IApiResponse<null>>("/auth/logout", {});
+    await authApi.logout();
   },
 
   async getMe(): Promise<IAuthUser> {
-    const res = await api.get<IApiResponse<IAuthUser>>("/auth/me");
+    const res = await authApi.getMe();
     return res.data.data;
   },
 };

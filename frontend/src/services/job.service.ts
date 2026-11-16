@@ -1,17 +1,13 @@
-import type { IApiResponse } from "../types/auth";
+import { jobApi } from "@/api/job.api";
+import type { IJobFilterParams } from "@/interfaces/job.interface";
 import type {
-  IJob,
-  IJobFilterParams,
   IJobsResponseData,
   ISingleJobDetail,
-} from "../types/job";
-import api from "./api";
+} from "@/responses/job.response";
 
 export const jobService = {
   async getAllJobs(params?: IJobFilterParams): Promise<IJobsResponseData> {
-    const res = await api.get<IApiResponse<IJob[]>>("/jobs", {
-      params,
-    });
+    const res = await jobApi.getAllJobs(params);
     return {
       jobs: res.data.data || [],
       meta: {
@@ -24,7 +20,7 @@ export const jobService = {
   },
 
   async getJobById(id: string): Promise<ISingleJobDetail> {
-    const res = await api.get<IApiResponse<ISingleJobDetail>>(`/jobs/${id}`);
+    const res = await jobApi.getJobById(id);
     return res.data.data;
   },
 };
