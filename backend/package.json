@@ -7,7 +7,6 @@
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
     "build": "prisma generate && tsc",
-    "postinstall": "prisma generate",
     "seed:admin": "tsx src/modules/admin/admin.seeder.ts",
     "prisma:generate": "prisma generate",
     "prisma:db-push": "prisma db push"

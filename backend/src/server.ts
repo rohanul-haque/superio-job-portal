@@ -1,14 +1,14 @@
 import type { Server } from "http";
 import app from "./app";
 import config from "./config";
-import connectDatabase from "./lib/db";
 import prisma from "./lib/prisma";
 
 let server: Server;
 
 async function bootstrap() {
   try {
-    await connectDatabase();
+    await prisma.$connect();
+    console.log("Connected to MongoDB via Prisma ORM successfully.");
 
     server = app.listen(config.PORT, () => {
       console.log(
