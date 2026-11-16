@@ -8,17 +8,17 @@ let server: Server;
 async function bootstrap() {
   try {
     await prisma.$connect();
-    console.log("✅ Connected to MongoDB via Prisma ORM successfully.");
+    console.log("Connected to MongoDB via Prisma ORM successfully.");
 
     server = app.listen(config.PORT, () => {
       console.log(
-        `🚀 Superio Enterprise Server (v2) is running on port ${config.PORT}`,
+        `Superio Enterprise Server (v2) is running on port ${config.PORT}`,
       );
-      console.log(`📡 Environment: ${config.NODE_ENV}`);
-      console.log(`🔗 API Base URL: http://localhost:${config.PORT}/api/v1`);
+      console.log(`Environment: ${config.NODE_ENV}`);
+      console.log(`API Base URL: http://localhost:${config.PORT}/api/v1`);
     });
   } catch (error) {
-    console.error("❌ Failed to connect to database or start server:", error);
+    console.error("Failed to connect to database or start server:", error);
     process.exit(1);
   }
 
