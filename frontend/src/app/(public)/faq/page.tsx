@@ -1,16 +1,21 @@
 "use client";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   Briefcase,
-  ChevronDown,
   HelpCircle,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 
 const FAQS = [
   {
@@ -36,12 +41,6 @@ const FAQS = [
 ];
 
 export default function FAQPage() {
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
-
   return (
     <div className="flex flex-col gap-16 md:gap-20 py-10 md:py-16">
       {/* Hero Header */}
@@ -66,59 +65,25 @@ export default function FAQPage() {
         </p>
       </section>
 
-      {/* FAQ Accordion Section */}
+      {/* FAQ Accordion Section using shadcn/ui Accordion */}
       <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="space-y-4">
-          {FAQS.map((faq, index) => {
-            const isOpen = openFaqIndex === index;
-            return (
-              <div
-                key={index}
-                className={`rounded-2xl border transition-all duration-200 bg-white ${
-                  isOpen
-                    ? "border-[#4F46E5] shadow-none"
-                    : "border-[#E5E7EB] hover:border-slate-300 shadow-none"
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => toggleFaq(index)}
-                  className="flex w-full items-center justify-between p-5 sm:p-6 text-left cursor-pointer transition-colors"
-                >
-                  <div className="flex items-center gap-3.5 pr-4">
-                    <div
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
-                        isOpen
-                          ? "bg-[#4F46E5] text-white"
-                          : "bg-[#EEF2FF] text-[#4F46E5]"
-                      }`}
-                    >
-                      <HelpCircle className="h-5 w-5" />
-                    </div>
-                    <span className="text-base sm:text-lg font-bold text-[#0F172A]">
-                      {faq.q}
-                    </span>
+        <Accordion type="single" collapsible defaultValue="faq-0">
+          {FAQS.map((faq, index) => (
+            <AccordionItem key={index} value={`faq-${index}`}>
+              <AccordionTrigger className="text-base sm:text-lg">
+                <div className="flex items-center gap-3.5 text-left">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
+                    <HelpCircle className="h-5 w-5" />
                   </div>
-                  <ChevronDown
-                    className={`h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200 ${
-                      isOpen ? "rotate-180 text-[#4F46E5]" : ""
-                    }`}
-                  />
-                </button>
-
-                {isOpen && (
-                  <div className="px-5 pb-6 pt-0 sm:px-6 sm:pb-7">
-                    <div className="border-t border-slate-100 pt-4 pl-[54px]">
-                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                        {faq.a}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                  <span>{faq.q}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pl-6 sm:pl-[58px]">
+                {faq.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </section>
 
       {/* Call to Action (CTA) Section matching Homepage */}
