@@ -240,39 +240,52 @@ export default function CandidateDashboardOverviewPage() {
 
       {/* 5 Summary Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        {statCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={card.label}
-              className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 ${card.border}`}
-            >
-              <div className="flex items-center justify-between">
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${card.bg} ${card.color}`}
-                >
-                  <Icon className="h-5 w-5" />
+        {isLoading
+          ? Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs"
+              >
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-10 w-10 rounded-xl" />
                 </div>
-              </div>
 
-              <div className="mt-4">
-                <div className="text-2xl font-black text-slate-900">
-                  {isLoading ? (
-                    <Skeleton className="h-8 w-14 rounded" />
-                  ) : (
-                    card.value
-                  )}
+                <div className="mt-4">
+                  <Skeleton className="h-8 w-14 rounded" />
+                  <Skeleton className="mt-0.5 h-4 w-24 rounded" />
+                  <Skeleton className="mt-0.5 h-3.5 w-28 rounded" />
                 </div>
-                <h3 className="mt-0.5 text-xs font-bold text-slate-800">
-                  {card.label}
-                </h3>
-                <p className="mt-0.5 text-[11px] text-slate-400">
-                  {card.description}
-                </p>
               </div>
-            </div>
-          );
-        })}
+            ))
+          : statCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <div
+                  key={card.label}
+                  className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 ${card.border}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-xl ${card.bg} ${card.color}`}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <div className="text-2xl font-black text-slate-900">
+                      {card.value}
+                    </div>
+                    <h3 className="mt-0.5 text-xs font-bold text-slate-800">
+                      {card.label}
+                    </h3>
+                    <p className="mt-0.5 text-[11px] text-slate-400">
+                      {card.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
       </div>
 
       {/* Recharts Area Chart */}
