@@ -10,12 +10,12 @@ const config = {
 
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
 
-  BREVO_SMTP_HOST: process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com",
-  BREVO_SMTP_PORT: Number(process.env.BREVO_SMTP_PORT) || 587,
-  BREVO_SMTP_USER: process.env.BREVO_SMTP_USER,
-  BREVO_SMTP_KEY: process.env.BREVO_SMTP_KEY,
-  BREVO_FROM_EMAIL: process.env.BREVO_FROM_EMAIL,
-  BREVO_FROM_NAME: process.env.BREVO_FROM_NAME || "HireNest",
+  EMAIL_USER: process.env.EMAIL_USER || process.env.GMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS || process.env.GMAIL_APP_PASSWORD,
+  EMAIL_FROM:
+    process.env.EMAIL_FROM ||
+    process.env.EMAIL_USER ||
+    "HireNest <no-reply@hirenest.com>",
 
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,

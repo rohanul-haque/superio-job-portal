@@ -17,10 +17,11 @@ export interface ISendPasswordResetEmailOptions {
 }
 
 const getSenderAddress = (): string => {
-  if (config.BREVO_FROM_EMAIL) {
-    return config.BREVO_FROM_NAME
-      ? `"${config.BREVO_FROM_NAME}" <${config.BREVO_FROM_EMAIL}>`
-      : config.BREVO_FROM_EMAIL;
+  if (config.EMAIL_FROM) {
+    return config.EMAIL_FROM;
+  }
+  if (config.EMAIL_USER) {
+    return `"HireNest" <${config.EMAIL_USER}>`;
   }
   return `"HireNest" <no-reply@hirenest.com>`;
 };
@@ -33,10 +34,10 @@ export const sendVerificationEmail = async ({
   const verificationUrl = `${config.FRONTEND_URL}/verify-email`;
   const html = getVerificationEmailTemplate({ name, role, verificationUrl });
   const from = getSenderAddress();
-  const subject = `[Superio] Verify your email address (${role.toUpperCase()})`;
+  const subject = `[HireNest] Verify your email address (${role.toUpperCase()})`;
 
   try {
-    if (config.BREVO_SMTP_USER && config.BREVO_SMTP_KEY) {
+    if (config.EMAIL_USER && config.EMAIL_PASS) {
       const info = await transporter.sendMail({
         from,
         to,
@@ -45,11 +46,11 @@ export const sendVerificationEmail = async ({
       });
 
       console.log(
-        `[Email] Verification email dispatched to ${to} via Brevo SMTP (MessageID: ${info.messageId})`,
+        `[Email] Verification email dispatched to ${to} via Gmail SMTP (MessageID: ${info.messageId})`,
       );
     } else {
       console.log(
-        "\n================== EMAIL VERIFICATION (DEV FALLBACK - BREVO SMTP NOT CONFIGURED) ==================",
+        "\n================== EMAIL VERIFICATION (DEV FALLBACK - GMAIL SMTP NOT CONFIGURED) ==================",
       );
       console.log(`To: ${to} (${name}) [Role: ${role}]`);
       console.log(`Verification URL (Zero-Token): ${verificationUrl}`);
@@ -76,10 +77,10 @@ export const sendPasswordResetEmail = async ({
   const resetUrl = `${config.FRONTEND_URL}/reset-password`;
   const html = getPasswordResetEmailTemplate({ name, resetUrl });
   const from = getSenderAddress();
-  const subject = "[Superio] Reset your password";
+  const subject = "[HireNest] Reset your password";
 
   try {
-    if (config.BREVO_SMTP_USER && config.BREVO_SMTP_KEY) {
+    if (config.EMAIL_USER && config.EMAIL_PASS) {
       const info = await transporter.sendMail({
         from,
         to,
@@ -88,11 +89,11 @@ export const sendPasswordResetEmail = async ({
       });
 
       console.log(
-        `[Email] Password reset email sent successfully to ${to} via Brevo SMTP (MessageID: ${info.messageId})`,
+        `[Email] Password reset email sent successfully to ${to} via Gmail SMTP (MessageID: ${info.messageId})`,
       );
     } else {
       console.log(
-        "\n================== PASSWORD RESET (DEV FALLBACK - BREVO SMTP NOT CONFIGURED) ==================",
+        "\n================== PASSWORD RESET (DEV FALLBACK - GMAIL SMTP NOT CONFIGURED) ==================",
       );
       console.log(`To: ${to} (${name})`);
       console.log(`Reset URL (Zero-Token): ${resetUrl}`);
