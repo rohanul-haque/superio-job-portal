@@ -1,6 +1,6 @@
-import nodemailer from "nodemailer";
-import type { SentMessageInfo } from "nodemailer";
 import { StatusCodes } from "http-status-codes";
+import type { SentMessageInfo } from "nodemailer";
+import nodemailer from "nodemailer";
 import config from "../config";
 import getPasswordResetEmailTemplate from "../templates/password-reset-email";
 import getVerificationEmailTemplate from "../templates/verification-email";

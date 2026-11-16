@@ -1,7 +1,6 @@
 {
   "name": "backend",
   "version": "2.0.0",
-  "description": "",
   "main": "dist/server.js",
   "type": "commonjs",
   "scripts": {
@@ -22,9 +21,6 @@
   ],
   "author": "Superio Team",
   "license": "ISC",
-  "engines": {
-    "node": "22.x"
-  },
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^2.4.3",
