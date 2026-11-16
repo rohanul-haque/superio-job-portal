@@ -1,7 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
-  ArrowRight,
   Briefcase,
   Building2,
   CheckCircle2,
@@ -12,7 +10,6 @@ import {
   Users,
 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -97,7 +94,7 @@ export default function AboutPage() {
         </Badge>
 
         <h1 className="text-4xl font-extrabold tracking-tight text-[#0F172A] sm:text-5xl md:text-6xl">
-          Bridging the Gap Between World-Class Talent and <br />
+          Connecting Top Talent with <br />
           <span className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4338CA] bg-clip-text text-transparent">
             Visionary Companies
           </span>
@@ -168,55 +165,6 @@ export default function AboutPage() {
               </span>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Call to Action (CTA) Section matching Homepage */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4338CA] px-6 py-12 sm:px-12 sm:py-16 md:py-20 text-white shadow-none">
-          <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center">
-            <Badge className="bg-white/20 text-white border-0 mb-4 px-3.5 py-1 text-xs font-medium backdrop-blur-xs inline-flex items-center gap-1.5 shadow-none rounded-full">
-              <Sparkles className="h-3.5 w-3.5" />
-              Join High-Growth Careers
-            </Badge>
-
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-              Ready to Start Your Hiring Journey?
-            </h2>
-
-            <p className="mt-4 text-indigo-100 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl">
-              Whether you are looking for your next career move or searching for elite
-              talent to scale your engineering team, Hirenest is built for you.
-            </p>
-
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-              <Link href="/all-jobs" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-white text-[#4F46E5] hover:bg-slate-50 font-medium text-sm sm:text-base rounded-full shadow-none"
-                >
-                  Explore Open Jobs
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-transparent hover:bg-transparent text-white hover:text-white border-white/80 hover:border-white/80 font-medium text-sm sm:text-base rounded-full shadow-none"
-                >
-                  <Briefcase className="mr-2 h-4 w-4" />
-                  Create an Account
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          {/* Background decorative elements */}
-          <div className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-          <div className="pointer-events-none absolute right-40 top-0 h-40 w-40 rounded-full bg-indigo-400/20 blur-2xl" />
-          <div className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-blue-400/20 blur-2xl" />
         </div>
       </section>
     </div>

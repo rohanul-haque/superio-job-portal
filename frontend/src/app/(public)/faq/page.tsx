@@ -7,14 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  Briefcase,
-  HelpCircle,
-  Sparkles,
-} from "lucide-react";
-import Link from "next/link";
+import { HelpCircle } from "lucide-react";
 import React from "react";
 
 const FAQS = [
@@ -42,7 +35,7 @@ const FAQS = [
 
 export default function FAQPage() {
   return (
-    <div className="flex flex-col gap-16 md:gap-20 py-10 md:py-16">
+    <div className="flex flex-col gap-12 sm:gap-16 py-10 md:py-16">
       {/* Hero Header */}
       <section className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
         <Badge
@@ -66,7 +59,7 @@ export default function FAQPage() {
       </section>
 
       {/* FAQ Accordion Section using shadcn/ui Accordion */}
-      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 w-full">
+      <section className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 w-full pb-8">
         <Accordion type="single" collapsible defaultValue="faq-0">
           {FAQS.map((faq, index) => (
             <AccordionItem key={index} value={`faq-${index}`}>
@@ -84,54 +77,6 @@ export default function FAQPage() {
             </AccordionItem>
           ))}
         </Accordion>
-      </section>
-
-      {/* Call to Action (CTA) Section matching Homepage */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#4338CA] px-6 py-12 sm:px-12 sm:py-16 md:py-20 text-white shadow-none">
-          <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center">
-            <Badge className="bg-white/20 text-white border-0 mb-4 px-3.5 py-1 text-xs font-medium backdrop-blur-xs inline-flex items-center gap-1.5 shadow-none rounded-full">
-              <Sparkles className="h-3.5 w-3.5" />
-              Need Personal Assistance?
-            </Badge>
-
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-              Ready to Accelerate Your Career or Hiring?
-            </h2>
-
-            <p className="mt-4 text-indigo-100 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl">
-              Connect with leading organizations, discover verified global opportunities, and hire top-tier talent with Hirenest&apos;s recruitment ecosystem.
-            </p>
-
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-              <Link href="/all-jobs" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-white text-[#4F46E5] hover:bg-slate-50 font-medium text-sm sm:text-base rounded-full shadow-none"
-                >
-                  Explore All Jobs
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 bg-transparent hover:bg-transparent text-white hover:text-white border-white/80 hover:border-white/80 font-medium text-sm sm:text-base rounded-full shadow-none"
-                >
-                  <Briefcase className="mr-2 h-4 w-4" />
-                  Create an Account
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          {/* Background decorative elements */}
-          <div className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-          <div className="pointer-events-none absolute right-40 top-0 h-40 w-40 rounded-full bg-indigo-400/20 blur-2xl" />
-          <div className="pointer-events-none absolute -left-12 -top-12 h-64 w-64 rounded-full bg-blue-400/20 blur-2xl" />
-        </div>
       </section>
     </div>
   );

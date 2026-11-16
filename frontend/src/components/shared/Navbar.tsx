@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Logo from "@/components/shared/Logo";
 import UserAvatar from "@/components/shared/UserAvatar";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import {
   ChevronDown,
@@ -13,12 +13,34 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 export const Navbar: React.FC = () => {
+  const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { label: "Home", href: "/", isActive: pathname === "/" },
+    {
+      label: "Find Jobs",
+      href: "/all-jobs",
+      isActive:
+        pathname.startsWith("/all-jobs") || pathname.startsWith("/apply-job"),
+    },
+    {
+      label: "About",
+      href: "/about",
+      isActive: pathname.startsWith("/about"),
+    },
+    {
+      label: "FAQ",
+      href: "/faq",
+      isActive: pathname.startsWith("/faq") || pathname.startsWith("/terms"),
+    },
+  ];
 
   const getDashboardUrl = () => {
     if (!user) return "/";
@@ -35,30 +57,19 @@ export const Navbar: React.FC = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
-          <Link
-            href="/"
-            className="text-sm font-medium text-[#0F172A] transition-colors hover:text-[#4F46E5]"
-          >
-            Home
-          </Link>
-          <Link
-            href="/all-jobs"
-            className="text-sm font-medium text-[#0F172A] transition-colors hover:text-[#4F46E5]"
-          >
-            Find Jobs
-          </Link>
-          <Link
-            href="/about"
-            className="text-sm font-medium text-[#0F172A] transition-colors hover:text-[#4F46E5]"
-          >
-            About Us
-          </Link>
-          <Link
-            href="/terms"
-            className="text-sm font-medium text-[#0F172A] transition-colors hover:text-[#4F46E5]"
-          >
-            Terms & FAQ
-          </Link>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`text-sm transition-colors ${
+                link.isActive
+                  ? "text-[#4F46E5] font-semibold"
+                  : "text-[#0F172A] font-medium hover:text-[#4F46E5]"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Right Action Buttons */}
@@ -169,40 +180,26 @@ export const Navbar: React.FC = () => {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="border-t border-slate-100 bg-white px-4 py-4 md:hidden shadow-lg animate-in slide-in-from-top-2 duration-150">
-          <nav className="flex flex-col gap-3">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-[#4F46E5]"
-            >
-              Home
-            </Link>
-            <Link
-              href="/all-jobs"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-[#4F46E5]"
-            >
-              Find Jobs
-            </Link>
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-[#4F46E5]"
-            >
-              About Us
-            </Link>
-            <Link
-              href="/terms"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-[#4F46E5]"
-            >
-              Terms & FAQ
-            </Link>
+          <nav className="flex flex-col gap-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`rounded-xl px-3 py-2 text-sm transition-colors ${
+                  link.isActive
+                    ? "bg-[#EEF2FF] text-[#4F46E5] font-semibold"
+                    : "text-slate-700 font-medium hover:bg-slate-50 hover:text-[#4F46E5]"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
             {isAuthenticated && user && (
               <Link
                 href={getDashboardUrl()}
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700"
+                className="flex items-center gap-2 rounded-xl bg-[#EEF2FF] px-3 py-2 text-sm font-semibold text-[#4F46E5]"
               >
                 <LayoutDashboard className="h-4 w-4" />
                 Go to {user.role} Dashboard
