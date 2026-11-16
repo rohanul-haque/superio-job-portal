@@ -7,8 +7,8 @@ import { StatusCodes } from "http-status-codes";
 import corsOptions from "./lib/cors-options";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import notFoundHandler from "./middlewares/notFoundHandler";
-import healthCheckRoutes from "./routes/health-check.route";
 import routes from "./routes";
+import healthCheckRoutes from "./routes/health-check.route";
 
 const app: Application = express();
 

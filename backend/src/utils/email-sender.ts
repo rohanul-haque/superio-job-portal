@@ -1,9 +1,26 @@
+import nodemailer from "nodemailer";
+import type { SentMessageInfo } from "nodemailer";
 import { StatusCodes } from "http-status-codes";
 import config from "../config";
-import transporter from "../lib/email-transporter";
-import getPasswordResetEmailTemplate from "../templates/email/password-reset-email";
-import getVerificationEmailTemplate from "../templates/email/verification-email";
-import AppError from "../utils/AppError";
+import getPasswordResetEmailTemplate from "../templates/password-reset-email";
+import getVerificationEmailTemplate from "../templates/verification-email";
+import AppError from "./AppError";
+
+// Nodemailer Gmail SMTP Transporter Configuration
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: config.EMAIL_USER,
+    pass: config.EMAIL_PASS,
+  },
+});
+
+export interface ISendEmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+}
 
 export interface ISendVerificationEmailOptions {
   to: string;
@@ -16,7 +33,7 @@ export interface ISendPasswordResetEmailOptions {
   name: string;
 }
 
-const getSenderAddress = (): string => {
+export const getSenderAddress = (): string => {
   if (config.EMAIL_FROM) {
     return config.EMAIL_FROM;
   }
@@ -24,6 +41,37 @@ const getSenderAddress = (): string => {
     return `"HireNest" <${config.EMAIL_USER}>`;
   }
   return `"HireNest" <no-reply@hirenest.com>`;
+};
+
+// Common reusable sendEmail function
+export const sendEmail = async ({
+  to,
+  subject,
+  html,
+  from = getSenderAddress(),
+}: ISendEmailOptions): Promise<SentMessageInfo | void> => {
+  if (config.EMAIL_USER && config.EMAIL_PASS) {
+    const info = await transporter.sendMail({
+      from,
+      to,
+      subject,
+      html,
+    });
+
+    console.log(
+      `[Email] Email sent successfully to ${to} via Gmail SMTP (MessageID: ${info.messageId})`,
+    );
+    return info;
+  } else {
+    console.log(
+      "\n================== EMAIL DISPATCH (DEV FALLBACK - GMAIL SMTP NOT CONFIGURED) ==================",
+    );
+    console.log(`To: ${to}`);
+    console.log(`Subject: ${subject}`);
+    console.log(
+      "=================================================================================================\n",
+    );
+  }
 };
 
 export const sendVerificationEmail = async ({

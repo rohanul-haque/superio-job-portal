@@ -10,12 +10,9 @@ const config = {
 
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
 
-  EMAIL_USER: process.env.EMAIL_USER || process.env.GMAIL_USER,
-  EMAIL_PASS: process.env.EMAIL_PASS || process.env.GMAIL_APP_PASSWORD,
-  EMAIL_FROM:
-    process.env.EMAIL_FROM ||
-    process.env.EMAIL_USER ||
-    "HireNest <no-reply@hirenest.com>",
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
+  EMAIL_FROM: process.env.EMAIL_FROM,
 
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,

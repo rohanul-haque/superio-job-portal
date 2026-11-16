@@ -10,7 +10,7 @@ import {
 } from "../../lib/jwt";
 import prisma from "../../lib/prisma";
 import AppError from "../../utils/AppError";
-import { sendVerificationEmail } from "../../services/email.service";
+import { sendVerificationEmail } from "../../utils/email-sender";
 import type {
   IAuthUserAccount,
   ICandidateProfileDTO,
