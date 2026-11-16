@@ -1,8 +1,10 @@
 "use client";
 
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -19,7 +21,6 @@ import {
   CheckCircle2,
   Clock,
   Filter,
-  Loader2,
   MapPin,
   RefreshCw,
   Search,
@@ -170,9 +171,11 @@ export default function CandidateAppliedJobsPage() {
             disabled={isLoading}
             className="text-xs border-slate-200"
           >
-            <RefreshCw
-              className={`mr-1.5 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`}
-            />
+            {isLoading ? (
+              <Spinner size="sm" className="mr-1.5" />
+            ) : (
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+            )}
             Refresh
           </Button>
           <Link href="/all-jobs">
@@ -222,11 +225,8 @@ export default function CandidateAppliedJobsPage() {
       <Card className="border-slate-200 shadow-xs overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center p-16 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-              <p className="mt-3 text-xs font-medium text-slate-500">
-                Loading applied jobs...
-              </p>
+            <div className="p-5">
+              <TableSkeleton rows={5} columns={5} />
             </div>
           ) : filteredApplications.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-16 text-center">
@@ -411,7 +411,7 @@ export default function CandidateAppliedJobsPage() {
               >
                 {isWithdrawing ? (
                   <>
-                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    <Spinner size="sm" className="mr-1.5" />
                     Withdrawing...
                   </>
                 ) : (

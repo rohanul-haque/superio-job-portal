@@ -2,6 +2,7 @@
 
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -18,7 +19,6 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  Loader2,
   Lock,
 } from "lucide-react";
 import Link from "next/link";
@@ -200,7 +200,7 @@ export const AdminLoginForm: React.FC = () => {
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Spinner size="sm" className="mr-2" />
                 Signing in...
               </>
             ) : (

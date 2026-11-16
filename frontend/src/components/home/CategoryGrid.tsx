@@ -1,6 +1,7 @@
 "use client";
 
 import type { ICategory } from "@/types/category";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Briefcase,
   Code,
@@ -113,8 +114,14 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="h-28 animate-pulse rounded-xl sm:rounded-2xl border border-[#E5E7EB] bg-slate-50 p-4 sm:p-5"
-          />
+            className="flex flex-col justify-between rounded-xl sm:rounded-2xl border border-[#E5E7EB] bg-white p-4 sm:p-5"
+          >
+            <Skeleton className="h-10 w-10 rounded-xl" />
+            <div className="mt-3.5 space-y-1.5">
+              <Skeleton className="h-4 w-3/4 rounded" />
+              <Skeleton className="h-3 w-1/2 rounded" />
+            </div>
+          </div>
         ))}
       </div>
     );

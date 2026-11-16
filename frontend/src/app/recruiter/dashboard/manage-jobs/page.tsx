@@ -1,9 +1,11 @@
 "use client";
 
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import recruiterService from "@/services/recruiter.service";
 import type { IJob } from "@/types/job";
 import {
@@ -14,7 +16,6 @@ import {
   Eye,
   EyeOff,
   Globe,
-  Loader2,
   MapPin,
   Pencil,
   PlusCircle,
@@ -144,9 +145,11 @@ export default function RecruiterManageJobsPage() {
             disabled={isLoading}
             className="text-xs border-slate-200"
           >
-            <RefreshCw
-              className={`mr-1.5 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`}
-            />
+            {isLoading ? (
+              <Spinner size="sm" className="mr-1.5" />
+            ) : (
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+            )}
             Refresh
           </Button>
 
@@ -175,11 +178,8 @@ export default function RecruiterManageJobsPage() {
       <Card className="border-slate-200 shadow-xs overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center p-16 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-              <p className="mt-3 text-xs font-medium text-slate-500">
-                Loading published jobs...
-              </p>
+            <div className="p-5">
+              <TableSkeleton rows={5} columns={6} />
             </div>
           ) : filteredJobs.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-16 text-center">
@@ -406,7 +406,7 @@ export default function RecruiterManageJobsPage() {
               >
                 {isDeleting ? (
                   <>
-                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    <Spinner size="sm" className="mr-1.5" />
                     Deleting...
                   </>
                 ) : (

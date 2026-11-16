@@ -1,5 +1,6 @@
 "use client";
 
+import { ProfileSkeleton } from "@/components/shared/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import adminService from "@/services/admin.service";
 import type { IAdminProfile } from "@/types/admin";
@@ -24,7 +26,6 @@ import {
   EyeOff,
   Image as ImageIcon,
   KeyRound,
-  Loader2,
   Lock,
   Mail,
   RefreshCw,
@@ -351,24 +352,17 @@ export default function AdminProfilePage() {
           disabled={isLoadingProfile}
           className="self-start sm:self-auto gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
         >
-          <RefreshCw
-            className={`h-3.5 w-3.5 ${
-              isLoadingProfile ? "animate-spin text-purple-600" : ""
-            }`}
-          />
+          {isLoadingProfile ? (
+            <Spinner size="sm" className="text-purple-600" />
+          ) : (
+            <RefreshCw className="h-3.5 w-3.5" />
+          )}
           Refresh
         </Button>
       </div>
 
       {/* Loading Skeleton */}
-      {isLoadingProfile && !profile && (
-        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-slate-200 shadow-xs">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600 mb-3" />
-          <p className="text-sm font-medium text-slate-600">
-            Loading administrator account profile...
-          </p>
-        </div>
-      )}
+      {isLoadingProfile && !profile && <ProfileSkeleton />}
 
       {/* Load Error State */}
       {!isLoadingProfile && loadError && !profile && (
@@ -502,7 +496,7 @@ export default function AdminProfilePage() {
                         >
                           {isUploadingImage ? (
                             <>
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              <Spinner size="sm" className="mr-1.5" />
                               Uploading to Cloudinary...
                             </>
                           ) : (
@@ -539,7 +533,7 @@ export default function AdminProfilePage() {
                       >
                         {isRemovingImage ? (
                           <>
-                            <Loader2 className="h-3.5 w-3.5 animate-spin text-red-600" />
+                            <Spinner size="sm" className="mr-1.5 text-red-600" />
                             Removing...
                           </>
                         ) : (
@@ -664,7 +658,7 @@ export default function AdminProfilePage() {
                 >
                   {isUpdatingProfile ? (
                     <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <Spinner size="sm" className="mr-1.5" />
                       Saving...
                     </>
                   ) : (
@@ -825,7 +819,7 @@ export default function AdminProfilePage() {
                 >
                   {isChangingPassword ? (
                     <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <Spinner size="sm" className="mr-1.5" />
                       Updating...
                     </>
                   ) : (

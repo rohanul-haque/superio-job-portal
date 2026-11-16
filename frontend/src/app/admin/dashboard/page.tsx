@@ -2,10 +2,17 @@
 
 import CategoryDistributionChart from "@/components/admin/CategoryDistributionChart";
 import PlatformGrowthChart from "@/components/admin/PlatformGrowthChart";
+import {
+  ChartSkeleton,
+  StatsCardSkeleton,
+  TableSkeleton,
+} from "@/components/shared/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import adminService from "@/services/admin.service";
 import type { IAdminDashboardStats } from "@/types/admin";
 import {
@@ -18,7 +25,6 @@ import {
   ExternalLink,
   FileText,
   FolderTree,
-  Loader2,
   RefreshCw,
   ShieldAlert,
   Trash2,
@@ -54,11 +60,29 @@ export default function AdminDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-28 text-center">
-        <Loader2 className="h-9 w-9 animate-spin text-purple-600 mb-3" />
-        <p className="text-sm font-medium text-slate-600">
-          Loading platform intelligence & system metrics...
-        </p>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48 rounded" />
+            <Skeleton className="h-4 w-72 rounded" />
+          </div>
+          <Skeleton className="h-9 w-36 rounded-xl" />
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <StatsCardSkeleton key={i} />
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ChartSkeleton height="h-64" />
+          <ChartSkeleton height="h-64" />
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+          <TableSkeleton rows={5} columns={5} />
+        </div>
       </div>
     );
   }
@@ -188,7 +212,8 @@ export default function AdminDashboardPage() {
             Superio Governance Console
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Real-time platform metrics, user moderation, taxonomy controls, and system health.
+            Real-time platform metrics, user moderation, taxonomy controls, and
+            system health.
           </p>
         </div>
 
@@ -199,9 +224,11 @@ export default function AdminDashboardPage() {
             disabled={isLoading}
             className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
           >
-            <RefreshCw
-              className={`h-3.5 w-3.5 ${isLoading ? "animate-spin text-purple-600" : ""}`}
-            />
+            {isLoading ? (
+              <Spinner size="sm" className="text-purple-600" />
+            ) : (
+              <RefreshCw className="h-3.5 w-3.5" />
+            )}
             Refresh Telemetry
           </Button>
 
@@ -257,7 +284,8 @@ export default function AdminDashboardPage() {
                   Platform Growth & Inflow
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Monthly candidate signups, recruiter onboarding, and job vacancies posted.
+                  Monthly candidate signups, recruiter onboarding, and job
+                  vacancies posted.
                 </p>
               </div>
 

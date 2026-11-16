@@ -4,6 +4,7 @@ import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
 import RoleSelector, { RoleType } from "@/components/auth/RoleSelector";
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -20,7 +21,6 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  Loader2,
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
@@ -225,7 +225,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Spinner size="sm" className="mr-2" />
                 Creating Account...
               </>
             ) : (

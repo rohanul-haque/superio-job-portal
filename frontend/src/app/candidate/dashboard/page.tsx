@@ -1,9 +1,12 @@
 "use client";
 
 import ApplicationActivityChart from "@/components/candidate/ApplicationActivityChart";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import candidateService from "@/services/candidate.service";
 import type { ICandidateDashboardStats } from "@/types/candidate";
@@ -14,7 +17,6 @@ import {
   CheckCircle2,
   Clock,
   FileText,
-  Loader2,
   RefreshCw,
   Sparkles,
   ThumbsDown,
@@ -26,7 +28,9 @@ import { toast } from "sonner";
 
 export default function CandidateDashboardOverviewPage() {
   const { user } = useAuth();
-  const [statsData, setStatsData] = useState<ICandidateDashboardStats | null>(null);
+  const [statsData, setStatsData] = useState<ICandidateDashboardStats | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchStats = useCallback(async () => {
@@ -110,37 +114,49 @@ export default function CandidateDashboardOverviewPage() {
     switch (status) {
       case "Pending":
         return (
-          <Badge className={`bg-amber-50 text-amber-700 border-amber-200 ${baseBadgeClasses}`}>
+          <Badge
+            className={`bg-amber-50 text-amber-700 border-amber-200 ${baseBadgeClasses}`}
+          >
             Pending
           </Badge>
         );
       case "Shortlisted":
         return (
-          <Badge className={`bg-purple-50 text-purple-700 border-purple-200 ${baseBadgeClasses}`}>
+          <Badge
+            className={`bg-purple-50 text-purple-700 border-purple-200 ${baseBadgeClasses}`}
+          >
             Shortlisted
           </Badge>
         );
       case "Accepted":
         return (
-          <Badge className={`bg-emerald-50 text-emerald-700 border-emerald-200 ${baseBadgeClasses}`}>
+          <Badge
+            className={`bg-emerald-50 text-emerald-700 border-emerald-200 ${baseBadgeClasses}`}
+          >
             Accepted
           </Badge>
         );
       case "Rejected":
         return (
-          <Badge className={`bg-red-50 text-red-700 border-red-200 ${baseBadgeClasses}`}>
+          <Badge
+            className={`bg-red-50 text-red-700 border-red-200 ${baseBadgeClasses}`}
+          >
             Rejected
           </Badge>
         );
       case "Withdrawn":
         return (
-          <Badge className={`bg-slate-100 text-slate-600 border-slate-200 ${baseBadgeClasses}`}>
+          <Badge
+            className={`bg-slate-100 text-slate-600 border-slate-200 ${baseBadgeClasses}`}
+          >
             Withdrawn
           </Badge>
         );
       default:
         return (
-          <Badge className={`bg-slate-100 text-slate-700 border-slate-200 ${baseBadgeClasses}`}>
+          <Badge
+            className={`bg-slate-100 text-slate-700 border-slate-200 ${baseBadgeClasses}`}
+          >
             {status}
           </Badge>
         );
@@ -150,7 +166,10 @@ export default function CandidateDashboardOverviewPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       {/* Resume Guard Notice (If candidate hasn't uploaded a resume) */}
-      {!(user?.resume && (typeof user.resume === "object" ? user.resume.url : user.resume)) && (
+      {!(
+        user?.resume &&
+        (typeof user.resume === "object" ? user.resume.url : user.resume)
+      ) && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50/80 p-5 shadow-xs">
           <div className="flex items-start gap-3.5">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
@@ -161,12 +180,17 @@ export default function CandidateDashboardOverviewPage() {
                 Resume Required to Apply
               </h4>
               <p className="mt-0.5 text-xs text-amber-800">
-                You haven&apos;t uploaded your resume yet. Superio enforces the Resume Guard rule: all applications require an active PDF resume on file.
+                You haven&apos;t uploaded your resume yet. Superio enforces the
+                Resume Guard rule: all applications require an active PDF resume
+                on file.
               </p>
             </div>
           </div>
           <Link href="/candidate/dashboard/profile" className="shrink-0">
-            <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white text-xs">
+            <Button
+              size="sm"
+              className="bg-amber-600 hover:bg-amber-700 text-white text-xs"
+            >
               <FileText className="mr-1.5 h-3.5 w-3.5" />
               Upload PDF Resume
             </Button>
@@ -183,7 +207,8 @@ export default function CandidateDashboardOverviewPage() {
             </h2>
           </div>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">
-            Here is your job application status and performance analytics for today.
+            Here is your job application status and performance analytics for
+            today.
           </p>
         </div>
 
@@ -195,13 +220,18 @@ export default function CandidateDashboardOverviewPage() {
             disabled={isLoading}
             className="text-xs border-slate-200"
           >
-            <RefreshCw
-              className={`mr-1.5 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`}
-            />
+            {isLoading ? (
+              <Spinner size="sm" className="mr-1.5" />
+            ) : (
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+            )}
             Refresh
           </Button>
           <Link href="/candidate/dashboard/applied-jobs">
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
+            <Button
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
+            >
               View All Applications
             </Button>
           </Link>
@@ -228,7 +258,7 @@ export default function CandidateDashboardOverviewPage() {
               <div className="mt-4">
                 <div className="text-2xl font-black text-slate-900">
                   {isLoading ? (
-                    <div className="h-8 w-12 animate-pulse rounded bg-slate-100" />
+                    <Skeleton className="h-8 w-14 rounded" />
                   ) : (
                     card.value
                   )}
@@ -249,7 +279,10 @@ export default function CandidateDashboardOverviewPage() {
       <ApplicationActivityChart data={statsData?.activityChart || []} />
 
       {/* Recent Applications Section */}
-      <Card id="recent-applicant-applications" className="border-slate-200 shadow-xs overflow-hidden">
+      <Card
+        id="recent-applicant-applications"
+        className="border-slate-200 shadow-xs overflow-hidden"
+      >
         <div className="flex items-center justify-between border-b border-slate-100 p-5">
           <div>
             <h3 className="text-sm font-bold text-slate-900">
@@ -270,21 +303,27 @@ export default function CandidateDashboardOverviewPage() {
 
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center p-12">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-              <p className="mt-2 text-xs text-slate-500">Loading recent applications...</p>
+            <div className="p-5">
+              <TableSkeleton rows={5} columns={4} />
             </div>
-          ) : !statsData?.recentApplications || statsData.recentApplications.length === 0 ? (
+          ) : !statsData?.recentApplications ||
+            statsData.recentApplications.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                 <Briefcase className="h-6 w-6" />
               </div>
-              <p className="mt-3 text-xs font-bold text-slate-800">No applications submitted yet</p>
+              <p className="mt-3 text-xs font-bold text-slate-800">
+                No applications submitted yet
+              </p>
               <p className="mt-1 text-xs text-slate-400 max-w-sm">
-                Explore available vacancies on Superio and start submitting applications.
+                Explore available vacancies on Superio and start submitting
+                applications.
               </p>
               <Link href="/all-jobs" className="mt-4">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs">
+                <Button
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-xs"
+                >
                   Browse Active Jobs
                 </Button>
               </Link>
@@ -303,7 +342,10 @@ export default function CandidateDashboardOverviewPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
                   {statsData.recentApplications.map((app) => (
-                    <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
+                    <tr
+                      key={app.id}
+                      className="hover:bg-slate-50/80 transition-colors"
+                    >
                       <td className="py-3.5 px-5 font-bold text-slate-900">
                         {app.job.title}
                         <div className="text-[11px] font-normal text-slate-400">

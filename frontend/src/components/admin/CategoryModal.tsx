@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import categoryService from "@/services/category.service";
 import type { ICategory } from "@/types/category";
 import {
@@ -10,7 +11,6 @@ import {
   CheckCircle2,
   FolderPlus,
   ImageIcon,
-  Loader2,
   Pencil,
   Trash2,
   Upload,
@@ -408,7 +408,7 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  <Spinner size="sm" className="mr-2" />
                   {isEditMode ? "Updating..." : "Creating..."}
                 </>
               ) : isEditMode ? (

@@ -4,6 +4,7 @@ import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
 import RoleSelector, { RoleType } from "@/components/auth/RoleSelector";
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -15,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
-import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
+import { AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
@@ -242,7 +243,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Spinner size="sm" className="mr-2" />
                   Signing in...
                 </>
               ) : (

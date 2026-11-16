@@ -1,8 +1,10 @@
 "use client";
 
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import adminService from "@/services/admin.service";
 import type { ITrashItem } from "@/types/admin";
 import {
@@ -11,7 +13,6 @@ import {
   Briefcase,
   Building2,
   FolderTree,
-  Loader2,
   RefreshCw,
   RotateCcw,
   Trash2,
@@ -147,9 +148,11 @@ export default function AdminTrashCenterPage() {
           disabled={isLoading}
           className="gap-2 self-start sm:self-auto border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
         >
-          <RefreshCw
-            className={`h-3.5 w-3.5 ${isLoading ? "animate-spin text-purple-600" : ""}`}
-          />
+          {isLoading ? (
+            <Spinner size="sm" className="text-purple-600" />
+          ) : (
+            <RefreshCw className="h-3.5 w-3.5" />
+          )}
           Refresh Trash
         </Button>
       </div>
@@ -181,11 +184,8 @@ export default function AdminTrashCenterPage() {
       <Card className="border-slate-200 shadow-xs">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-purple-600 mb-3" />
-              <p className="text-sm font-medium text-slate-600">
-                Scanning trash registry...
-              </p>
+            <div className="p-6">
+              <TableSkeleton rows={5} columns={5} />
             </div>
           ) : trashItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
@@ -266,7 +266,7 @@ export default function AdminTrashCenterPage() {
                               className="gap-1.5 rounded-xl bg-purple-600 text-white hover:bg-purple-700 text-xs font-bold shadow-xs"
                             >
                               {isBusy ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                <Spinner size="sm" />
                               ) : (
                                 <RotateCcw className="h-3.5 w-3.5" />
                               )}
@@ -345,7 +345,7 @@ export default function AdminTrashCenterPage() {
               >
                 {actionLoadingId ? (
                   <>
-                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    <Spinner size="sm" className="mr-1.5" />
                     Purging...
                   </>
                 ) : (

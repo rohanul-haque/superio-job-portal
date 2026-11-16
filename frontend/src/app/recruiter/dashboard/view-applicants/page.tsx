@@ -1,11 +1,13 @@
 "use client";
 
 import { CandidateProfileModal } from "@/components/recruiter/CandidateProfileModal";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Select,
   SelectContent,
@@ -24,7 +26,6 @@ import {
   Eye,
   FileText,
   Filter,
-  Loader2,
   MapPin,
   Search,
   Sparkles,
@@ -292,11 +293,8 @@ function RecruiterApplicantsContent() {
       <Card className="border-slate-200 shadow-xs">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-3" />
-              <p className="text-sm font-medium text-slate-600">
-                Loading applicant records...
-              </p>
+            <div className="p-5">
+              <TableSkeleton rows={5} columns={5} />
             </div>
           ) : filteredApplicants.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
@@ -446,7 +444,7 @@ function RecruiterApplicantsContent() {
                                   </SelectContent>
                                 </Select>
                                 {isMutating && (
-                                  <Loader2 className="absolute right-2 top-2 h-4 w-4 animate-spin text-indigo-600 pointer-events-none" />
+                                  <Spinner size="sm" className="absolute right-2 top-2 pointer-events-none text-indigo-600" />
                                 )}
                               </div>
                             )}
@@ -488,11 +486,10 @@ export default function RecruiterViewApplicantsPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-3" />
-          <p className="text-sm font-medium text-slate-600">
-            Loading applicants dashboard...
-          </p>
+        <div className="space-y-6">
+          <div className="p-6 bg-white rounded-2xl border border-slate-200">
+            <TableSkeleton rows={6} columns={6} />
+          </div>
         </div>
       }
     >

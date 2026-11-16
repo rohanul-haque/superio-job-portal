@@ -1,9 +1,11 @@
 "use client";
 
+import { ProfileSkeleton } from "@/components/shared/skeletons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Select,
   SelectContent,
@@ -19,7 +21,6 @@ import {
   Camera,
   CheckCircle2,
   Globe,
-  Loader2,
   Mail,
   MapPin,
   RefreshCw,
@@ -200,14 +201,7 @@ export default function RecruiterCompanyProfilePage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <Loader2 className="h-9 w-9 animate-spin text-indigo-600 mb-3" />
-        <p className="text-sm font-medium text-slate-600">
-          Loading company profile...
-        </p>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return (
@@ -538,7 +532,7 @@ export default function RecruiterCompanyProfilePage() {
           >
             {isSaving ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Spinner size="sm" className="mr-2" />
                 Saving Changes...
               </>
             ) : (

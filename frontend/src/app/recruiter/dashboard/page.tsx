@@ -2,10 +2,13 @@
 
 import ApplicantInflowChart from "@/components/recruiter/ApplicantInflowChart";
 import CandidateProfileModal from "@/components/recruiter/CandidateProfileModal";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import recruiterService from "@/services/recruiter.service";
 import type {
@@ -19,7 +22,6 @@ import {
   Clock,
   Eye,
   FileText,
-  Loader2,
   PlusCircle,
   RefreshCw,
   Sparkles,
@@ -198,9 +200,11 @@ export default function RecruiterDashboardOverviewPage() {
             disabled={isLoading}
             className="text-xs border-slate-200"
           >
-            <RefreshCw
-              className={`mr-1.5 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`}
-            />
+            {isLoading ? (
+              <Spinner size="sm" className="mr-1.5" />
+            ) : (
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+            )}
             Refresh
           </Button>
 
@@ -233,7 +237,7 @@ export default function RecruiterDashboardOverviewPage() {
               <div className="mt-4">
                 <div className="text-2xl font-black text-slate-900">
                   {isLoading ? (
-                    <div className="h-8 w-12 animate-pulse rounded bg-slate-100" />
+                    <Skeleton className="h-8 w-14 rounded" />
                   ) : (
                     card.value
                   )}
@@ -279,9 +283,8 @@ export default function RecruiterDashboardOverviewPage() {
 
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center p-12">
-              <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
-              <p className="mt-2 text-xs text-slate-500">Loading applicant pipeline...</p>
+            <div className="p-5">
+              <TableSkeleton rows={5} columns={4} />
             </div>
           ) : !statsData?.recentApplicants || statsData.recentApplicants.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center">

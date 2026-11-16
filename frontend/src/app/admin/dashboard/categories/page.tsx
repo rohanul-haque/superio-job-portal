@@ -1,10 +1,12 @@
 "use client";
 
 import CategoryModal from "@/components/admin/CategoryModal";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import categoryService from "@/services/category.service";
 import type { ICategory } from "@/types/category";
 import {
@@ -14,7 +16,6 @@ import {
   Filter,
   FolderPlus,
   ImageIcon,
-  Loader2,
   Pencil,
   RefreshCw,
   Search,
@@ -124,9 +125,11 @@ export default function AdminCategoriesPage() {
             disabled={isLoading}
             className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
           >
-            <RefreshCw
-              className={`h-3.5 w-3.5 ${isLoading ? "animate-spin text-purple-600" : ""}`}
-            />
+            {isLoading ? (
+              <Spinner size="sm" className="text-purple-600" />
+            ) : (
+              <RefreshCw className="h-3.5 w-3.5" />
+            )}
             Refresh Categories
           </Button>
 
@@ -198,11 +201,8 @@ export default function AdminCategoriesPage() {
         <Card className="border-slate-200 shadow-sm overflow-hidden">
           <CardContent className="p-0">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center p-16 text-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                <p className="mt-3 text-xs font-medium text-slate-500">
-                  Loading categories...
-                </p>
+              <div className="p-6">
+                <TableSkeleton rows={5} columns={5} />
               </div>
             ) : categories.length === 0 ? (
               <div className="flex flex-col items-center justify-center p-16 text-center">
@@ -391,7 +391,7 @@ export default function AdminCategoriesPage() {
                 >
                   {deletingId ? (
                     <>
-                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                      <Spinner size="sm" className="mr-1.5" />
                       Deleting...
                     </>
                   ) : (

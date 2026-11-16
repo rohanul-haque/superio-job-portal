@@ -1,14 +1,15 @@
 "use client";
 
+import { JobCardSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import bookmarkService from "@/services/bookmark.service";
 import type { IBookmark } from "@/types/bookmark";
 import {
   Bookmark,
   Briefcase,
-  Loader2,
   MapPin,
   RefreshCw,
   Search,
@@ -89,9 +90,11 @@ export default function CandidateSavedJobsPage() {
             disabled={isLoading}
             className="text-xs border-slate-200"
           >
-            <RefreshCw
-              className={`mr-1.5 h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`}
-            />
+            {isLoading ? (
+              <Spinner size="sm" className="mr-1.5" />
+            ) : (
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+            )}
             Refresh
           </Button>
           <Link href="/all-jobs">
@@ -120,11 +123,10 @@ export default function CandidateSavedJobsPage() {
 
       {/* Bookmarks Grid / Cards */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center p-16 text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <p className="mt-3 text-xs font-medium text-slate-500">
-            Loading saved jobs...
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <JobCardSkeleton key={i} />
+          ))}
         </div>
       ) : filteredBookmarks.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center">
@@ -193,7 +195,7 @@ export default function CandidateSavedJobsPage() {
                       title="Remove bookmark"
                     >
                       {removingId === job.id ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <Spinner size="sm" />
                       ) : (
                         <Trash2 className="h-3.5 w-3.5" />
                       )}

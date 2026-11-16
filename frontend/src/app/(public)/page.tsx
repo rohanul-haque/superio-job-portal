@@ -7,6 +7,7 @@ import HeroSearch from "@/components/home/HeroSearch";
 import Testimonials from "@/components/home/Testimonials";
 import TrustedByCarousel from "@/components/home/TrustedByCarousel";
 import JobCard from "@/components/jobs/JobCard";
+import { JobCardSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import categoryService from "@/services/category.service";
@@ -134,10 +135,7 @@ export default function HomePage() {
         {isLoadingJobs ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-60 animate-pulse rounded-2xl border border-[#E5E7EB] bg-slate-50 p-6"
-              />
+              <JobCardSkeleton key={i} />
             ))}
           </div>
         ) : jobs.length > 0 ? (

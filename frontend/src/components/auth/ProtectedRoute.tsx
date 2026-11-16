@@ -1,8 +1,9 @@
 "use client";
 
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import type { UserRole } from "@/types/auth";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -81,7 +82,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Spinner size="lg" className="text-[#4F46E5]" />
         <p className="text-sm font-medium text-slate-500">
           Verifying security credentials...
         </p>

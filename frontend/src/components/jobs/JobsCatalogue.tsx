@@ -1,6 +1,7 @@
 "use client";
 
 import JobCard from "@/components/jobs/JobCard";
+import { JobCardSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,14 +61,25 @@ export const JobsCatalogue: React.FC = () => {
   const searchParams = useSearchParams();
 
   // URL Query State
-  const initialKeyword = searchParams.get("keyword") || searchParams.get("search") || "";
-  const initialCategory = searchParams.get("category") || searchParams.get("categoryId") || "";
+  const initialKeyword =
+    searchParams.get("keyword") || searchParams.get("search") || "";
+  const initialCategory =
+    searchParams.get("category") || searchParams.get("categoryId") || "";
   const initialLocation = searchParams.get("location") || "";
-  const initialJobType = searchParams.get("jobType") ? searchParams.get("jobType")!.split(",") : [];
-  const initialLevel = searchParams.get("level") ? searchParams.get("level")!.split(",") : [];
+  const initialJobType = searchParams.get("jobType")
+    ? searchParams.get("jobType")!.split(",")
+    : [];
+  const initialLevel = searchParams.get("level")
+    ? searchParams.get("level")!.split(",")
+    : [];
   const initialMinSalary = searchParams.get("minSalary") || "";
   const initialMaxSalary = searchParams.get("maxSalary") || "";
-  const initialSortBy = (searchParams.get("sortBy") as "newest" | "salary_desc" | "salary_asc" | "deadline") || "newest";
+  const initialSortBy =
+    (searchParams.get("sortBy") as
+      | "newest"
+      | "salary_desc"
+      | "salary_asc"
+      | "deadline") || "newest";
   const initialPage = Number(searchParams.get("page")) || 1;
 
   // Local Filter State
@@ -79,11 +91,14 @@ export const JobsCatalogue: React.FC = () => {
     initialLocation ? [initialLocation] : [],
   );
   const [customLocation, setCustomLocation] = useState("");
-  const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>(initialJobType);
+  const [selectedJobTypes, setSelectedJobTypes] =
+    useState<string[]>(initialJobType);
   const [selectedLevels, setSelectedLevels] = useState<string[]>(initialLevel);
   const [minSalary, setMinSalary] = useState(initialMinSalary);
   const [maxSalary, setMaxSalary] = useState(initialMaxSalary);
-  const [sortBy, setSortBy] = useState<"newest" | "salary_desc" | "salary_asc" | "deadline">(initialSortBy);
+  const [sortBy, setSortBy] = useState<
+    "newest" | "salary_desc" | "salary_asc" | "deadline"
+  >(initialSortBy);
   const [page, setPage] = useState(initialPage);
 
   // Data & Loading State
@@ -102,7 +117,9 @@ export const JobsCatalogue: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const catRes = await categoryService.getAllCategories({ isActive: "true" });
+        const catRes = await categoryService.getAllCategories({
+          isActive: "true",
+        });
         setCategories(catRes || []);
       } catch (err) {
         console.error("Failed to fetch categories:", err);
@@ -123,17 +140,25 @@ export const JobsCatalogue: React.FC = () => {
       };
 
       if (keyword.trim()) params.keyword = keyword.trim();
-      if (selectedCategories.length > 0) params.category = selectedCategories.join(",");
-      
+      if (selectedCategories.length > 0)
+        params.category = selectedCategories.join(",");
+
       const activeLocations = [...selectedLocations];
-      if (customLocation.trim() && !activeLocations.includes(customLocation.trim())) {
+      if (
+        customLocation.trim() &&
+        !activeLocations.includes(customLocation.trim())
+      ) {
         activeLocations.push(customLocation.trim());
       }
-      if (activeLocations.length > 0) params.location = activeLocations.join(",");
-      if (selectedJobTypes.length > 0) params.jobType = selectedJobTypes.join(",");
+      if (activeLocations.length > 0)
+        params.location = activeLocations.join(",");
+      if (selectedJobTypes.length > 0)
+        params.jobType = selectedJobTypes.join(",");
       if (selectedLevels.length > 0) params.level = selectedLevels.join(",");
-      if (minSalary && !isNaN(Number(minSalary))) params.minSalary = Number(minSalary);
-      if (maxSalary && !isNaN(Number(maxSalary))) params.maxSalary = Number(maxSalary);
+      if (minSalary && !isNaN(Number(minSalary)))
+        params.minSalary = Number(minSalary);
+      if (maxSalary && !isNaN(Number(maxSalary)))
+        params.maxSalary = Number(maxSalary);
 
       const res = await jobService.getAllJobs(params);
       setJobs(res.jobs);
@@ -165,11 +190,15 @@ export const JobsCatalogue: React.FC = () => {
   const updateUrl = useCallback(() => {
     const params = new URLSearchParams();
     if (keyword.trim()) params.set("keyword", keyword.trim());
-    if (selectedCategories.length > 0) params.set("category", selectedCategories.join(","));
-    if (selectedLocations.length > 0) params.set("location", selectedLocations.join(","));
+    if (selectedCategories.length > 0)
+      params.set("category", selectedCategories.join(","));
+    if (selectedLocations.length > 0)
+      params.set("location", selectedLocations.join(","));
     if (customLocation.trim()) params.set("location", customLocation.trim());
-    if (selectedJobTypes.length > 0) params.set("jobType", selectedJobTypes.join(","));
-    if (selectedLevels.length > 0) params.set("level", selectedLevels.join(","));
+    if (selectedJobTypes.length > 0)
+      params.set("jobType", selectedJobTypes.join(","));
+    if (selectedLevels.length > 0)
+      params.set("level", selectedLevels.join(","));
     if (minSalary) params.set("minSalary", minSalary);
     if (maxSalary) params.set("maxSalary", maxSalary);
     if (sortBy !== "newest") params.set("sortBy", sortBy);
@@ -199,7 +228,9 @@ export const JobsCatalogue: React.FC = () => {
   const handleToggleCategory = (catId: string) => {
     setPage(1);
     setSelectedCategories((prev) =>
-      prev.includes(catId) ? prev.filter((id) => id !== catId) : [...prev, catId],
+      prev.includes(catId)
+        ? prev.filter((id) => id !== catId)
+        : [...prev, catId],
     );
   };
 
@@ -316,7 +347,9 @@ export const JobsCatalogue: React.FC = () => {
                     onChange={() => handleToggleCategory(cat.id)}
                     className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                   />
-                  <span className={isChecked ? "font-semibold text-[#4F46E5]" : ""}>
+                  <span
+                    className={isChecked ? "font-semibold text-[#4F46E5]" : ""}
+                  >
                     {cat.name}
                   </span>
                 </div>
@@ -346,7 +379,9 @@ export const JobsCatalogue: React.FC = () => {
                   onChange={() => handleToggleJobType(type)}
                   className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
-                <span className={isChecked ? "font-semibold text-[#4F46E5]" : ""}>
+                <span
+                  className={isChecked ? "font-semibold text-[#4F46E5]" : ""}
+                >
                   {type}
                 </span>
               </label>
@@ -374,7 +409,9 @@ export const JobsCatalogue: React.FC = () => {
                   onChange={() => handleToggleLevel(level)}
                   className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
-                <span className={isChecked ? "font-semibold text-[#4F46E5]" : ""}>
+                <span
+                  className={isChecked ? "font-semibold text-[#4F46E5]" : ""}
+                >
                   {level}
                 </span>
               </label>
@@ -402,7 +439,9 @@ export const JobsCatalogue: React.FC = () => {
                   onChange={() => handleToggleLocation(loc)}
                   className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
-                <span className={isChecked ? "font-semibold text-[#4F46E5]" : ""}>
+                <span
+                  className={isChecked ? "font-semibold text-[#4F46E5]" : ""}
+                >
                   {loc}
                 </span>
               </label>
@@ -466,7 +505,8 @@ export const JobsCatalogue: React.FC = () => {
             Explore Open Opportunities
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Showing {meta.total} {meta.total === 1 ? "vacancy" : "vacancies"} matching your criteria
+            Showing {meta.total} {meta.total === 1 ? "vacancy" : "vacancies"}{" "}
+            matching your criteria
           </p>
         </div>
 
@@ -486,7 +526,7 @@ export const JobsCatalogue: React.FC = () => {
               value={sortBy}
               onValueChange={(val) => {
                 setSortBy(
-                  val as "newest" | "salary_desc" | "salary_asc" | "deadline"
+                  val as "newest" | "salary_desc" | "salary_asc" | "deadline",
                 );
                 setPage(1);
               }}
@@ -494,7 +534,9 @@ export const JobsCatalogue: React.FC = () => {
               <SelectTrigger className="h-10 rounded-full border border-[#E5E7EB] bg-white px-4 text-xs font-medium text-[#0F172A] shadow-none min-w-[190px]">
                 <div className="flex items-center gap-1.5">
                   <ArrowUpDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                  <span className="text-xs font-medium text-slate-500">Sort:</span>
+                  <span className="text-xs font-medium text-slate-500">
+                    Sort:
+                  </span>
                   <SelectValue />
                 </div>
               </SelectTrigger>
@@ -512,7 +554,9 @@ export const JobsCatalogue: React.FC = () => {
       {/* Active Filter Pills Bar */}
       {activeFilterCount > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-slate-500">Active filters:</span>
+          <span className="text-xs font-medium text-slate-500">
+            Active filters:
+          </span>
           {keyword && (
             <Badge
               variant="secondary"
@@ -617,10 +661,7 @@ export const JobsCatalogue: React.FC = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-64 animate-pulse rounded-2xl border border-slate-100 bg-slate-50 p-6"
-                />
+                <JobCardSkeleton key={i} />
               ))}
             </div>
           ) : jobs.length > 0 ? (
@@ -635,8 +676,14 @@ export const JobsCatalogue: React.FC = () => {
               {meta.totalPage > 1 && (
                 <div className="mt-8 flex items-center justify-between border-t border-slate-200 pt-6">
                   <p className="text-xs text-slate-500">
-                    Page <span className="font-bold text-slate-800">{meta.page}</span> of{" "}
-                    <span className="font-bold text-slate-800">{meta.totalPage}</span>
+                    Page{" "}
+                    <span className="font-bold text-slate-800">
+                      {meta.page}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-bold text-slate-800">
+                      {meta.totalPage}
+                    </span>
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -660,7 +707,9 @@ export const JobsCatalogue: React.FC = () => {
                           return (
                             <Button
                               key={pNum}
-                              variant={pNum === meta.page ? "default" : "outline"}
+                              variant={
+                                pNum === meta.page ? "default" : "outline"
+                              }
                               size="sm"
                               onClick={() => setPage(pNum)}
                               className={`h-8 w-8 p-0 text-xs rounded-full ${
@@ -675,7 +724,10 @@ export const JobsCatalogue: React.FC = () => {
                         }
                         if (pNum === meta.page - 2 || pNum === meta.page + 2) {
                           return (
-                            <span key={pNum} className="text-xs text-slate-400 px-1">
+                            <span
+                              key={pNum}
+                              className="text-xs text-slate-400 px-1"
+                            >
                               ...
                             </span>
                           );
@@ -687,7 +739,9 @@ export const JobsCatalogue: React.FC = () => {
                       variant="outline"
                       size="sm"
                       disabled={meta.page >= meta.totalPage}
-                      onClick={() => setPage((p) => Math.min(meta.totalPage, p + 1))}
+                      onClick={() =>
+                        setPage((p) => Math.min(meta.totalPage, p + 1))
+                      }
                       className="text-xs gap-1"
                     >
                       Next
@@ -704,8 +758,8 @@ export const JobsCatalogue: React.FC = () => {
                 No job postings found
               </h3>
               <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">
-                No active vacancies match your current filter parameters. Try loosening
-                your filters or search terms.
+                No active vacancies match your current filter parameters. Try
+                loosening your filters or search terms.
               </p>
               <div className="mt-5">
                 <Button
@@ -759,4 +813,3 @@ export const JobsCatalogue: React.FC = () => {
 };
 
 export default JobsCatalogue;
-

@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { authService } from "@/services/auth.service";
-import { CheckCircle2, Loader2, MailCheck, X } from "lucide-react";
+import { CheckCircle2, MailCheck, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -153,7 +154,7 @@ export const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
           >
             {isResending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Spinner size="sm" className="mr-2" />
                 Sending Verification Email...
               </>
             ) : (

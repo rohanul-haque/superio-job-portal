@@ -1,8 +1,10 @@
 "use client";
 
 import JobCard from "@/components/jobs/JobCard";
+import { JobDetailsSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import applicationService from "@/services/application.service";
 import bookmarkService from "@/services/bookmark.service";
@@ -21,7 +23,6 @@ import {
   DollarSign,
   ExternalLink,
   FileText,
-  Loader2,
   MapPin,
   Share2,
   ShieldCheck,
@@ -183,14 +184,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5]" />
-        <p className="text-sm font-medium text-slate-500">
-          Loading job details...
-        </p>
-      </div>
-    );
+    return <JobDetailsSkeleton />;
   }
 
   if (errorMessage || !job) {
@@ -685,7 +679,7 @@ export const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
               >
                 {isApplying ? (
                   <>
-                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    <Spinner size="sm" className="mr-2" />
                     Submitting...
                   </>
                 ) : (

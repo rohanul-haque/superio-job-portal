@@ -1,11 +1,13 @@
 "use client";
 
+import { ProfileSkeleton } from "@/components/shared/skeletons";
 import TiptapEditor from "@/components/shared/TiptapEditor";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Popover,
   PopoverContent,
@@ -32,7 +34,6 @@ import {
   CheckCircle2,
   DollarSign,
   Layers,
-  Loader2,
   MapPin,
   Pencil,
   Save,
@@ -227,16 +228,7 @@ export default function RecruiterEditJobPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-          <p className="text-xs text-slate-500 font-medium">
-            Loading job details...
-          </p>
-        </div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return (
@@ -273,7 +265,7 @@ export default function RecruiterEditJobPage() {
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              <Spinner size="sm" className="mr-1.5" />
               Saving Changes...
             </>
           ) : (

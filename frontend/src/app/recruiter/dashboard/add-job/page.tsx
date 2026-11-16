@@ -5,6 +5,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Popover,
   PopoverContent,
@@ -30,7 +31,6 @@ import {
   CheckCircle2,
   DollarSign,
   Layers,
-  Loader2,
   MapPin,
   PlusCircle,
   Sparkles,
@@ -543,7 +543,7 @@ export default function RecruiterAddJobPage() {
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" className="mr-1.5" />
                 Publishing Vacancy...
               </>
             ) : (

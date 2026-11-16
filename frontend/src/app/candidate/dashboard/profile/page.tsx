@@ -1,11 +1,13 @@
 "use client";
 
+import { ProfileSkeleton } from "@/components/shared/skeletons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
 import candidateService from "@/services/candidate.service";
 import type { ICandidateProfile } from "@/types/candidate";
@@ -15,7 +17,6 @@ import {
   CheckCircle2,
   ExternalLink,
   FileText,
-  Loader2,
   Plus,
   RefreshCw,
   Save,
@@ -249,14 +250,7 @@ export default function CandidateProfilePage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex h-96 flex-col items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <p className="mt-3 text-xs text-slate-500 font-medium">
-          Loading profile data...
-        </p>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   const currentResumeUrl =
@@ -321,7 +315,7 @@ export default function CandidateProfilePage() {
           >
             {isSaving ? (
               <>
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" className="mr-1.5" />
                 Saving...
               </>
             ) : (
@@ -775,7 +769,7 @@ export default function CandidateProfilePage() {
           >
             {isSaving ? (
               <>
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" className="mr-1.5" />
                 Saving...
               </>
             ) : (

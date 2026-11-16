@@ -1,7 +1,9 @@
 "use client";
 
+import { AuthCardSkeleton } from "@/components/shared/skeletons";
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -19,7 +21,6 @@ import {
   ArrowRight,
   CheckCircle2,
   KeyRound,
-  Loader2,
   Mail,
   MailCheck,
   RefreshCw,
@@ -166,7 +167,7 @@ function VerifyEmailContent() {
     return (
       <Card className="rounded-2xl border border-[#E5E7EB] bg-white shadow-none text-center p-8">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#4F46E5] mb-4">
-          <Loader2 className="h-7 w-7 animate-spin" />
+          <Spinner size="lg" />
         </div>
         <CardTitle className="text-xl font-bold text-[#0F172A]">
           Validating Email Verification...
@@ -274,7 +275,7 @@ function VerifyEmailContent() {
           >
             {isSubmittingCredentials ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Spinner size="sm" className="mr-2" />
                 Verifying Credentials...
               </>
             ) : (
@@ -319,7 +320,7 @@ function VerifyEmailContent() {
                   className="shrink-0 text-xs border-[#E5E7EB] rounded-full"
                 >
                   {isResending ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <Spinner size="sm" />
                   ) : (
                     "Send Email"
                   )}
@@ -344,14 +345,7 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense
-      fallback={
-        <Card className="rounded-2xl border border-[#E5E7EB] bg-white shadow-none text-center p-8">
-          <Loader2 className="mx-auto h-7 w-7 animate-spin text-[#4F46E5]" />
-          <p className="mt-2 text-sm text-slate-500">Loading verification...</p>
-        </Card>
-      }
-    >
+    <Suspense fallback={<AuthCardSkeleton />}>
       <VerifyEmailContent />
     </Suspense>
   );
