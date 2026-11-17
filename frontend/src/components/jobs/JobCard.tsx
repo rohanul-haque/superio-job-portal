@@ -2,31 +2,97 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
+import { useAuth } from "@/context/AuthContext";
+import { useCandidateJobState } from "@/context/CandidateJobStateContext";
 import type { IJob } from "@/types/job";
 import {
   ArrowRight,
+  Bookmark,
+  BookmarkCheck,
   Briefcase,
   Building2,
   Calendar,
+  CheckCircle2,
   Clock,
   DollarSign,
   MapPin,
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
 interface JobCardProps {
   job: IJob;
   featured?: boolean;
   actionLabel?: string;
+  hasApplied?: boolean;
+  isBookmarked?: boolean;
+  showBookmark?: boolean;
+  onBookmarkToggle?: (jobId: string) => void;
 }
 
 const JobCard: React.FC<JobCardProps> = ({
   job,
   featured = false,
   actionLabel = "View Details",
+  hasApplied: hasAppliedProp,
+  isBookmarked: isBookmarkedProp,
+  showBookmark = true,
+  onBookmarkToggle,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, isAuthenticated } = useAuth();
+  const {
+    hasAppliedToJob,
+    isJobBookmarked,
+    toggleBookmark: toggleCandidateBookmark,
+  } = useCandidateJobState();
+
+  const isApplied =
+    hasAppliedProp !== undefined
+      ? hasAppliedProp
+      : hasAppliedToJob(job.id);
+
+  const isSaved =
+    isBookmarkedProp !== undefined
+      ? isBookmarkedProp
+      : isJobBookmarked(job.id);
+
+  const handleBookmarkClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated || !user) {
+      toast.info("Please sign in to save this job to your bookmarks.");
+      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
+    if (user.role !== "candidate") {
+      toast.error("Only candidate accounts can bookmark jobs.");
+      return;
+    }
+
+    if (onBookmarkToggle) {
+      onBookmarkToggle(job.id);
+      return;
+    }
+
+    try {
+      const nextState = await toggleCandidateBookmark(job.id);
+      if (nextState) {
+        toast.success("Job saved to your bookmarks!");
+      } else {
+        toast.info("Job removed from bookmarks.");
+      }
+    } catch {
+      toast.error("Failed to update bookmark.");
+    }
+  };
+
   const formatSalary = (amount: number) => {
     if (amount >= 1000) {
       return `$${(amount / 1000).toFixed(0)}k/mo`;
@@ -89,14 +155,35 @@ const JobCard: React.FC<JobCardProps> = ({
             </div>
           </div>
 
-          <Badge
-            variant="outline"
-            className={`text-xs px-2.5 py-0.5 font-medium shrink-0 ${getJobTypeColor(
-              job.jobType,
-            )}`}
-          >
-            {job.jobType}
-          </Badge>
+          <div className="flex items-center gap-2 shrink-0">
+            {showBookmark && (
+              <button
+                type="button"
+                onClick={handleBookmarkClick}
+                className={`flex h-8 w-8 items-center justify-center rounded-xl border transition cursor-pointer ${
+                  isSaved
+                    ? "border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100"
+                    : "border-[#E5E7EB] bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                }`}
+                title={isSaved ? "Saved to bookmarks" : "Save to bookmarks"}
+                aria-label={isSaved ? "Remove bookmark" : "Add bookmark"}
+              >
+                {isSaved ? (
+                  <BookmarkCheck className="h-4 w-4 text-amber-600 fill-amber-600" />
+                ) : (
+                  <Bookmark className="h-4 w-4" />
+                )}
+              </button>
+            )}
+            <Badge
+              variant="outline"
+              className={`text-xs px-2.5 py-0.5 font-medium shrink-0 ${getJobTypeColor(
+                job.jobType,
+              )}`}
+            >
+              {job.jobType}
+            </Badge>
+          </div>
         </div>
 
         {/* Location & Meta info */}
@@ -145,13 +232,24 @@ const JobCard: React.FC<JobCardProps> = ({
             <Button
               size="sm"
               className={`h-9 px-4 text-xs font-medium rounded-full cursor-pointer transition ${
-                isOngoing
-                  ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
-                  : "bg-slate-100 hover:bg-slate-200 text-[#0F172A]"
+                isApplied
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                  : isOngoing
+                    ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                    : "bg-slate-100 hover:bg-slate-200 text-[#0F172A]"
               }`}
             >
-              {actionLabel}
-              <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+              {isApplied ? (
+                <>
+                  <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+                  Already Applied
+                </>
+              ) : (
+                <>
+                  {actionLabel}
+                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                </>
+              )}
             </Button>
           </Link>
         </div>

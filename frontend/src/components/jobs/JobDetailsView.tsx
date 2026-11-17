@@ -7,9 +7,9 @@ import JobDetailsSidebar from "./details/JobDetailsSidebar";
 import { JobDetailsSkeleton } from "@/components/loaders/skeleton/JobListSkeleton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useCandidateJobState } from "@/context/CandidateJobStateContext";
 import type { IJob } from "@/interfaces/job.interface";
 import { applyJob } from "@/services/application.service";
-import { toggleBookmark } from "@/services/bookmark.service";
 import { getJobById } from "@/services/job.service";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
@@ -25,15 +25,21 @@ const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuth();
+  const {
+    isJobBookmarked,
+    hasAppliedToJob,
+    toggleBookmark: toggleCandidateBookmark,
+    recordApplication,
+  } = useCandidateJobState();
 
   const [job, setJob] = useState<IJob | null>(null);
   const [similarJobs, setSimilarJobs] = useState<IJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Interaction State
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [hasApplied, setHasApplied] = useState(false);
+  // Interaction State backed by Candidate Job State context & server truth
+  const isBookmarked = isJobBookmarked(id);
+  const hasApplied = hasAppliedToJob(id);
   const [isApplying, setIsApplying] = useState(false);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isResumeWarningOpen, setIsResumeWarningOpen] = useState(false);
@@ -62,16 +68,19 @@ const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
   }, [id]);
 
   const handleBookmarkToggle = async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       toast.info("Please sign in to save this job to your bookmarks.");
       router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
       return;
     }
 
+    if (user.role !== "candidate") {
+      toast.error("Only candidate accounts can bookmark jobs.");
+      return;
+    }
+
     try {
-      const nextState = !isBookmarked;
-      setIsBookmarked(nextState);
-      await toggleBookmark(id);
+      const nextState = await toggleCandidateBookmark(id);
       if (nextState) {
         toast.success("Job saved to your bookmarks!");
       } else {
@@ -96,6 +105,11 @@ const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
       return;
     }
 
+    if (hasApplied) {
+      toast.info("You have already applied for this job.");
+      return;
+    }
+
     const resumeUrl =
       typeof user.resume === "object" ? user.resume?.url : user.resume;
     if (!resumeUrl || resumeUrl.trim() === "") {
@@ -110,7 +124,7 @@ const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
     setIsApplying(true);
     try {
       await applyJob(id);
-      setHasApplied(true);
+      recordApplication(id);
       setIsApplyModalOpen(false);
       toast.success("Application submitted successfully!", {
         description: "Your application has been received by the recruiter.",
@@ -121,11 +135,24 @@ const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
         err &&
         typeof err === "object" &&
         "response" in err &&
-        (err as { response?: { data?: { message?: string } } }).response?.data
-          ?.message
+        (err as { response?: { data?: { message?: string }; status?: number } })
+          .response
       ) {
-        message = (err as { response: { data: { message: string } } }).response
-          .data.message;
+        const resp = (
+          err as {
+            response: { data?: { message?: string }; status?: number };
+          }
+        ).response;
+        if (
+          resp?.status === 409 ||
+          resp?.data?.message?.toLowerCase().includes("already applied")
+        ) {
+          recordApplication(id);
+          setIsApplyModalOpen(false);
+        }
+        if (resp?.data?.message) {
+          message = resp.data.message;
+        }
       } else if (err instanceof Error) {
         message = err.message;
       }

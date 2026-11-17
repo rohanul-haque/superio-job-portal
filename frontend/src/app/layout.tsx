@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
+import { CandidateJobStateProvider } from "@/context/CandidateJobStateContext";
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
@@ -27,8 +28,10 @@ export default function RootLayout({
         className={`${outfit.className} min-h-screen bg-white text-slate-900 antialiased`}
       >
         <AuthProvider>
-          {children}
-          <Toaster position="bottom-right" richColors closeButton />
+          <CandidateJobStateProvider>
+            {children}
+            <Toaster position="bottom-right" richColors closeButton />
+          </CandidateJobStateProvider>
         </AuthProvider>
       </body>
     </html>

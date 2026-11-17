@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Input from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
+import { useCandidateJobState } from "@/context/CandidateJobStateContext";
 import type { IJobApplication } from "@/interfaces/application.interface";
 import {
   getMyApplications,
@@ -23,6 +24,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 function ApplicationList() {
+  const { refetchCandidateJobState } = useCandidateJobState();
   const [applications, setApplications] = useState<IJobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,7 +65,7 @@ function ApplicationList() {
         description: `Your application for "${applicationToWithdraw.job.title}" has been withdrawn.`,
       });
       setApplicationToWithdraw(null);
-      await fetchApplications();
+      await Promise.all([fetchApplications(), refetchCandidateJobState()]);
     } catch (err: unknown) {
       let msg = "Failed to withdraw application.";
       if (err instanceof Error) msg = err.message;

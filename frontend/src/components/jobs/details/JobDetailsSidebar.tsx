@@ -104,18 +104,18 @@ export default function JobDetailsSidebar({
         <Button
           onClick={onApplyClick}
           disabled={!isOngoing || hasApplied}
-          className={`w-full h-11 font-semibold text-xs sm:text-sm rounded-full shadow-none cursor-pointer ${
+          className={`w-full h-11 font-semibold text-xs sm:text-sm rounded-full shadow-none ${
             hasApplied
-              ? "bg-emerald-600 text-white"
+              ? "bg-emerald-600 text-white opacity-90 cursor-not-allowed"
               : isOngoing
-                ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white"
+                ? "bg-[#6366F1] hover:bg-[#4F46E5] text-white cursor-pointer"
                 : "bg-slate-200 text-slate-500 cursor-not-allowed"
           }`}
         >
           {hasApplied ? (
             <>
               <CheckCircle2 className="mr-2 h-4 w-4" />
-              Application Submitted
+              Already Applied
             </>
           ) : isOngoing ? (
             <>

@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
 import type { IBookmark } from "@/types/bookmark";
-import { getMyBookmarks, removeBookmark } from "@/services/bookmark.service";
+import { getMyBookmarks } from "@/services/bookmark.service";
+import { useCandidateJobState } from "@/context/CandidateJobStateContext";
 import { Bookmark, Briefcase, RefreshCw, Search } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 function SavedJobsList() {
+  const { removeBookmark: removeCandidateBookmark } = useCandidateJobState();
   const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,7 +41,7 @@ function SavedJobsList() {
   const handleRemoveBookmark = async (jobId: string) => {
     setRemovingId(jobId);
     try {
-      await removeBookmark(jobId);
+      await removeCandidateBookmark(jobId);
       toast.success("Bookmark removed", {
         description: "The job was removed from your saved list.",
       });
