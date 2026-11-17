@@ -2,10 +2,8 @@
 
 import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
 import RoleSelector from "@/components/auth/RoleSelector";
-import type { RoleType } from "@/types/auth";
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
-import Spinner from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -16,7 +14,9 @@ import {
 } from "@/components/ui/card";
 import Input from "@/components/ui/input";
 import Label from "@/components/ui/label";
+import Spinner from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
+import type { RoleType } from "@/types/auth";
 import { AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -52,9 +52,7 @@ const sanitizeReturnUrl = (url: string | null, fallback: string): string => {
   }
 };
 
-const LoginForm: React.FC<LoginFormProps> = ({
-  initialRole = "candidate",
-}) => {
+const LoginForm: React.FC<LoginFormProps> = ({ initialRole = "candidate" }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryRole = searchParams.get("role") as RoleType | null;

@@ -18,10 +18,26 @@ import {
   UserCheck,
 } from "lucide-react";
 import Link from "next/link";
+import React, { useMemo } from "react";
 
 export default function CandidateRecommendationsPage() {
   const { recommendations, meta, isLoading, error, refetch } =
     useCandidateRecommendations();
+
+  // Identify the highest matchScore among recommendations for best-match highlighting
+  const highestMatchScore = useMemo(() => {
+    if (!recommendations || recommendations.length === 0) return null;
+    const validScores = recommendations
+      .map((r) => r.matchScore)
+      .filter(
+        (score): score is number =>
+          typeof score === "number" &&
+          !Number.isNaN(score) &&
+          Number.isFinite(score) &&
+          score > 0,
+      );
+    return validScores.length > 0 ? Math.max(...validScores) : null;
+  }, [recommendations]);
 
   const getMatchScoreBadgeStyle = (score: number) => {
     if (score >= 85) {
@@ -208,79 +224,99 @@ export default function CandidateRecommendationsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {recommendations.map((rec: IJobRecommendation) => (
-              <div
-                key={rec.jobId}
-                className="flex flex-col rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs hover:border-[#6366F1]/50 transition-all duration-200"
-              >
-                {/* AI Recommendation Context Bar */}
-                <div className="bg-slate-50/90 border-b border-slate-100 p-4 space-y-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-[#6366F1] shrink-0" />
-                      <span className="text-xs font-bold text-slate-800">
-                        Match Score: {rec.matchScore}%
-                      </span>
+            {recommendations.map((rec: IJobRecommendation) => {
+              const isBestMatch =
+                highestMatchScore !== null &&
+                rec.matchScore === highestMatchScore;
+
+              return (
+                <div
+                  key={rec.jobId}
+                  className={`flex flex-col rounded-2xl border bg-white overflow-hidden shadow-xs transition-all duration-200 ${
+                    isBestMatch
+                      ? "border-[#6366F1] ring-1 ring-[#6366F1]/20"
+                      : "border-slate-200 hover:border-[#6366F1]/50"
+                  }`}
+                >
+                  {/* AI Recommendation Context Bar */}
+                  <div className="bg-slate-50/90 border-b border-slate-100 p-4 space-y-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-[#6366F1] shrink-0" />
+                        <span className="text-xs font-bold text-slate-800">
+                          Match Score: {rec.matchScore}%
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {isBestMatch && (
+                          <Badge
+                            variant="outline"
+                            className="bg-indigo-50 text-indigo-700 border-indigo-200 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          >
+                            Best Match
+                          </Badge>
+                        )}
+                        <Badge
+                          variant="outline"
+                          className={`text-[11px] font-semibold px-2.5 py-0.5 ${getMatchScoreBadgeStyle(
+                            rec.matchScore,
+                          )}`}
+                        >
+                          {rec.matchLevel}
+                        </Badge>
+                      </div>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={`text-[11px] font-semibold px-2.5 py-0.5 ${getMatchScoreBadgeStyle(
-                        rec.matchScore,
-                      )}`}
-                    >
-                      {rec.matchLevel}
-                    </Badge>
+
+                    {rec.reason && (
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        {rec.reason}
+                      </p>
+                    )}
+
+                    {rec.matchedSkills && rec.matchedSkills.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mr-1">
+                          Matched:
+                        </span>
+                        {rec.matchedSkills.slice(0, 5).map((skill, sIdx) => (
+                          <span
+                            key={sIdx}
+                            className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 border border-emerald-200"
+                          >
+                            <CheckCircle2 className="h-2.5 w-2.5 text-emerald-600" />
+                            {skill}
+                          </span>
+                        ))}
+                        {rec.missingSkills && rec.missingSkills.length > 0 && (
+                          <>
+                            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider ml-1 mr-1">
+                              Missing:
+                            </span>
+                            {rec.missingSkills.slice(0, 2).map((mSkill, mIdx) => (
+                              <span
+                                key={mIdx}
+                                className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 border border-slate-200"
+                              >
+                                {mSkill}
+                              </span>
+                            ))}
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  {rec.reason && (
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      {rec.reason}
-                    </p>
-                  )}
-
-                  {rec.matchedSkills && rec.matchedSkills.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mr-1">
-                        Matched:
-                      </span>
-                      {rec.matchedSkills.slice(0, 5).map((skill, sIdx) => (
-                        <span
-                          key={sIdx}
-                          className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 border border-emerald-200"
-                        >
-                          <CheckCircle2 className="h-2.5 w-2.5 text-emerald-600" />
-                          {skill}
-                        </span>
-                      ))}
-                      {rec.missingSkills && rec.missingSkills.length > 0 && (
-                        <>
-                          <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider ml-1 mr-1">
-                            Missing:
-                          </span>
-                          {rec.missingSkills.slice(0, 2).map((mSkill, mIdx) => (
-                            <span
-                              key={mIdx}
-                              className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 border border-slate-200"
-                            >
-                              {mSkill}
-                            </span>
-                          ))}
-                        </>
-                      )}
-                    </div>
-                  )}
+                  {/* Reused Existing Job Card Component */}
+                  <div className="p-2 sm:p-3 flex-1 flex flex-col justify-between">
+                    <JobCard
+                      job={rec.job}
+                      featured={isBestMatch}
+                      actionLabel="View Details & Apply"
+                    />
+                  </div>
                 </div>
-
-                {/* Reused Existing Job Card Component */}
-                <div className="p-2 sm:p-3 flex-1 flex flex-col justify-between">
-                  <JobCard
-                    job={rec.job}
-                    featured={rec.matchScore >= 85}
-                    actionLabel="View Details & Apply"
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -76,3 +76,71 @@ export interface IUpdateCompanyProfilePayload {
     facebook?: string;
   } | null;
 }
+
+export type CandidateMatchLevel =
+  | "Excellent Match"
+  | "Strong Match"
+  | "Good Match"
+  | "Moderate Match"
+  | "Weak Match"
+  | "Low Match";
+
+export interface IMatchedCandidateData {
+  id: string;
+  name: string;
+  email: string;
+  profilePicture?: {
+    url: string;
+    publicId: string;
+  } | null;
+  title: string;
+  bio: string;
+  skills: string[];
+  socialLinks?: Record<string, string> | null;
+  resume?: string;
+  createdAt: string;
+}
+
+export interface ICandidateMatch {
+  candidateId: string;
+  matchScore: number;
+  matchLevel: CandidateMatchLevel;
+  matchedSkills: string[];
+  missingSkills: string[];
+  reason: string;
+  candidate: IMatchedCandidateData;
+  matchedTechnicalSkills?: string[];
+  missingRequiredSkills?: string[];
+  matchedProfessionalSkills?: string[];
+  matchedPreferredSkills?: string[];
+  titleCompatibility?: number;
+  bioCompatibility?: number;
+  experienceCompatibility?: number;
+  qualificationCompatibility?: number;
+  responsibilityCompatibility?: number;
+  mandatoryRequirementsPassed?: boolean;
+  explanation?: string;
+  rejectionReasons?: string[];
+}
+
+export interface ICandidateMatchingResponseData {
+  jobId: string;
+  job: {
+    id: string;
+    title: string;
+    location: string;
+    level: string;
+    jobType: string;
+    hiringStatus: string;
+    category?: string;
+  };
+  matches: ICandidateMatch[];
+  meta: {
+    total: number;
+    cached: boolean;
+    evaluatedCount: number;
+    timestamp: string;
+    message?: string;
+  };
+}
+

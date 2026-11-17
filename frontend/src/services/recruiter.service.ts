@@ -3,6 +3,7 @@ import {
   deleteJob as deleteJobApi,
   getApplicants as getApplicantsApi,
   getDashboardStats as getDashboardStatsApi,
+  getMatchedCandidates as getMatchedCandidatesApi,
   getMyJobs as getMyJobsApi,
   getProfile as getProfileApi,
   updateApplicantStatus as updateApplicantStatusApi,
@@ -15,6 +16,7 @@ import type {
   IUpdateJobPayload,
 } from "@/interfaces/job.interface";
 import type {
+  ICandidateMatchingResponseData,
   ICompanyProfile,
   IRecruiterApplicant,
 } from "@/interfaces/recruiter.interface";
@@ -74,4 +76,12 @@ export const updateJob = async (
 
 export const deleteJob = async (id: string): Promise<void> => {
   await deleteJobApi(id);
+};
+
+export const getMatchedCandidates = async (
+  jobId: string,
+  refresh = false,
+): Promise<ICandidateMatchingResponseData> => {
+  const res = await getMatchedCandidatesApi(jobId, refresh);
+  return res.data.data;
 };

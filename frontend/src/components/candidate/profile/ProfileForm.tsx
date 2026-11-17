@@ -258,12 +258,15 @@ function ProfileForm({
             <Label className="text-xs font-bold text-slate-700">
               Curriculum Vitae / PDF Resume
             </Label>
-            <Badge className="bg-blue-100 text-blue-700 border-none text-[10px] font-semibold">
-              Resume Guard Guarded
+            <Badge
+              variant="outline"
+              className="bg-transparent text-blue-700 border-none text-[10px] font-semibold p-0 shadow-none"
+            >
+              Resume Guard
             </Badge>
           </div>
           <p className="text-[11px] text-slate-400">
-            Superio requires a verified PDF resume on file to unlock the &quot;Apply Now&quot; button across all employer postings.
+            HireNest requires a verified PDF resume on file to unlock the &quot;Apply Now&quot; button across all employer postings.
           </p>
         </div>
 

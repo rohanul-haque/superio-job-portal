@@ -48,8 +48,10 @@ export interface IUpdateCandidateProfilePayload {
 
 export type MatchLevel =
   | "Excellent Match"
+  | "Strong Match"
   | "Good Match"
   | "Moderate Match"
+  | "Weak Match"
   | "Low Match";
 
 export interface IJobRecommendation {
@@ -60,6 +62,18 @@ export interface IJobRecommendation {
   missingSkills: string[];
   reason: string;
   job: IJob;
+  matchedTechnicalSkills?: string[];
+  missingRequiredSkills?: string[];
+  matchedProfessionalSkills?: string[];
+  matchedPreferredSkills?: string[];
+  titleCompatibility?: number;
+  bioCompatibility?: number;
+  experienceCompatibility?: number;
+  qualificationCompatibility?: number;
+  responsibilityCompatibility?: number;
+  mandatoryRequirementsPassed?: boolean;
+  explanation?: string;
+  rejectionReasons?: string[];
 }
 
 export interface IRecommendationsResponseData {

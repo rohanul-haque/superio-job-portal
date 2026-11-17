@@ -49,7 +49,7 @@ const Logo: React.FC<LogoProps> = ({
         <span
           className={`${sizeClasses.text} font-bold tracking-tight text-[#0F172A] leading-tight`}
         >
-          Hire<span className="text-[#4F46E5]">nest</span>
+          Hire<span className="text-[#4F46E5]">Nest</span>
         </span>
         {subtitle && (
           <span

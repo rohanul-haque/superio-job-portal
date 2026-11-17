@@ -1,7 +1,5 @@
-import AIRecommendationsTeaser from "@/components/recruiter/recommendations/AIRecommendationsTeaser";
-import React from "react";
-
+import CandidateMatchingView from "@/components/recruiter/recommendations/CandidateMatchingView";
 
 export default function RecruiterRecommendationsPage() {
-  return <AIRecommendationsTeaser />;
+  return <CandidateMatchingView />;
 }

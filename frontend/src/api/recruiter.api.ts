@@ -5,6 +5,7 @@ import type {
   IUpdateJobPayload,
 } from "@/interfaces/job.interface";
 import type {
+  ICandidateMatchingResponseData,
   ICompanyProfile,
   IRecruiterApplicant,
 } from "@/interfaces/recruiter.interface";
@@ -52,4 +53,10 @@ export const updateJob = (id: string, data: IUpdateJobPayload) => {
 
 export const deleteJob = (id: string) => {
   return api.delete<IApiResponse<null>>(`/jobs/${id}`);
+};
+
+export const getMatchedCandidates = (jobId: string, refresh = false) => {
+  return api.get<IApiResponse<ICandidateMatchingResponseData>>(
+    `/recruiter/jobs/${jobId}/matched-candidates${refresh ? "?refresh=true" : ""}`,
+  );
 };

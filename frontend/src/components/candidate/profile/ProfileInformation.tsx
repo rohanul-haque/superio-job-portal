@@ -66,7 +66,7 @@ function ProfileInformation({
           </Badge>
         </div>
         <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
-          Accepts JPG, PNG, or WEBP up to 5 MB. Photos are automatically optimized and served via secure Cloudinary storage.
+          Accept JPG, PNG, WebP up to 5 MB, photos are automatically optimized.
         </p>
         <Button
           type="button"

@@ -1,7 +1,6 @@
 import LoginForm from "@/components/auth/LoginForm";
 import { AuthCardSkeleton } from "@/components/shared/skeletons";
-import React, { Suspense } from "react";
-
+import { Suspense } from "react";
 
 export default function CandidateLoginPage() {
   return (
