@@ -22,7 +22,7 @@ import {
 import { Briefcase, Filter, Search, Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 function ApplicantsListInner() {
   const searchParams = useSearchParams();

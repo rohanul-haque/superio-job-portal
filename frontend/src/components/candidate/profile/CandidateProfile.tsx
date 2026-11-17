@@ -11,7 +11,7 @@ import type { ICandidateProfile } from "@/interfaces/candidate.interface";
 import { getProfile, updateProfile } from "@/services/candidate.service";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_RESUME_SIZE = 5 * 1024 * 1024; // 5 MB

@@ -1,7 +1,7 @@
 import type { IJobApplication } from "@/interfaces/application.interface";
 import { getMyApplications } from "@/services/application.service";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 export default function useApplications(statusFilter?: string) {
   const [applications, setApplications] = useState<IJobApplication[]>([]);

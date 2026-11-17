@@ -1,7 +1,7 @@
 import type { IAdminDashboardStats } from "@/responses/admin.response";
 import { getDashboardStats } from "@/services/admin.service";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 export default function useAdminDashboard() {
   const [data, setData] = useState<IAdminDashboardStats | null>(null);

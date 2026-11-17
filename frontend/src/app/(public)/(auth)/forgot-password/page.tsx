@@ -8,7 +8,7 @@ import Label from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Logo from '@/components/shared/Logo';
 import { KeyRound, ArrowRight, CheckCircle2, ArrowLeft } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from "@/components/ui/toast";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');

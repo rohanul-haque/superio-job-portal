@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@/components/ui/toast";
 import React, {
   createContext,
   useCallback,
@@ -8,7 +9,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { toast } from "sonner";
 import {
   isExplicitLogout,
   setExplicitLogout,

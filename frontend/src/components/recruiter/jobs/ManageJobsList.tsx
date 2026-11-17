@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 export default function ManageJobsList() {
   const [jobs, setJobs] = useState<IJob[]>([]);

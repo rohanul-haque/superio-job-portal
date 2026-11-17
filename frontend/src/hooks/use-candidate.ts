@@ -9,7 +9,7 @@ import {
   getRecommendations,
 } from "@/services/candidate.service";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 export function useCandidateDashboard() {
   const [statsData, setStatsData] = useState<ICandidateDashboardStats | null>(null);

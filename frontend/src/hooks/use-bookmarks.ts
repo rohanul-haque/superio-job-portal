@@ -1,7 +1,7 @@
 import type { IBookmark } from "@/types/bookmark";
 import { getMyBookmarks } from "@/services/bookmark.service";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 export default function useBookmarks() {
   const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);

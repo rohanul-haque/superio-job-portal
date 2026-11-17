@@ -5,7 +5,7 @@ import Spinner from "@/components/ui/spinner";
 import { resendVerification } from "@/services/auth.service";
 import { CheckCircle2, MailCheck, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 type EmailVerificationModalMode = "registration" | "login";
 

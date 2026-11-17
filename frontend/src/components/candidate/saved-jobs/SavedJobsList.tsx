@@ -10,7 +10,7 @@ import { getMyBookmarks, removeBookmark } from "@/services/bookmark.service";
 import { Bookmark, Briefcase, RefreshCw, Search } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 function SavedJobsList() {
   const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);

@@ -20,7 +20,7 @@ import {
   Users,
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 export default function CandidateModerationList() {
   const [candidates, setCandidates] = useState<IAdminCandidate[]>([]);

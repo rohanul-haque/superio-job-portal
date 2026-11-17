@@ -8,7 +8,7 @@ import type { ICompanyProfile } from "@/interfaces/recruiter.interface";
 import { getProfile, updateProfile } from "@/services/recruiter.service";
 import { RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 

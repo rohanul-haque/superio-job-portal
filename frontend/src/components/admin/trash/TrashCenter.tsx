@@ -17,7 +17,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 export default function TrashCenter() {
   const [trashItems, setTrashItems] = useState<ITrashItem[]>([]);

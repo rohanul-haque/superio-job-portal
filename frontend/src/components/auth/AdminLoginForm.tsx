@@ -24,7 +24,7 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 const sanitizeReturnUrl = (url: string | null, fallback: string): string => {
   if (!url) return fallback;

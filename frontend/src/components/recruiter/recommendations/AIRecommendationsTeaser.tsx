@@ -14,7 +14,7 @@ import {
   Zap,
 } from "lucide-react";
 import React, { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 export default function AIRecommendationsTeaser() {
   const [isSubscribed, setIsSubscribed] = useState(false);

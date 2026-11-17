@@ -30,7 +30,7 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 interface RegisterFormProps {
   initialRole?: RoleType;

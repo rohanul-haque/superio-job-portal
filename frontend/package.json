@@ -26,7 +26,6 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^3.10.1",
-    "sonner": "^1.7.0",
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
