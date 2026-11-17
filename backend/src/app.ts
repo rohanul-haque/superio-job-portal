@@ -12,12 +12,19 @@ import healthCheckRoutes from "./routes/health-check.route";
 
 const app: Application = express();
 
+// Security and performance: disable x-powered-by header to prevent fingerprinting and reduce byte payload
+app.disable("x-powered-by");
+
 // Middlewares
 // 1. CORS configuration
 app.use(cors(corsOptions));
 
-// 2. Compression middleware
-app.use(compression());
+// 2. Compression middleware - threshold set to 1024 bytes (1 KB) to prevent CPU overhead on tiny responses
+app.use(
+  compression({
+    threshold: 1024,
+  }),
+);
 
 // 3. JSON body parser (10 MB limit)
 app.use(express.json({ limit: "10mb" }));

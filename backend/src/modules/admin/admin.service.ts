@@ -84,111 +84,108 @@ const seedAdmin = async (
  * category distribution, and latest activity logs.
  */
 const getDashboardStats = async (): Promise<IAdminDashboardStats> => {
-  const [
-    totalCandidates,
-    totalRecruiters,
-    totalActiveJobs,
-    totalApplications,
-    totalHired,
-    blockedUsers,
-    blockedCompanies,
-  ] = await Promise.all([
-    prisma.user.count({ where: { role: "candidate", isDeleted: false } }),
-    prisma.company.count({ where: { isDeleted: false } }),
-    prisma.job.count({
-      where: { isDeleted: false, visible: true, hiringStatus: "Ongoing" },
-    }),
-    prisma.jobApplication.count({ where: { isDeleted: false } }),
-    prisma.jobApplication.count({
-      where: { isDeleted: false, status: "Accepted" },
-    }),
-    prisma.user.count({
-      where: {
-        role: "candidate",
-        OR: [{ status: "blocked" }, { isDeleted: true }],
-      },
-    }),
-    prisma.company.count({
-      where: {
-        OR: [{ status: "blocked" }, { isDeleted: true }],
-      },
-    }),
-  ]);
-
-  const totalModerated = blockedUsers + blockedCompanies;
-
-  // Generate 6-month platform growth chart data
+  // Prepare 6-month intervals
   const now = new Date();
-  const growthChart: IGrowthChartItem[] = [];
+  const monthIntervals: Array<{
+    startOfMonth: Date;
+    endOfMonth: Date;
+    monthLabel: string;
+  }> = [];
 
   for (let i = 5; i >= 0; i--) {
     const year = now.getFullYear();
     const month = now.getMonth() - i;
     const startOfMonth = new Date(year, month, 1);
     const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999);
-
-    const [candidatesCount, recruitersCount, jobsCount] = await Promise.all([
-      prisma.user.count({
-        where: {
-          role: "candidate",
-          createdAt: { gte: startOfMonth, lte: endOfMonth },
-        },
-      }),
-      prisma.company.count({
-        where: {
-          createdAt: { gte: startOfMonth, lte: endOfMonth },
-        },
-      }),
-      prisma.job.count({
-        where: {
-          createdAt: { gte: startOfMonth, lte: endOfMonth },
-        },
-      }),
-    ]);
-
     const monthLabel = startOfMonth.toLocaleString("default", {
       month: "short",
     });
 
-    growthChart.push({
-      month: monthLabel,
-      candidates: candidatesCount,
-      recruiters: recruitersCount,
-      jobs: jobsCount,
-    });
+    monthIntervals.push({ startOfMonth, endOfMonth, monthLabel });
   }
 
-  // Category distribution: latest categories with at least one active job vacancy
-  const categories = await prisma.category.findMany({
-    where: { isDeleted: false, isActive: true },
-    orderBy: { createdAt: "desc" },
-    select: {
-      name: true,
-      _count: {
-        select: {
-          jobs: {
-            where: { isDeleted: false, visible: true },
-          },
-        },
-      },
-    },
-  });
-
-  const categoryDistribution = categories
-    .map((cat) => ({
-      name: cat.name,
-      count: cat._count?.jobs || 0,
-    }))
-    .filter((cat) => cat.count > 0)
-    .slice(0, 3);
-
-  // Recent platform activity
+  // Execute all independent platform metric queries concurrently
   const [
+    baseCounts,
+    growthChart,
+    categories,
     recentCandidates,
     recentRecruiters,
     recentJobs,
     recentApplications,
   ] = await Promise.all([
+    // 1. Overview counts
+    Promise.all([
+      prisma.user.count({ where: { role: "candidate", isDeleted: false } }),
+      prisma.company.count({ where: { isDeleted: false } }),
+      prisma.job.count({
+        where: { isDeleted: false, visible: true, hiringStatus: "Ongoing" },
+      }),
+      prisma.jobApplication.count({ where: { isDeleted: false } }),
+      prisma.jobApplication.count({
+        where: { isDeleted: false, status: "Accepted" },
+      }),
+      prisma.user.count({
+        where: {
+          role: "candidate",
+          OR: [{ status: "blocked" }, { isDeleted: true }],
+        },
+      }),
+      prisma.company.count({
+        where: {
+          OR: [{ status: "blocked" }, { isDeleted: true }],
+        },
+      }),
+    ]),
+
+    // 2. 6-Month growth chart queries in parallel batch
+    Promise.all(
+      monthIntervals.map(async ({ startOfMonth, endOfMonth, monthLabel }) => {
+        const [candidatesCount, recruitersCount, jobsCount] = await Promise.all([
+          prisma.user.count({
+            where: {
+              role: "candidate",
+              createdAt: { gte: startOfMonth, lte: endOfMonth },
+            },
+          }),
+          prisma.company.count({
+            where: {
+              createdAt: { gte: startOfMonth, lte: endOfMonth },
+            },
+          }),
+          prisma.job.count({
+            where: {
+              createdAt: { gte: startOfMonth, lte: endOfMonth },
+            },
+          }),
+        ]);
+
+        return {
+          month: monthLabel,
+          candidates: candidatesCount,
+          recruiters: recruitersCount,
+          jobs: jobsCount,
+        };
+      }),
+    ),
+
+    // 3. Category distribution
+    prisma.category.findMany({
+      where: { isDeleted: false, isActive: true },
+      orderBy: { createdAt: "desc" },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            jobs: {
+              where: { isDeleted: false, visible: true },
+            },
+          },
+        },
+      },
+    }),
+
+    // 4. Recent platform activities (top 5 each)
     prisma.user.findMany({
       where: { role: "candidate", isDeleted: false },
       orderBy: { createdAt: "desc" },
@@ -258,6 +255,26 @@ const getDashboardStats = async (): Promise<IAdminDashboardStats> => {
       },
     }),
   ]);
+
+  const [
+    totalCandidates,
+    totalRecruiters,
+    totalActiveJobs,
+    totalApplications,
+    totalHired,
+    blockedUsers,
+    blockedCompanies,
+  ] = baseCounts;
+
+  const totalModerated = blockedUsers + blockedCompanies;
+
+  const categoryDistribution = categories
+    .map((cat) => ({
+      name: cat.name,
+      count: cat._count?.jobs || 0,
+    }))
+    .filter((cat) => cat.count > 0)
+    .slice(0, 3);
 
   return {
     stats: {

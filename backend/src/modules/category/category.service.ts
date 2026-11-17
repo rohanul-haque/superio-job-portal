@@ -155,6 +155,8 @@ const createCategory = async (
       },
     });
 
+    clearCategoryCache();
+
     return {
       ...category,
       jobCount: category._count?.jobs || 0,
@@ -168,9 +170,35 @@ const createCategory = async (
   }
 };
 
+// ============================================================================
+// IN-MEMORY CACHE WITH TTL (5 MINUTES) & CACHE INVALIDATION
+// ============================================================================
+interface ICategoryCacheEntry {
+  data: ICategoryResponse[];
+  expiresAt: number;
+}
+
+const categoryCache = new Map<string, ICategoryCacheEntry>();
+const CATEGORY_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+export const clearCategoryCache = (): void => {
+  categoryCache.clear();
+};
+
 const getAllCategories = async (
   query?: ICategoryFilterQuery,
 ): Promise<ICategoryResponse[]> => {
+  const cacheKey = JSON.stringify({
+    isDeleted: query?.isDeleted,
+    isActive: query?.isActive,
+    search: query?.search?.trim() || "",
+  });
+
+  const cached = categoryCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.data;
+  }
+
   const where: {
     isDeleted: boolean;
     isActive?: boolean;
@@ -216,10 +244,17 @@ const getAllCategories = async (
     },
   });
 
-  return categories.map((cat) => ({
+  const result = categories.map((cat) => ({
     ...cat,
     jobCount: cat._count?.jobs || 0,
   }));
+
+  categoryCache.set(cacheKey, {
+    data: result,
+    expiresAt: Date.now() + CATEGORY_CACHE_TTL_MS,
+  });
+
+  return result;
 };
 
 const getCategoryById = async (id: string): Promise<ICategoryResponse> => {
@@ -372,6 +407,8 @@ const updateCategory = async (
       }
     }
 
+    clearCategoryCache();
+
     return {
       ...updatedCategory,
       jobCount: updatedCategory._count?.jobs || 0,
@@ -416,6 +453,8 @@ const deleteCategory = async (id: string): Promise<ICategoryResponse> => {
     },
   });
 
+  clearCategoryCache();
+
   return {
     ...deleted,
     jobCount: deleted._count?.jobs || 0,
@@ -428,6 +467,7 @@ const categoryService = {
   getCategoryById,
   updateCategory,
   deleteCategory,
+  clearCategoryCache,
 };
 
 export default categoryService;

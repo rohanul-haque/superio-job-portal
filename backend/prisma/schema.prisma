@@ -36,6 +36,9 @@ model User {
   applications      JobApplication[]
   bookmarks         Bookmark[]
   categoriesCreated Category[]
+
+  @@index([role, isDeleted, createdAt])
+  @@index([role, status, isDeleted])
 }
 
 model Company {
@@ -60,6 +63,9 @@ model Company {
 
   jobs         Job[]
   applications JobApplication[]
+
+  @@index([isDeleted, createdAt])
+  @@index([status, isDeleted])
 }
 
 type CategoryIcon {
@@ -81,6 +87,8 @@ model Category {
   updatedAt   DateTime     @updatedAt
 
   jobs Job[]
+
+  @@index([isDeleted, isActive, name])
 }
 
 model Job {
@@ -106,6 +114,11 @@ model Job {
 
   applications JobApplication[]
   bookmarks    Bookmark[]
+
+  @@index([isDeleted, visible, hiringStatus, createdAt])
+  @@index([companyId, isDeleted, createdAt])
+  @@index([categoryId, isDeleted, visible, hiringStatus])
+  @@index([isDeleted, visible, hiringStatus, salary])
 }
 
 model JobApplication {
@@ -123,6 +136,10 @@ model JobApplication {
   updatedAt DateTime  @updatedAt
 
   @@unique([userId, jobId])
+  @@index([companyId, isDeleted, createdAt])
+  @@index([companyId, isDeleted, status])
+  @@index([jobId, isDeleted, createdAt])
+  @@index([userId, isDeleted, createdAt])
 }
 
 model Bookmark {
@@ -134,4 +151,6 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   @@unique([userId, jobId])
+  @@index([userId, createdAt])
+  @@index([jobId])
 }

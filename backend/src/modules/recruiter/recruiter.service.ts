@@ -164,7 +164,17 @@ const updateProfile = async (
 const getDashboardStats = async (
   companyId: string,
 ): Promise<IRecruiterDashboardStatsResponse> => {
-  const [jobs, applications] = await Promise.all([
+  const now = new Date();
+  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+  const [
+    jobs,
+    totalApplicants,
+    hiredCandidates,
+    inflowApplications,
+    recentApplicationsRaw,
+  ] = await Promise.all([
+    // 1. Jobs summary (status only)
     prisma.job.findMany({
       where: { companyId, isDeleted: false },
       select: {
@@ -172,9 +182,34 @@ const getDashboardStats = async (
         hiringStatus: true,
       },
     }),
+
+    // 2. Total applicants count using index
+    prisma.jobApplication.count({
+      where: { companyId, isDeleted: false },
+    }),
+
+    // 3. Hired candidates count using index
+    prisma.jobApplication.count({
+      where: { companyId, isDeleted: false, status: "Accepted" },
+    }),
+
+    // 4. Inflow data: limited to last 6 months, only createdAt field (no relation overhead)
+    prisma.jobApplication.findMany({
+      where: {
+        companyId,
+        isDeleted: false,
+        createdAt: { gte: sixMonthsAgo },
+      },
+      select: {
+        createdAt: true,
+      },
+    }),
+
+    // 5. Top 5 Recent Applicants: bounded query with take: 5
     prisma.jobApplication.findMany({
       where: { companyId, isDeleted: false },
       orderBy: { createdAt: "desc" },
+      take: 5,
       include: {
         user: {
           select: {
@@ -200,8 +235,8 @@ const getDashboardStats = async (
     totalJobsPosted: jobs.length,
     ongoingJobs: jobs.filter((j) => j.hiringStatus === "Ongoing").length,
     closedJobs: jobs.filter((j) => j.hiringStatus === "Closed").length,
-    totalApplicants: applications.length,
-    hiredCandidates: applications.filter((a) => a.status === "Accepted").length,
+    totalApplicants,
+    hiredCandidates,
   };
 
   // Inflow Chart: Last 6 months aggregate
@@ -219,7 +254,6 @@ const getDashboardStats = async (
     "Nov",
     "Dec",
   ];
-  const now = new Date();
   const inflowChart: Array<{ date: string; applications: number }> = [];
 
   for (let i = 5; i >= 0; i--) {
@@ -236,7 +270,7 @@ const getDashboardStats = async (
       999,
     );
 
-    const count = applications.filter((app) => {
+    const count = inflowApplications.filter((app) => {
       const appDate = new Date(app.createdAt);
       return appDate >= monthStart && appDate <= monthEnd;
     }).length;
@@ -248,7 +282,7 @@ const getDashboardStats = async (
   }
 
   // Top 5 Recent Applicants
-  const recentApplicants = applications.slice(0, 5).map((app) => ({
+  const recentApplicants = recentApplicationsRaw.map((app) => ({
     id: app.id,
     status: app.status,
     createdAt: app.createdAt,

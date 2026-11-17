@@ -288,41 +288,58 @@ const updateProfile = async (
 const getDashboardStats = async (
   candidateId: string,
 ): Promise<ICandidateDashboardStatsResponse> => {
-  const applications = await prisma.jobApplication.findMany({
-    where: {
-      userId: candidateId,
-      isDeleted: false,
-    },
-    orderBy: { createdAt: "desc" },
-    include: {
-      job: {
-        select: {
-          id: true,
-          title: true,
-          location: true,
-          jobType: true,
-          salary: true,
-          hiringStatus: true,
+  // Query top 5 recent applications with relations and lightweight stats records concurrently
+  const [recentApplicationsRaw, statusRecords] = await Promise.all([
+    // 1. Top 5 Recent Applications with full job/company relations
+    prisma.jobApplication.findMany({
+      where: {
+        userId: candidateId,
+        isDeleted: false,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: {
+        job: {
+          select: {
+            id: true,
+            title: true,
+            location: true,
+            jobType: true,
+            salary: true,
+            hiringStatus: true,
+          },
+        },
+        company: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            location: true,
+          },
         },
       },
-      company: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          location: true,
-        },
-      },
-    },
-  });
+    }),
 
-  // 1. Calculate 5 Stat Cards
+    // 2. Lightweight query for status counts and timeline chart (no relation overhead)
+    prisma.jobApplication.findMany({
+      where: {
+        userId: candidateId,
+        isDeleted: false,
+      },
+      select: {
+        status: true,
+        createdAt: true,
+      },
+    }),
+  ]);
+
+  // 1. Calculate 5 Stat Cards from lightweight records
   const stats = {
-    totalApplied: applications.length,
-    pending: applications.filter((a) => a.status === "Pending").length,
-    shortlisted: applications.filter((a) => a.status === "Shortlisted").length,
-    accepted: applications.filter((a) => a.status === "Accepted").length,
-    rejected: applications.filter((a) => a.status === "Rejected").length,
+    totalApplied: statusRecords.length,
+    pending: statusRecords.filter((a) => a.status === "Pending").length,
+    shortlisted: statusRecords.filter((a) => a.status === "Shortlisted").length,
+    accepted: statusRecords.filter((a) => a.status === "Accepted").length,
+    rejected: statusRecords.filter((a) => a.status === "Rejected").length,
   };
 
   // 2. Generate Application Activity Area Chart data (last 6 months with real aggregate counts)
@@ -357,7 +374,7 @@ const getDashboardStats = async (
       999,
     );
 
-    const count = applications.filter((app) => {
+    const count = statusRecords.filter((app) => {
       const appDate = new Date(app.createdAt);
       return appDate >= monthStart && appDate <= monthEnd;
     }).length;
@@ -369,7 +386,7 @@ const getDashboardStats = async (
   }
 
   // 3. Top 5 Recent Applications
-  const recentApplications = applications.slice(0, 5).map((app) => ({
+  const recentApplications = recentApplicationsRaw.map((app) => ({
     id: app.id,
     status: app.status,
     createdAt: app.createdAt,

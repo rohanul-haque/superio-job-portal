@@ -17,19 +17,45 @@ const applyJob = async (
   candidateId: string,
   jobId: string,
 ): Promise<IApplicationResponse> => {
-  // 1. Resume Guard: Candidate must have an uploaded resume
-  const candidate = await prisma.user.findFirst({
-    where: {
-      id: candidateId,
-      role: "candidate",
-      isDeleted: false,
-    },
-    select: {
-      id: true,
-      resume: true,
-    },
-  });
+  // Concurrently validate candidate resume guard, active job availability, and duplicate application prevention
+  const [candidate, job, existingApplication] = await Promise.all([
+    prisma.user.findFirst({
+      where: {
+        id: candidateId,
+        role: "candidate",
+        isDeleted: false,
+      },
+      select: {
+        id: true,
+        resume: true,
+      },
+    }),
+    prisma.job.findFirst({
+      where: {
+        id: jobId,
+        isDeleted: false,
+        visible: true,
+      },
+      select: {
+        id: true,
+        hiringStatus: true,
+        companyId: true,
+      },
+    }),
+    prisma.jobApplication.findUnique({
+      where: {
+        userId_jobId: {
+          userId: candidateId,
+          jobId,
+        },
+      },
+      select: {
+        id: true,
+      },
+    }),
+  ]);
 
+  // 1. Resume Guard: Candidate must have an uploaded resume
   if (!candidate) {
     throw new AppError(StatusCodes.NOT_FOUND, "Candidate profile not found.");
   }
@@ -46,14 +72,6 @@ const applyJob = async (
   }
 
   // 2. Validate Job status and availability
-  const job = await prisma.job.findFirst({
-    where: {
-      id: jobId,
-      isDeleted: false,
-      visible: true,
-    },
-  });
-
   if (!job) {
     throw new AppError(StatusCodes.NOT_FOUND, APPLICATION_MESSAGES.JOB_NOT_FOUND);
   }
@@ -63,15 +81,6 @@ const applyJob = async (
   }
 
   // 3. Prevent duplicate applications via compound unique index
-  const existingApplication = await prisma.jobApplication.findUnique({
-    where: {
-      userId_jobId: {
-        userId: candidateId,
-        jobId,
-      },
-    },
-  });
-
   if (existingApplication) {
     throw new AppError(
       StatusCodes.CONFLICT,

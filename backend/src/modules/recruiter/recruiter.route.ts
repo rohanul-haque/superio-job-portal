@@ -41,5 +41,12 @@ router.patch(
   recruiterController.updateApplicantStatus,
 );
 
+// Recruiter: AI-powered candidate matching for a specific job posting
+router.get(
+  "/jobs/:jobId/matched-candidates",
+  authGuard("recruiter"),
+  recruiterController.getMatchedCandidates,
+);
+
 export default router;
 

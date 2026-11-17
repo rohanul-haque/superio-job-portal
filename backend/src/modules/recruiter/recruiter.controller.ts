@@ -4,6 +4,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import RECRUITER_MESSAGES from "./recruiter.messages";
 import recruiterService from "./recruiter.service";
+import recommendationService from "../recommendation/recommendation.service";
 
 const getProfile = catchAsync(async (req: Request, res: Response) => {
   const companyId = req.user!.id;
@@ -76,12 +77,36 @@ const updateApplicantStatus = catchAsync(async (req: Request, res: Response) => 
   });
 });
 
+const getMatchedCandidates = catchAsync(async (req: Request, res: Response) => {
+  const companyId = req.user!.id;
+  const jobId = req.params.jobId as string;
+  const forceRefresh = req.query.refresh === "true";
+
+  const result = await recommendationService.matchCandidatesForJob(
+    companyId,
+    jobId,
+    forceRefresh,
+  );
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message:
+      result.meta.message || "Matched candidates retrieved successfully.",
+    meta: {
+      total: result.meta.total,
+    },
+    data: result,
+  });
+});
+
 const recruiterController = {
   getProfile,
   updateProfile,
   getDashboardStats,
   getApplicants,
   updateApplicantStatus,
+  getMatchedCandidates,
 };
 
 export default recruiterController;

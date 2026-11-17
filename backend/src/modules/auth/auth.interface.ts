@@ -136,9 +136,20 @@ export interface IAuthAccount {
   name: string;
   image?: string;
   profilePicture?: { url: string; publicId: string } | null;
+  title?: string;
+  bio?: string;
+  skills?: string[];
+  resume?: string | { url: string; publicId: string } | null;
+  location?: string;
+  companySize?: string;
+  website?: string;
+  description?: string;
+  socialLinks?: unknown;
   isEmailVerified: boolean;
   status: string;
   isDeleted: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IAuthUserAccount {

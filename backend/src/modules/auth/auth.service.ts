@@ -12,6 +12,7 @@ import prisma from "../../lib/prisma";
 import AppError from "../../utils/AppError";
 import { sendVerificationEmail } from "../../utils/email-sender";
 import type {
+  IAuthAccount,
   IAuthUserAccount,
   ICandidateProfileDTO,
   ICandidateRegisterPayload,
@@ -32,12 +33,16 @@ const registerCandidate = async (
 ): Promise<IRegistrationResult<ICandidateProfileDTO>> => {
   const normalizedEmail = payload.email.toLowerCase().trim();
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-  });
-  const existingCompany = await prisma.company.findUnique({
-    where: { email: normalizedEmail },
-  });
+  const [existingUser, existingCompany] = await Promise.all([
+    prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true },
+    }),
+    prisma.company.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true },
+    }),
+  ]);
 
   if (existingUser || existingCompany) {
     throw new AppError(StatusCodes.CONFLICT, AUTH_MESSAGES.EMAIL_CONFLICT);
@@ -103,12 +108,16 @@ const registerRecruiter = async (
 ): Promise<IRegistrationResult<IRecruiterProfileDTO>> => {
   const normalizedEmail = payload.email.toLowerCase().trim();
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-  });
-  const existingCompany = await prisma.company.findUnique({
-    where: { email: normalizedEmail },
-  });
+  const [existingUser, existingCompany] = await Promise.all([
+    prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true },
+    }),
+    prisma.company.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true },
+    }),
+  ]);
 
   if (existingUser || existingCompany) {
     throw new AppError(StatusCodes.CONFLICT, AUTH_MESSAGES.EMAIL_CONFLICT);
@@ -418,9 +427,17 @@ const resendVerificationEmail = async (
   } | null = null;
   let isCompany = false;
 
-  const user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-  });
+  const [user, company] = await Promise.all([
+    prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true, name: true, email: true, isEmailVerified: true },
+    }),
+    prisma.company.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true, name: true, email: true, isEmailVerified: true },
+    }),
+  ]);
+
   if (user) {
     target = {
       id: user.id,
@@ -429,20 +446,15 @@ const resendVerificationEmail = async (
       role: "candidate",
       isEmailVerified: user.isEmailVerified,
     };
-  } else {
-    const company = await prisma.company.findUnique({
-      where: { email: normalizedEmail },
-    });
-    if (company) {
-      target = {
-        id: company.id,
-        name: company.name,
-        email: company.email,
-        role: "recruiter",
-        isEmailVerified: company.isEmailVerified,
-      };
-      isCompany = true;
-    }
+  } else if (company) {
+    target = {
+      id: company.id,
+      name: company.name,
+      email: company.email,
+      role: "recruiter",
+      isEmailVerified: company.isEmailVerified,
+    };
+    isCompany = true;
   }
 
   if (!target) {
@@ -654,8 +666,33 @@ const refreshToken = async (token?: string): Promise<IRefreshTokenResult> => {
   };
 };
 
-const getMe = async (userPayload: IJwtPayload) => {
+const getMe = async (userPayload: IJwtPayload & { dbUser?: unknown }) => {
+  const dbUser =
+    userPayload.dbUser && typeof userPayload.dbUser === "object"
+      ? (userPayload.dbUser as IAuthAccount)
+      : null;
+
   if (userPayload.role === "recruiter") {
+    // If account was already hydrated by authGuard, return it immediately without secondary DB query
+    if (dbUser && dbUser.name) {
+      return {
+        id: dbUser.id,
+        name: dbUser.name,
+        email: dbUser.email,
+        role: dbUser.role,
+        image: dbUser.image || "",
+        description: dbUser.description || "",
+        website: dbUser.website || "",
+        location: dbUser.location || "",
+        companySize: dbUser.companySize || "",
+        socialLinks: dbUser.socialLinks,
+        isEmailVerified: dbUser.isEmailVerified,
+        status: dbUser.status,
+        createdAt: dbUser.createdAt || new Date(),
+        updatedAt: dbUser.updatedAt || new Date(),
+      };
+    }
+
     const company = await prisma.company.findUnique({
       where: { id: userPayload.id },
       select: {
@@ -683,6 +720,34 @@ const getMe = async (userPayload: IJwtPayload) => {
       );
     }
     return company;
+  }
+
+  // If candidate was already hydrated by authGuard, return it immediately without secondary DB query
+  if (dbUser && dbUser.name) {
+    const resumeUrl = dbUser.resume
+      ? typeof dbUser.resume === "string"
+        ? dbUser.resume
+        : typeof dbUser.resume === "object" && "url" in dbUser.resume
+          ? (dbUser.resume as { url: string }).url
+          : ""
+      : "";
+
+    return {
+      id: dbUser.id,
+      name: dbUser.name,
+      email: dbUser.email,
+      role: dbUser.role,
+      profilePicture: dbUser.profilePicture || null,
+      title: dbUser.title || "",
+      bio: dbUser.bio || "",
+      skills: dbUser.skills || [],
+      socialLinks: dbUser.socialLinks,
+      resume: resumeUrl,
+      isEmailVerified: dbUser.isEmailVerified,
+      status: dbUser.status,
+      createdAt: dbUser.createdAt || new Date(),
+      updatedAt: dbUser.updatedAt || new Date(),
+    };
   }
 
   const user = await prisma.user.findUnique({

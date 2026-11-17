@@ -1,7 +1,9 @@
 export type MatchLevel =
   | "Excellent Match"
+  | "Strong Match"
   | "Good Match"
   | "Moderate Match"
+  | "Weak Match"
   | "Low Match";
 
 export interface IAIRecommendationRaw {
@@ -11,6 +13,18 @@ export interface IAIRecommendationRaw {
   matchedSkills: string[];
   missingSkills: string[];
   reason: string;
+  matchedTechnicalSkills?: string[];
+  missingRequiredSkills?: string[];
+  matchedProfessionalSkills?: string[];
+  matchedPreferredSkills?: string[];
+  titleCompatibility?: number;
+  bioCompatibility?: number;
+  experienceCompatibility?: number;
+  qualificationCompatibility?: number;
+  responsibilityCompatibility?: number;
+  mandatoryRequirementsPassed?: boolean;
+  explanation?: string;
+  rejectionReasons?: string[];
 }
 
 export interface IRecommendedJobItem {
@@ -52,6 +66,18 @@ export interface IRecommendedJobResponse {
   missingSkills: string[];
   reason: string;
   job: IRecommendedJobItem;
+  matchedTechnicalSkills?: string[];
+  missingRequiredSkills?: string[];
+  matchedProfessionalSkills?: string[];
+  matchedPreferredSkills?: string[];
+  titleCompatibility?: number;
+  bioCompatibility?: number;
+  experienceCompatibility?: number;
+  qualificationCompatibility?: number;
+  responsibilityCompatibility?: number;
+  mandatoryRequirementsPassed?: boolean;
+  explanation?: string;
+  rejectionReasons?: string[];
 }
 
 export interface IRecommendationsResult {
@@ -59,6 +85,86 @@ export interface IRecommendationsResult {
   meta: {
     total: number;
     profileCompleted: boolean;
+    cached: boolean;
+    evaluatedCount: number;
+    timestamp: string;
+    message?: string;
+  };
+}
+
+export interface IAICandidateMatchRaw {
+  candidateId: string;
+  matchScore: number;
+  matchLevel: MatchLevel;
+  matchedSkills: string[];
+  missingSkills: string[];
+  reason: string;
+  matchedTechnicalSkills?: string[];
+  missingRequiredSkills?: string[];
+  matchedProfessionalSkills?: string[];
+  matchedPreferredSkills?: string[];
+  titleCompatibility?: number;
+  bioCompatibility?: number;
+  experienceCompatibility?: number;
+  qualificationCompatibility?: number;
+  responsibilityCompatibility?: number;
+  mandatoryRequirementsPassed?: boolean;
+  explanation?: string;
+  rejectionReasons?: string[];
+}
+
+export interface IMatchedCandidateItem {
+  id: string;
+  name: string;
+  email: string;
+  profilePicture?: {
+    url: string;
+    publicId: string;
+  } | null;
+  title: string;
+  bio: string;
+  skills: string[];
+  socialLinks?: Record<string, string> | null;
+  resume?: string;
+  createdAt: Date;
+}
+
+export interface ICandidateMatchResponse {
+  candidateId: string;
+  matchScore: number;
+  matchLevel: MatchLevel;
+  matchedSkills: string[];
+  missingSkills: string[];
+  reason: string;
+  candidate: IMatchedCandidateItem;
+  matchedTechnicalSkills?: string[];
+  missingRequiredSkills?: string[];
+  matchedProfessionalSkills?: string[];
+  matchedPreferredSkills?: string[];
+  titleCompatibility?: number;
+  bioCompatibility?: number;
+  experienceCompatibility?: number;
+  qualificationCompatibility?: number;
+  responsibilityCompatibility?: number;
+  mandatoryRequirementsPassed?: boolean;
+  explanation?: string;
+  rejectionReasons?: string[];
+}
+
+export interface ICandidateMatchingResult {
+  jobId: string;
+  job: {
+    id: string;
+    title: string;
+    location: string;
+    level: string;
+    jobType: string;
+    hiringStatus: string;
+    category?: string;
+  };
+  matches: ICandidateMatchResponse[];
+  meta: {
+    total: number;
     cached: boolean;
     evaluatedCount: number;
     timestamp: string;

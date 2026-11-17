@@ -61,9 +61,16 @@ const authGuard = (...requiredRoles: UserRole[]) => {
             role: true,
             name: true,
             image: true,
+            description: true,
+            website: true,
+            location: true,
+            companySize: true,
+            socialLinks: true,
             isEmailVerified: true,
             status: true,
             isDeleted: true,
+            createdAt: true,
+            updatedAt: true,
           },
         });
       } else {
@@ -75,9 +82,16 @@ const authGuard = (...requiredRoles: UserRole[]) => {
             role: true,
             name: true,
             profilePicture: true,
+            title: true,
+            bio: true,
+            skills: true,
+            socialLinks: true,
+            resume: true,
             isEmailVerified: true,
             status: true,
             isDeleted: true,
+            createdAt: true,
+            updatedAt: true,
           },
         });
       }

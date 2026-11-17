@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import prisma from "../../lib/prisma";
 import AppError from "../../utils/AppError";
+import { clearJobCandidateMatchingCache } from "../recommendation/recommendation.service";
 import {
   extractMeaningfulText,
   sanitizeJobDescription,
@@ -451,6 +452,8 @@ const updateJob = async (
     },
   });
 
+  clearJobCandidateMatchingCache(id);
+
   return {
     ...updatedJob,
     applicationCount: updatedJob._count?.applications || 0,
@@ -507,6 +510,8 @@ const deleteJob = async (
       },
     },
   });
+
+  clearJobCandidateMatchingCache(id);
 
   return {
     ...deletedJob,
