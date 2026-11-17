@@ -17,23 +17,20 @@ import { getAllCategories } from "@/services/category.service";
 import { getAllJobs } from "@/services/job.service";
 import type { ICategory } from "@/types/category";
 import type { IJob, IJobsResponseMeta } from "@/types/job";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   ArrowUpDown,
   Briefcase,
   ChevronLeft,
   ChevronRight,
   Filter,
-  Layers,
-  MapPin,
   RotateCcw,
   Search,
   SlidersHorizontal,
-  Sparkles,
   X,
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const JOB_TYPES = [
   "Full-time",
@@ -58,208 +55,82 @@ const POPULAR_LOCATIONS = [
   "Austin, USA",
 ];
 
-const JobsCatalogue: React.FC = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // URL Query State
-  const initialKeyword =
-    searchParams.get("keyword") || searchParams.get("search") || "";
-  const initialCategory =
-    searchParams.get("category") || searchParams.get("categoryId") || "";
-  const initialLocation = searchParams.get("location") || "";
-  const initialJobType = searchParams.get("jobType")
-    ? searchParams.get("jobType")!.split(",")
-    : [];
-  const initialLevel = searchParams.get("level")
-    ? searchParams.get("level")!.split(",")
-    : [];
-  const initialMinSalary = searchParams.get("minSalary") || "";
-  const initialMaxSalary = searchParams.get("maxSalary") || "";
-  const initialSortBy =
-    (searchParams.get("sortBy") as
-      | "newest"
-      | "salary_desc"
-      | "salary_asc"
-      | "deadline") || "newest";
-  const initialPage = Number(searchParams.get("page")) || 1;
-
-  // Local Filter State
-  const [keyword, setKeyword] = useState(initialKeyword);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    initialCategory ? [initialCategory] : [],
-  );
-  const [selectedLocations, setSelectedLocations] = useState<string[]>(
-    initialLocation ? [initialLocation] : [],
-  );
-  const [customLocation, setCustomLocation] = useState("");
-  const [selectedJobTypes, setSelectedJobTypes] =
-    useState<string[]>(initialJobType);
-  const [selectedLevels, setSelectedLevels] = useState<string[]>(initialLevel);
-  const [minSalary, setMinSalary] = useState(initialMinSalary);
-  const [maxSalary, setMaxSalary] = useState(initialMaxSalary);
-  const [sortBy, setSortBy] = useState<
-    "newest" | "salary_desc" | "salary_asc" | "deadline"
-  >(initialSortBy);
-  const [page, setPage] = useState(initialPage);
-
-  const filterParams = useMemo(() => {
-    const params: Record<string, string | number> = {
-      page,
-      limit: 9,
-      sortBy,
-      hiringStatus: "Ongoing",
-    };
-
-    if (keyword.trim()) params.keyword = keyword.trim();
-    if (selectedCategories.length > 0)
-      params.category = selectedCategories.join(",");
-
-    const activeLocations = [...selectedLocations];
-    if (
-      customLocation.trim() &&
-      !activeLocations.includes(customLocation.trim())
-    ) {
-      activeLocations.push(customLocation.trim());
-    }
-    if (activeLocations.length > 0)
-      params.location = activeLocations.join(",");
-    if (selectedJobTypes.length > 0)
-      params.jobType = selectedJobTypes.join(",");
-    if (selectedLevels.length > 0) params.level = selectedLevels.join(",");
-    if (minSalary && !isNaN(Number(minSalary)))
-      params.minSalary = Number(minSalary);
-    if (maxSalary && !isNaN(Number(maxSalary)))
-      params.maxSalary = Number(maxSalary);
-
-    return params;
-  }, [
-    keyword,
-    selectedCategories,
-    selectedLocations,
-    customLocation,
-    selectedJobTypes,
-    selectedLevels,
-    minSalary,
-    maxSalary,
-    sortBy,
-    page,
-  ]);
-
-  const categoriesQuery = useQuery({
-    queryKey: queryKeys.categories.list({ isActive: "true" }),
-    queryFn: () => getAllCategories({ isActive: "true" }),
-  });
-
-  const jobsQuery = useQuery({
-    queryKey: queryKeys.jobs.list(filterParams),
-    queryFn: () => getAllJobs(filterParams),
-  });
-
-  const categories: ICategory[] = categoriesQuery.data || [];
-  const jobs: IJob[] = jobsQuery.data?.jobs || [];
-  const meta: IJobsResponseMeta = jobsQuery.data?.meta || {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPage: 1,
-  };
-  const isLoading = jobsQuery.isLoading;
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-
-  // Update query params in URL when user changes filters
-  const updateUrl = useCallback(() => {
-    const params = new URLSearchParams();
-    if (keyword.trim()) params.set("keyword", keyword.trim());
-    if (selectedCategories.length > 0)
-      params.set("category", selectedCategories.join(","));
-    if (selectedLocations.length > 0)
-      params.set("location", selectedLocations.join(","));
-    if (customLocation.trim()) params.set("location", customLocation.trim());
-    if (selectedJobTypes.length > 0)
-      params.set("jobType", selectedJobTypes.join(","));
-    if (selectedLevels.length > 0)
-      params.set("level", selectedLevels.join(","));
-    if (minSalary) params.set("minSalary", minSalary);
-    if (maxSalary) params.set("maxSalary", maxSalary);
-    if (sortBy !== "newest") params.set("sortBy", sortBy);
-    if (page > 1) params.set("page", String(page));
-
-    const qs = params.toString();
-    router.replace(qs ? `/all-jobs?${qs}` : "/all-jobs", { scroll: false });
-  }, [
-    keyword,
-    selectedCategories,
-    selectedLocations,
-    customLocation,
-    selectedJobTypes,
-    selectedLevels,
-    minSalary,
-    maxSalary,
-    sortBy,
-    page,
-    router,
-  ]);
+/**
+ * Custom hook for debouncing input values by specified delay (default 450ms).
+ * If the value is an empty string, updates immediately for snappy clear/reset.
+ */
+function useDebounce<T>(value: T, delay: number = 450): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    updateUrl();
-  }, [updateUrl]);
+    if (typeof value === "string" && value.trim() === "") {
+      setDebouncedValue(value);
+      return;
+    }
 
-  // Filter toggles
-  const handleToggleCategory = (catId: string) => {
-    setPage(1);
-    setSelectedCategories((prev) =>
-      prev.includes(catId)
-        ? prev.filter((id) => id !== catId)
-        : [...prev, catId],
-    );
-  };
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
-  const handleToggleLocation = (loc: string) => {
-    setPage(1);
-    setSelectedLocations((prev) =>
-      prev.includes(loc) ? prev.filter((l) => l !== loc) : [...prev, loc],
-    );
-  };
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
 
-  const handleToggleJobType = (type: string) => {
-    setPage(1);
-    setSelectedJobTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
-    );
-  };
+  return debouncedValue;
+}
 
-  const handleToggleLevel = (lvl: string) => {
-    setPage(1);
-    setSelectedLevels((prev) =>
-      prev.includes(lvl) ? prev.filter((l) => l !== lvl) : [...prev, lvl],
-    );
-  };
+interface FilterSidebarContentProps {
+  keyword: string;
+  onKeywordChange: (val: string) => void;
+  categories: ICategory[];
+  selectedCategories: string[];
+  onToggleCategory: (catId: string) => void;
+  selectedJobTypes: string[];
+  onToggleJobType: (type: string) => void;
+  selectedLevels: string[];
+  onToggleLevel: (level: string) => void;
+  selectedLocations: string[];
+  onToggleLocation: (loc: string) => void;
+  customLocation: string;
+  onCustomLocationChange: (val: string) => void;
+  minSalary: string;
+  onMinSalaryChange: (val: string) => void;
+  maxSalary: string;
+  onMaxSalaryChange: (val: string) => void;
+  salaryError: string | null;
+  activeFilterCount: number;
+  onResetFilters: () => void;
+}
 
-  const handleResetFilters = () => {
-    setKeyword("");
-    setSelectedCategories([]);
-    setSelectedLocations([]);
-    setCustomLocation("");
-    setSelectedJobTypes([]);
-    setSelectedLevels([]);
-    setMinSalary("");
-    setMaxSalary("");
-    setSortBy("newest");
-    setPage(1);
-  };
-
-  const activeFilterCount =
-    (keyword ? 1 : 0) +
-    selectedCategories.length +
-    selectedLocations.length +
-    (customLocation ? 1 : 0) +
-    selectedJobTypes.length +
-    selectedLevels.length +
-    (minSalary || maxSalary ? 1 : 0);
-
-  // Filter Sidebar View Component
-  const FilterSidebar = () => (
+/**
+ * FilterSidebarContent component declared OUTSIDE JobsCatalogue.
+ * Maintaining a stable component reference prevents React from unmounting
+ * and destroying input DOM nodes on re-renders, fixing the focus loss bug completely.
+ */
+const FilterSidebarContent: React.FC<FilterSidebarContentProps> = ({
+  keyword,
+  onKeywordChange,
+  categories,
+  selectedCategories,
+  onToggleCategory,
+  selectedJobTypes,
+  onToggleJobType,
+  selectedLevels,
+  onToggleLevel,
+  selectedLocations,
+  onToggleLocation,
+  customLocation,
+  onCustomLocationChange,
+  minSalary,
+  onMinSalaryChange,
+  maxSalary,
+  onMaxSalaryChange,
+  salaryError,
+  activeFilterCount,
+  onResetFilters,
+}) => {
+  return (
     <div className="space-y-6">
       {/* Header & Reset Button */}
       <div className="flex items-center justify-between pb-4 border-b border-[#E5E7EB]">
@@ -275,7 +146,7 @@ const JobsCatalogue: React.FC = () => {
         {activeFilterCount > 0 && (
           <button
             type="button"
-            onClick={handleResetFilters}
+            onClick={onResetFilters}
             className="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-red-600 transition cursor-pointer"
           >
             <RotateCcw className="h-3.5 w-3.5" />
@@ -295,10 +166,7 @@ const JobsCatalogue: React.FC = () => {
             type="text"
             placeholder="Job title or tags..."
             value={keyword}
-            onChange={(e) => {
-              setKeyword(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => onKeywordChange(e.target.value)}
             className="pl-9 text-xs"
           />
         </div>
@@ -325,7 +193,7 @@ const JobsCatalogue: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={isChecked}
-                    onChange={() => handleToggleCategory(cat.id)}
+                    onChange={() => onToggleCategory(cat.id)}
                     className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                   />
                   <span
@@ -357,7 +225,7 @@ const JobsCatalogue: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={isChecked}
-                  onChange={() => handleToggleJobType(type)}
+                  onChange={() => onToggleJobType(type)}
                   className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
                 <span
@@ -387,7 +255,7 @@ const JobsCatalogue: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={isChecked}
-                  onChange={() => handleToggleLevel(level)}
+                  onChange={() => onToggleLevel(level)}
                   className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
                 <span
@@ -417,7 +285,7 @@ const JobsCatalogue: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={isChecked}
-                  onChange={() => handleToggleLocation(loc)}
+                  onChange={() => onToggleLocation(loc)}
                   className="rounded border-[#E5E7EB] text-[#4F46E5] focus:ring-[#4F46E5] cursor-pointer"
                 />
                 <span
@@ -434,10 +302,7 @@ const JobsCatalogue: React.FC = () => {
             type="text"
             placeholder="Custom city/country..."
             value={customLocation}
-            onChange={(e) => {
-              setCustomLocation(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => onCustomLocationChange(e.target.value)}
             className="text-xs h-8"
           />
         </div>
@@ -449,30 +314,377 @@ const JobsCatalogue: React.FC = () => {
           Monthly Salary ($ USD)
         </label>
         <div className="grid grid-cols-2 gap-2">
-          <Input
-            type="number"
-            placeholder="Min ($)"
-            value={minSalary}
-            onChange={(e) => {
-              setMinSalary(e.target.value);
-              setPage(1);
-            }}
-            className="text-xs h-8"
-          />
-          <Input
-            type="number"
-            placeholder="Max ($)"
-            value={maxSalary}
-            onChange={(e) => {
-              setMaxSalary(e.target.value);
-              setPage(1);
-            }}
-            className="text-xs h-8"
-          />
+          <div>
+            <Input
+              type="number"
+              min="0"
+              placeholder="Min ($)"
+              value={minSalary}
+              onChange={(e) => onMinSalaryChange(e.target.value)}
+              className={`text-xs h-8 ${
+                salaryError ? "border-red-400 focus-visible:ring-red-400" : ""
+              }`}
+            />
+          </div>
+          <div>
+            <Input
+              type="number"
+              min="0"
+              placeholder="Max ($)"
+              value={maxSalary}
+              onChange={(e) => onMaxSalaryChange(e.target.value)}
+              className={`text-xs h-8 ${
+                salaryError ? "border-red-400 focus-visible:ring-red-400" : ""
+              }`}
+            />
+          </div>
         </div>
+        {salaryError && (
+          <p className="text-[11px] text-red-600 font-medium leading-tight">
+            {salaryError}
+          </p>
+        )}
       </div>
     </div>
   );
+};
+
+const JobsCatalogue: React.FC = () => {
+  const searchParams = useSearchParams();
+
+  // Initial URL Query State
+  const initialKeyword =
+    searchParams.get("keyword") || searchParams.get("search") || "";
+  const initialCategory =
+    searchParams.get("category") || searchParams.get("categoryId") || "";
+  const initialLocation = searchParams.get("location") || "";
+  const isPopularLocation = POPULAR_LOCATIONS.includes(initialLocation);
+  const initialSelectedLocations = isPopularLocation ? [initialLocation] : [];
+  const initialCustomLoc =
+    !isPopularLocation && initialLocation ? initialLocation : "";
+  const initialJobType = searchParams.get("jobType")
+    ? searchParams.get("jobType")!.split(",").filter(Boolean)
+    : [];
+  const initialLevel = searchParams.get("level")
+    ? searchParams.get("level")!.split(",").filter(Boolean)
+    : [];
+  const initialMinSalary = searchParams.get("minSalary") || "";
+  const initialMaxSalary = searchParams.get("maxSalary") || "";
+  const initialSortBy =
+    (searchParams.get("sortBy") as
+      | "newest"
+      | "salary_desc"
+      | "salary_asc"
+      | "deadline") || "newest";
+  const initialPage = Number(searchParams.get("page")) || 1;
+
+  // Immediate Input States (smooth typing, immediate UI feedback)
+  const [keywordInput, setKeywordInput] = useState(initialKeyword);
+  const [customLocationInput, setCustomLocationInput] =
+    useState(initialCustomLoc);
+  const [minSalaryInput, setMinSalaryInput] = useState(initialMinSalary);
+  const [maxSalaryInput, setMaxSalaryInput] = useState(initialMaxSalary);
+
+  // Debounced States (450ms debounce for network requests and URL sync)
+  const debouncedKeyword = useDebounce(keywordInput, 450);
+  const debouncedCustomLocation = useDebounce(customLocationInput, 450);
+  const debouncedMinSalary = useDebounce(minSalaryInput, 450);
+  const debouncedMaxSalary = useDebounce(maxSalaryInput, 450);
+
+  // Non-debounced Filter States (immediate response on click)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialCategory ? [initialCategory] : [],
+  );
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(
+    initialSelectedLocations,
+  );
+  const [selectedJobTypes, setSelectedJobTypes] =
+    useState<string[]>(initialJobType);
+  const [selectedLevels, setSelectedLevels] = useState<string[]>(initialLevel);
+  const [sortBy, setSortBy] = useState<
+    "newest" | "salary_desc" | "salary_asc" | "deadline"
+  >(initialSortBy);
+  const [page, setPage] = useState(initialPage);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  // Salary Validation
+  const salaryValidation = useMemo(() => {
+    const minTrimmed = minSalaryInput.trim();
+    const maxTrimmed = maxSalaryInput.trim();
+
+    const minNum = minTrimmed !== "" ? Number(minTrimmed) : null;
+    const maxNum = maxTrimmed !== "" ? Number(maxTrimmed) : null;
+
+    if (minNum !== null && isNaN(minNum)) {
+      return { isValid: false, error: "Minimum salary must be a valid number" };
+    }
+    if (maxNum !== null && isNaN(maxNum)) {
+      return { isValid: false, error: "Maximum salary must be a valid number" };
+    }
+    if (minNum !== null && minNum < 0) {
+      return { isValid: false, error: "Minimum salary cannot be negative" };
+    }
+    if (maxNum !== null && maxNum < 0) {
+      return { isValid: false, error: "Maximum salary cannot be negative" };
+    }
+    if (minNum !== null && maxNum !== null && minNum > maxNum) {
+      return {
+        isValid: false,
+        error: "Minimum salary cannot exceed maximum salary",
+      };
+    }
+
+    return { isValid: true, error: null };
+  }, [minSalaryInput, maxSalaryInput]);
+
+  const debouncedMinNum = useMemo(() => {
+    const trimmed = debouncedMinSalary.trim();
+    if (!trimmed || isNaN(Number(trimmed))) return null;
+    return Number(trimmed);
+  }, [debouncedMinSalary]);
+
+  const debouncedMaxNum = useMemo(() => {
+    const trimmed = debouncedMaxSalary.trim();
+    if (!trimmed || isNaN(Number(trimmed))) return null;
+    return Number(trimmed);
+  }, [debouncedMaxSalary]);
+
+  const isDebouncedSalaryValid = useMemo(() => {
+    if (debouncedMinNum !== null && debouncedMinNum < 0) return false;
+    if (debouncedMaxNum !== null && debouncedMaxNum < 0) return false;
+    if (
+      debouncedMinNum !== null &&
+      debouncedMaxNum !== null &&
+      debouncedMinNum > debouncedMaxNum
+    ) {
+      return false;
+    }
+    return true;
+  }, [debouncedMinNum, debouncedMaxNum]);
+
+  // Construct stable query parameters for TanStack Query
+  const filterParams = useMemo(() => {
+    const params: Record<string, string | number> = {
+      page,
+      limit: 10,
+      sortBy,
+      hiringStatus: "Ongoing",
+    };
+
+    if (debouncedKeyword.trim()) {
+      params.keyword = debouncedKeyword.trim();
+    }
+
+    if (selectedCategories.length > 0) {
+      params.category = selectedCategories.join(",");
+    }
+
+    const activeLocations = [...selectedLocations];
+    if (
+      debouncedCustomLocation.trim() &&
+      !activeLocations.includes(debouncedCustomLocation.trim())
+    ) {
+      activeLocations.push(debouncedCustomLocation.trim());
+    }
+    if (activeLocations.length > 0) {
+      params.location = activeLocations.join(",");
+    }
+
+    if (selectedJobTypes.length > 0) {
+      params.jobType = selectedJobTypes.join(",");
+    }
+
+    if (selectedLevels.length > 0) {
+      params.level = selectedLevels.join(",");
+    }
+
+    if (isDebouncedSalaryValid) {
+      if (debouncedMinNum !== null) params.minSalary = debouncedMinNum;
+      if (debouncedMaxNum !== null) params.maxSalary = debouncedMaxNum;
+    }
+
+    return params;
+  }, [
+    page,
+    sortBy,
+    debouncedKeyword,
+    selectedCategories,
+    selectedLocations,
+    debouncedCustomLocation,
+    selectedJobTypes,
+    selectedLevels,
+    isDebouncedSalaryValid,
+    debouncedMinNum,
+    debouncedMaxNum,
+  ]);
+
+  // Categories Query
+  const categoriesQuery = useQuery({
+    queryKey: queryKeys.categories.list({ isActive: "true" }),
+    queryFn: () => getAllCategories({ isActive: "true" }),
+  });
+
+  // Jobs Query with keepPreviousData to prevent layout collapsing & scroll jumps
+  const jobsQuery = useQuery({
+    queryKey: queryKeys.jobs.list(filterParams),
+    queryFn: () => getAllJobs(filterParams),
+    placeholderData: keepPreviousData,
+  });
+
+  const categories: ICategory[] = categoriesQuery.data || [];
+  const jobs: IJob[] = jobsQuery.data?.jobs || [];
+  const meta: IJobsResponseMeta = jobsQuery.data?.meta || {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPage: 1,
+  };
+  const isInitialLoading = jobsQuery.isLoading;
+
+  // Track initial mount so we do NOT reset page to 1 on initial load
+  const isInitialMount = useRef(true);
+
+  // Reset page to 1 whenever any debounced search filter or click filter changes
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    setPage(1);
+  }, [
+    debouncedKeyword,
+    selectedCategories,
+    selectedLocations,
+    debouncedCustomLocation,
+    selectedJobTypes,
+    selectedLevels,
+    debouncedMinSalary,
+    debouncedMaxSalary,
+    sortBy,
+  ]);
+
+  // Synchronize URL query parameters cleanly with window.history.replaceState
+  // This avoids Next.js router transitions, Suspense fallbacks, and scroll-to-top resets
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (debouncedKeyword.trim()) {
+      params.set("keyword", debouncedKeyword.trim());
+    }
+
+    if (selectedCategories.length > 0) {
+      params.set("category", selectedCategories.join(","));
+    }
+
+    const allLocations = [...selectedLocations];
+    if (
+      debouncedCustomLocation.trim() &&
+      !allLocations.includes(debouncedCustomLocation.trim())
+    ) {
+      allLocations.push(debouncedCustomLocation.trim());
+    }
+    if (allLocations.length > 0) {
+      params.set("location", allLocations.join(","));
+    }
+
+    if (selectedJobTypes.length > 0) {
+      params.set("jobType", selectedJobTypes.join(","));
+    }
+
+    if (selectedLevels.length > 0) {
+      params.set("level", selectedLevels.join(","));
+    }
+
+    if (isDebouncedSalaryValid) {
+      if (debouncedMinSalary.trim() && debouncedMinNum !== null) {
+        params.set("minSalary", String(debouncedMinNum));
+      }
+      if (debouncedMaxSalary.trim() && debouncedMaxNum !== null) {
+        params.set("maxSalary", String(debouncedMaxNum));
+      }
+    }
+
+    if (sortBy !== "newest") {
+      params.set("sortBy", sortBy);
+    }
+
+    if (page > 1) {
+      params.set("page", String(page));
+    }
+
+    const qs = params.toString();
+    const targetUrl = qs ? `/all-jobs?${qs}` : "/all-jobs";
+
+    if (typeof window !== "undefined") {
+      const currentUrl = window.location.pathname + window.location.search;
+      if (currentUrl !== targetUrl) {
+        window.history.replaceState(window.history.state, "", targetUrl);
+      }
+    }
+  }, [
+    debouncedKeyword,
+    selectedCategories,
+    selectedLocations,
+    debouncedCustomLocation,
+    selectedJobTypes,
+    selectedLevels,
+    debouncedMinSalary,
+    debouncedMaxSalary,
+    debouncedMinNum,
+    debouncedMaxNum,
+    isDebouncedSalaryValid,
+    sortBy,
+    page,
+  ]);
+
+  // Filter toggle handlers
+  const handleToggleCategory = useCallback((catId: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(catId)
+        ? prev.filter((id) => id !== catId)
+        : [...prev, catId],
+    );
+  }, []);
+
+  const handleToggleLocation = useCallback((loc: string) => {
+    setSelectedLocations((prev) =>
+      prev.includes(loc) ? prev.filter((l) => l !== loc) : [...prev, loc],
+    );
+  }, []);
+
+  const handleToggleJobType = useCallback((type: string) => {
+    setSelectedJobTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
+    );
+  }, []);
+
+  const handleToggleLevel = useCallback((lvl: string) => {
+    setSelectedLevels((prev) =>
+      prev.includes(lvl) ? prev.filter((l) => l !== lvl) : [...prev, lvl],
+    );
+  }, []);
+
+  const handleResetFilters = useCallback(() => {
+    setKeywordInput("");
+    setSelectedCategories([]);
+    setSelectedLocations([]);
+    setCustomLocationInput("");
+    setSelectedJobTypes([]);
+    setSelectedLevels([]);
+    setMinSalaryInput("");
+    setMaxSalaryInput("");
+    setSortBy("newest");
+    setPage(1);
+  }, []);
+
+  const activeFilterCount =
+    (keywordInput.trim() ? 1 : 0) +
+    selectedCategories.length +
+    selectedLocations.length +
+    (customLocationInput.trim() ? 1 : 0) +
+    selectedJobTypes.length +
+    selectedLevels.length +
+    (minSalaryInput.trim() || maxSalaryInput.trim() ? 1 : 0);
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -509,7 +721,6 @@ const JobsCatalogue: React.FC = () => {
                 setSortBy(
                   val as "newest" | "salary_desc" | "salary_asc" | "deadline",
                 );
-                setPage(1);
               }}
             >
               <SelectTrigger className="h-10 rounded-full border border-[#E5E7EB] bg-white px-4 text-xs font-medium text-[#0F172A] shadow-none min-w-[190px]">
@@ -538,15 +749,15 @@ const JobsCatalogue: React.FC = () => {
           <span className="text-xs font-medium text-slate-500">
             Active filters:
           </span>
-          {keyword && (
+          {keywordInput.trim() && (
             <Badge
               variant="secondary"
               className="gap-1 bg-[#EEF2FF] text-[#4F46E5] border-transparent text-xs rounded-full"
             >
-              Keyword: {keyword}
+              Keyword: {keywordInput.trim()}
               <X
                 className="h-3 w-3 cursor-pointer"
-                onClick={() => setKeyword("")}
+                onClick={() => setKeywordInput("")}
               />
             </Badge>
           )}
@@ -605,21 +816,41 @@ const JobsCatalogue: React.FC = () => {
               />
             </Badge>
           ))}
-          {(minSalary || maxSalary) && (
+          {customLocationInput.trim() && (
             <Badge
               variant="secondary"
-              className="gap-1 bg-slate-100 text-slate-700 text-xs"
+              className="gap-1 bg-amber-50 text-amber-700 border-amber-200 text-xs"
             >
-              Salary: ${minSalary || "0"} - ${maxSalary || "Any"}
+              Location: {customLocationInput.trim()}
               <X
                 className="h-3 w-3 cursor-pointer"
-                onClick={() => {
-                  setMinSalary("");
-                  setMaxSalary("");
-                }}
+                onClick={() => setCustomLocationInput("")}
               />
             </Badge>
           )}
+          {isDebouncedSalaryValid &&
+            (minSalaryInput.trim() || maxSalaryInput.trim()) && (
+              <Badge
+                variant="secondary"
+                className="gap-1 bg-slate-100 text-slate-700 text-xs"
+              >
+                Salary:{" "}
+                {minSalaryInput.trim()
+                  ? `$${Number(minSalaryInput.trim()).toLocaleString()}`
+                  : "$0"}{" "}
+                -{" "}
+                {maxSalaryInput.trim()
+                  ? `$${Number(maxSalaryInput.trim()).toLocaleString()}`
+                  : "Any"}
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={() => {
+                    setMinSalaryInput("");
+                    setMaxSalaryInput("");
+                  }}
+                />
+              </Badge>
+            )}
           <button
             type="button"
             onClick={handleResetFilters}
@@ -634,12 +865,33 @@ const JobsCatalogue: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Desktop Left Sidebar */}
         <aside className="hidden lg:block lg:col-span-1 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-xs h-fit sticky top-24">
-          <FilterSidebar />
+          <FilterSidebarContent
+            keyword={keywordInput}
+            onKeywordChange={setKeywordInput}
+            categories={categories}
+            selectedCategories={selectedCategories}
+            onToggleCategory={handleToggleCategory}
+            selectedJobTypes={selectedJobTypes}
+            onToggleJobType={handleToggleJobType}
+            selectedLevels={selectedLevels}
+            onToggleLevel={handleToggleLevel}
+            selectedLocations={selectedLocations}
+            onToggleLocation={handleToggleLocation}
+            customLocation={customLocationInput}
+            onCustomLocationChange={setCustomLocationInput}
+            minSalary={minSalaryInput}
+            onMinSalaryChange={setMinSalaryInput}
+            maxSalary={maxSalaryInput}
+            onMaxSalaryChange={setMaxSalaryInput}
+            salaryError={salaryValidation.error}
+            activeFilterCount={activeFilterCount}
+            onResetFilters={handleResetFilters}
+          />
         </aside>
 
         {/* Right Job Cards Grid */}
         <main className="lg:col-span-3 space-y-6">
-          {isLoading ? (
+          {isInitialLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <JobCardSkeleton key={i} />
@@ -647,7 +899,11 @@ const JobsCatalogue: React.FC = () => {
             </div>
           ) : jobs.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div
+                className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-opacity duration-200 ${
+                  jobsQuery.isFetching ? "opacity-60" : "opacity-100"
+                }`}
+              >
                 {jobs.map((job) => (
                   <JobCard key={job.id} job={job} />
                 ))}
@@ -668,6 +924,7 @@ const JobsCatalogue: React.FC = () => {
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
+                      type="button"
                       variant="outline"
                       size="sm"
                       disabled={meta.page <= 1}
@@ -687,6 +944,7 @@ const JobsCatalogue: React.FC = () => {
                         ) {
                           return (
                             <Button
+                              type="button"
                               key={pNum}
                               variant={
                                 pNum === meta.page ? "default" : "outline"
@@ -717,6 +975,7 @@ const JobsCatalogue: React.FC = () => {
                       })}
                     </div>
                     <Button
+                      type="button"
                       variant="outline"
                       size="sm"
                       disabled={meta.page >= meta.totalPage}
@@ -744,6 +1003,7 @@ const JobsCatalogue: React.FC = () => {
               </p>
               <div className="mt-5">
                 <Button
+                  type="button"
                   onClick={handleResetFilters}
                   variant="outline"
                   className="text-xs font-semibold"
@@ -777,9 +1037,31 @@ const JobsCatalogue: React.FC = () => {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <FilterSidebar />
+            <FilterSidebarContent
+              keyword={keywordInput}
+              onKeywordChange={setKeywordInput}
+              categories={categories}
+              selectedCategories={selectedCategories}
+              onToggleCategory={handleToggleCategory}
+              selectedJobTypes={selectedJobTypes}
+              onToggleJobType={handleToggleJobType}
+              selectedLevels={selectedLevels}
+              onToggleLevel={handleToggleLevel}
+              selectedLocations={selectedLocations}
+              onToggleLocation={handleToggleLocation}
+              customLocation={customLocationInput}
+              onCustomLocationChange={setCustomLocationInput}
+              minSalary={minSalaryInput}
+              onMinSalaryChange={setMinSalaryInput}
+              maxSalary={maxSalaryInput}
+              onMaxSalaryChange={setMaxSalaryInput}
+              salaryError={salaryValidation.error}
+              activeFilterCount={activeFilterCount}
+              onResetFilters={handleResetFilters}
+            />
             <div className="mt-6 pt-4 border-t border-[#E5E7EB]">
               <Button
+                type="button"
                 onClick={() => setMobileFilterOpen(false)}
                 className="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white rounded-full"
               >
