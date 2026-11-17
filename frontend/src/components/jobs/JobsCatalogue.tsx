@@ -659,14 +659,14 @@ const JobsCatalogue: React.FC = () => {
         {/* Right Job Cards Grid */}
         <main className="lg:col-span-3 space-y-6">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <JobCardSkeleton key={i} />
               ))}
             </div>
           ) : jobs.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {jobs.map((job) => (
                   <JobCard key={job.id} job={job} />
                 ))}

@@ -34,7 +34,7 @@ export default function AllJobsPage() {
 
             {/* Right Job Cards Grid skeleton */}
             <main className="lg:col-span-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <JobCardSkeleton key={i} />
                 ))}

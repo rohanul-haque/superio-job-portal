@@ -130,7 +130,7 @@ const JobCard: React.FC<JobCardProps> = ({
       <div>
         {/* Header: Company Logo/Avatar & Badges */}
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-700 font-bold text-base shadow-none overflow-hidden">
               {job.company?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -143,7 +143,7 @@ const JobCard: React.FC<JobCardProps> = ({
                 <Building2 className="h-6 w-6 text-slate-400" />
               )}
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-slate-500 line-clamp-1">
                 {job.company?.name || "Verified Company"}
               </p>
