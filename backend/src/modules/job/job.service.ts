@@ -303,14 +303,14 @@ const getJobById = async (id: string): Promise<ISingleJobDetailResponse> => {
     throw new AppError(StatusCodes.NOT_FOUND, JOB_MESSAGES.NOT_FOUND);
   }
 
-  // Fetch similar jobs (up to 4 active jobs from the same category or company)
+  // Fetch similar jobs: active jobs belonging to the same category as the currently viewed job
   const similarJobs = await prisma.job.findMany({
     where: {
       id: { not: id },
+      categoryId: job.categoryId,
       isDeleted: false,
       visible: true,
       hiringStatus: "Ongoing",
-      OR: [{ categoryId: job.categoryId }, { companyId: job.companyId }],
     },
     take: 4,
     orderBy: { createdAt: "desc" },

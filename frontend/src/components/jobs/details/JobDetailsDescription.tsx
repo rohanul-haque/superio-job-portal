@@ -1,21 +1,19 @@
-import JobCard from "@/components/jobs/JobCard";
-import { Button } from "@/components/ui/button";
 import type { IJob } from "@/interfaces/job.interface";
 import { Briefcase } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 
 interface JobDetailsDescriptionProps {
   job: IJob;
+  className?: string;
   similarJobs?: IJob[];
 }
 
 export default function JobDetailsDescription({
   job,
-  similarJobs = [],
+  className = "",
 }: JobDetailsDescriptionProps) {
   return (
-    <div className="lg:col-span-2 space-y-8">
+    <div className={`space-y-8 ${className}`}>
       {/* Job Description Card */}
       <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-none">
         <h2 className="text-xl font-bold text-[#0F172A] mb-6 flex items-center gap-2">
@@ -29,37 +27,6 @@ export default function JobDetailsDescription({
           dangerouslySetInnerHTML={{ __html: job.description }}
         />
       </div>
-
-      {/* Similar Jobs Section */}
-      {similarJobs.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-bold text-[#0F172A]">
-                Similar Job Opportunities
-              </h3>
-              <p className="text-xs text-slate-500">
-                Active openings in {job.category?.name || "this category"}
-              </p>
-            </div>
-            <Link href="/all-jobs">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs rounded-full border-[#E5E7EB]"
-              >
-                View Catalogue
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {similarJobs.map((simJob) => (
-              <JobCard key={simJob.id} job={simJob} />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

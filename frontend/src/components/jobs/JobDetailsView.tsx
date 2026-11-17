@@ -211,15 +211,21 @@ const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
       />
 
       {/* Content Layout */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Description + Similar */}
-        <JobDetailsDescription job={job} similarJobs={similarJobs} />
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Description */}
+        <JobDetailsDescription
+          job={job}
+          className="md:col-span-7 lg:col-span-8"
+        />
 
-        {/* Right Column: Company Summary Card & Quick Apply */}
+        {/* Right Column: Similar Jobs Sidebar */}
         <JobDetailsSidebar
+          currentJobId={job.id}
+          similarJobs={similarJobs}
           job={job}
           hasApplied={hasApplied}
           onApplyClick={handleApplyClick}
+          className="md:col-span-5 lg:col-span-4"
         />
       </div>
 
