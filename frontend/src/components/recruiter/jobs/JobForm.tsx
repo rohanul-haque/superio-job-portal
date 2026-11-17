@@ -20,12 +20,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Spinner from "@/components/ui/spinner";
-import type { ICategory } from "@/types/category";
-import type { ExperienceLevel, JobType } from "@/types/job.type";
+import { queryKeys } from "@/lib/query-keys";
 import cn from "@/lib/utils";
 import { getAllCategories } from "@/services/category.service";
 import { getJobById } from "@/services/job.service";
 import { createJob, updateJob } from "@/services/recruiter.service";
+import type { ICategory } from "@/types/category";
+import type { ExperienceLevel, JobType } from "@/types/job.type";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   Calendar as CalendarIcon,
@@ -58,10 +60,21 @@ interface JobFormProps {
 
 export default function JobForm({ mode, jobId }: JobFormProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
-  const [isLoadingJob, setIsLoadingJob] = useState(mode === "edit");
+  const categoriesQuery = useQuery({
+    queryKey: queryKeys.categories.list({ isActive: "true" }),
+    queryFn: () => getAllCategories({ isActive: "true" }),
+  });
+  const categories: ICategory[] = categoriesQuery.data || [];
+  const isCategoriesLoading = categoriesQuery.isLoading;
+
+  const jobQuery = useQuery({
+    queryKey: queryKeys.jobs.detail(jobId || ""),
+    queryFn: () => getJobById(jobId || ""),
+    enabled: mode === "edit" && Boolean(jobId),
+  });
+  const isLoadingJob = mode === "edit" && jobQuery.isLoading;
 
   // Form State
   const [title, setTitle] = useState("");
@@ -71,13 +84,13 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
   const [salary, setSalary] = useState<number | string>("");
   const [vacancy, setVacancy] = useState<number | string>(1);
   const [jobType, setJobType] = useState<JobType>("Full-time");
-  const [hiringStatus, setHiringStatus] = useState<"Ongoing" | "Closed">("Ongoing");
+  const [hiringStatus, setHiringStatus] = useState<"Ongoing" | "Closed">(
+    "Ongoing",
+  );
   const [deadline, setDeadline] = useState("");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [visible, setVisible] = useState(true);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const deadlineDate = useMemo(() => {
@@ -87,70 +100,111 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
     return new Date(y, m - 1, d);
   }, [deadline]);
 
-  // Load Categories & Job Data
+  // Load default category & deadline in create mode
   useEffect(() => {
-    const initData = async () => {
-      try {
-        const catData = await getAllCategories({
-          isActive: "true",
-        });
-        setCategories(catData);
+    if (categories.length > 0 && !categoryId && mode === "create") {
+      setCategoryId(categories[0].id);
+      const defaultDate = new Date();
+      defaultDate.setDate(defaultDate.getDate() + 30);
+      const y = defaultDate.getFullYear();
+      const m = String(defaultDate.getMonth() + 1).padStart(2, "0");
+      const d = String(defaultDate.getDate()).padStart(2, "0");
+      setDeadline(`${y}-${m}-${d}`);
+    }
+  }, [categories, categoryId, mode]);
 
-        if (mode === "create") {
-          if (catData.length > 0) {
-            setCategoryId(catData[0].id);
-          }
-          const defaultDate = new Date();
-          defaultDate.setDate(defaultDate.getDate() + 30);
-          const y = defaultDate.getFullYear();
-          const m = String(defaultDate.getMonth() + 1).padStart(2, "0");
-          const d = String(defaultDate.getDate()).padStart(2, "0");
-          setDeadline(`${y}-${m}-${d}`);
-        } else if (mode === "edit" && jobId) {
-          const jobData = await getJobById(jobId);
-          const currentJob = jobData.job;
-          if (currentJob) {
-            setTitle(currentJob.title || "");
-            setCategoryId(currentJob.categoryId || "");
-            setLocation(currentJob.location || "");
-            setLevel((currentJob.level as ExperienceLevel) || "Intermediate level");
-            setSalary(currentJob.salary || "");
-            setVacancy(currentJob.vacancy || 1);
-            setJobType((currentJob.jobType as JobType) || "Full-time");
-            setHiringStatus(
-              (currentJob.hiringStatus as "Ongoing" | "Closed") || "Ongoing"
-            );
-            if (currentJob.deadline) {
-              const raw = currentJob.deadline;
-              if (typeof raw === "string" && raw.includes("T")) {
-                setDeadline(raw.split("T")[0]);
-              } else {
-                const d = new Date(raw);
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, "0");
-                const day = String(d.getDate()).padStart(2, "0");
-                setDeadline(`${y}-${m}-${day}`);
-              }
-            }
-            setDescription(currentJob.description || "");
-            setVisible(currentJob.visible !== false);
-          }
+  // Sync loaded job data in edit mode
+  useEffect(() => {
+    if (jobQuery.data?.job && mode === "edit") {
+      const currentJob = jobQuery.data.job;
+      setTitle(currentJob.title || "");
+      setCategoryId(currentJob.categoryId || "");
+      setLocation(currentJob.location || "");
+      setLevel((currentJob.level as ExperienceLevel) || "Intermediate level");
+      setSalary(currentJob.salary || "");
+      setVacancy(currentJob.vacancy || 1);
+      setJobType((currentJob.jobType as JobType) || "Full-time");
+      setHiringStatus(
+        (currentJob.hiringStatus as "Ongoing" | "Closed") || "Ongoing",
+      );
+      if (currentJob.deadline) {
+        const raw = currentJob.deadline;
+        if (typeof raw === "string" && raw.includes("T")) {
+          setDeadline(raw.split("T")[0]);
+        } else {
+          const d = new Date(raw);
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          setDeadline(`${y}-${m}-${day}`);
         }
-      } catch (err: unknown) {
-        let msg = mode === "edit" ? "Failed to load job details." : "Failed to load categories.";
-        if (err instanceof Error) msg = err.message;
-        setFormError(msg);
-        toast.error("Error", { description: msg });
-      } finally {
-        setIsCategoriesLoading(false);
-        setIsLoadingJob(false);
       }
-    };
+      setDescription(currentJob.description || "");
+      setVisible(currentJob.visible !== false);
+    }
+  }, [jobQuery.data, mode]);
 
-    initData();
-  }, [mode, jobId]);
+  const saveJobMutation = useMutation({
+    mutationFn: async (payload: Parameters<typeof createJob>[0]) => {
+      if (mode === "create") {
+        return createJob(payload);
+      }
+      if (!jobId) throw new Error("Job ID missing for edit mode.");
+      return updateJob(jobId, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recruiter.jobs(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recruiter.dashboard(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.jobs.all,
+      });
+      if (jobId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.jobs.detail(jobId),
+        });
+      }
+      toast.success(
+        mode === "create"
+          ? "Job published successfully!"
+          : "Job updated successfully!",
+        {
+          description:
+            mode === "create"
+              ? `"${title}" is now open for candidate applications.`
+              : `Modifications to "${title}" have been saved.`,
+        },
+      );
+      router.push("/recruiter/dashboard/manage-jobs");
+    },
+    onError: (err: unknown) => {
+      let msg =
+        mode === "create"
+          ? "Failed to create job posting."
+          : "Failed to update job posting.";
+      if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+      ) {
+        msg = (err as { response: { data: { message: string } } }).response.data
+          .message;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
+      setFormError(msg);
+      toast.error("Operation failed", { description: msg });
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const isSubmitting = saveJobMutation.isPending;
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
 
@@ -185,57 +239,27 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
       .trim();
 
     if (!meaningfulText || meaningfulText.length < 20) {
-      setFormError("Job description must contain at least 20 characters of readable text.");
+      setFormError(
+        "Job description must contain at least 20 characters of readable text.",
+      );
       return;
     }
 
-    setIsSubmitting(true);
+    const payload = {
+      title: title.trim(),
+      categoryId,
+      location: location.trim(),
+      level,
+      salary: Number(salary),
+      vacancy: Number(vacancy) || 1,
+      jobType,
+      hiringStatus,
+      deadline,
+      description: description.trim(),
+      visible,
+    };
 
-    try {
-      const payload = {
-        title: title.trim(),
-        categoryId,
-        location: location.trim(),
-        level,
-        salary: Number(salary),
-        vacancy: Number(vacancy) || 1,
-        jobType,
-        hiringStatus,
-        deadline,
-        description: description.trim(),
-        visible,
-      };
-
-      if (mode === "create") {
-        await createJob(payload);
-        toast.success("Job published successfully!", {
-          description: `"${title}" is now open for candidate applications.`,
-        });
-      } else if (mode === "edit" && jobId) {
-        await updateJob(jobId, payload);
-        toast.success("Job updated successfully!", {
-          description: `Modifications to "${title}" have been saved.`,
-        });
-      }
-
-      router.push("/recruiter/dashboard/manage-jobs");
-    } catch (err: unknown) {
-      let msg = mode === "create" ? "Failed to create job posting." : "Failed to update job posting.";
-      if (
-        err &&
-        typeof err === "object" &&
-        "response" in err &&
-        (err as { response?: { data?: { message?: string } } }).response?.data?.message
-      ) {
-        msg = (err as { response: { data: { message: string } } }).response.data.message;
-      } else if (err instanceof Error) {
-        msg = err.message;
-      }
-      setFormError(msg);
-      toast.error("Operation failed", { description: msg });
-    } finally {
-      setIsSubmitting(false);
-    }
+    saveJobMutation.mutate(payload);
   };
 
   if (isLoadingJob) {
@@ -465,7 +489,7 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
                       disabled={isSubmitting}
                       className={cn(
                         "h-11 w-full justify-start text-left text-xs font-semibold rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 px-3 transition-colors",
-                        !deadline && "text-slate-400 font-normal"
+                        !deadline && "text-slate-400 font-normal",
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4 text-slate-400 shrink-0" />
@@ -489,7 +513,10 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
                       onSelect={(date) => {
                         if (date) {
                           const y = date.getFullYear();
-                          const m = String(date.getMonth() + 1).padStart(2, "0");
+                          const m = String(date.getMonth() + 1).padStart(
+                            2,
+                            "0",
+                          );
                           const d = String(date.getDate()).padStart(2, "0");
                           setDeadline(`${y}-${m}-${d}`);
                         } else {
@@ -517,7 +544,8 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
               Role Description & Requirements
             </h3>
             <p className="text-[11px] text-slate-500">
-              Provide thorough details about the responsibilities, required tech stack, and benefits.
+              Provide thorough details about the responsibilities, required tech
+              stack, and benefits.
             </p>
           </div>
 
@@ -534,7 +562,8 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
               }
             />
             <p className="text-[11px] text-slate-400">
-              Format your job description using headings, lists, bold text, and links. Saved as clean, safe HTML.
+              Format your job description using headings, lists, bold text, and
+              links. Saved as clean, safe HTML.
             </p>
           </CardContent>
         </Card>
@@ -586,7 +615,8 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
                   Public Marketplace Visibility
                 </h4>
                 <p className="text-[11px] text-slate-500">
-                  When enabled, this opening appears in search filters and the public catalogue.
+                  When enabled, this opening appears in search filters and the
+                  public catalogue.
                 </p>
               </div>
 
@@ -624,7 +654,9 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
             {isSubmitting ? (
               <>
                 <Spinner size="sm" className="mr-1.5" />
-                {mode === "create" ? "Publishing Vacancy..." : "Saving Modifications..."}
+                {mode === "create"
+                  ? "Publishing Vacancy..."
+                  : "Saving Modifications..."}
               </>
             ) : mode === "create" ? (
               <>

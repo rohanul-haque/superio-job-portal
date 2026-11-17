@@ -8,13 +8,14 @@ import { JobDetailsSkeleton } from "@/components/loaders/skeleton/JobListSkeleto
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useCandidateJobState } from "@/context/CandidateJobStateContext";
-import type { IJob } from "@/interfaces/job.interface";
+import { queryKeys } from "@/lib/query-keys";
 import { applyJob } from "@/services/application.service";
 import { getJobById } from "@/services/job.service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 interface JobDetailsViewProps {
@@ -24,6 +25,7 @@ interface JobDetailsViewProps {
 const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
   const { user, isAuthenticated } = useAuth();
   const {
     isJobBookmarked,
@@ -32,40 +34,74 @@ const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
     recordApplication,
   } = useCandidateJobState();
 
-  const [job, setJob] = useState<IJob | null>(null);
-  const [similarJobs, setSimilarJobs] = useState<IJob[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const jobDetailQuery = useQuery({
+    queryKey: queryKeys.jobs.detail(id),
+    queryFn: () => getJobById(id),
+    enabled: Boolean(id),
+  });
+
+  const job = jobDetailQuery.data?.job || null;
+  const similarJobs = jobDetailQuery.data?.similarJobs || [];
+  const isLoading = jobDetailQuery.isLoading;
+  const errorMessage = jobDetailQuery.error instanceof Error
+    ? jobDetailQuery.error.message
+    : jobDetailQuery.error
+      ? String(jobDetailQuery.error)
+      : null;
 
   // Interaction State backed by Candidate Job State context & server truth
   const isBookmarked = isJobBookmarked(id);
   const hasApplied = hasAppliedToJob(id);
-  const [isApplying, setIsApplying] = useState(false);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isResumeWarningOpen, setIsResumeWarningOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchJobDetails = async () => {
-      setIsLoading(true);
-      setErrorMessage(null);
-      try {
-        const res = await getJobById(id);
-        setJob(res.job);
-        setSimilarJobs(res.similarJobs || []);
-      } catch (err: unknown) {
-        const error = err as { message?: string };
-        setErrorMessage(
-          error.message || "Job not found or no longer publicly available."
-        );
-      } finally {
-        setIsLoading(false);
+  const applyMutation = useMutation({
+    mutationFn: () => applyJob(id),
+    onSuccess: () => {
+      recordApplication(id);
+      setIsApplyModalOpen(false);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.applications(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.dashboard(),
+      });
+      toast.success("Application submitted successfully!", {
+        description: "Your application has been received by the recruiter.",
+      });
+    },
+    onError: (err: unknown) => {
+      let message = "Failed to submit application.";
+      if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        (err as { response?: { data?: { message?: string }; status?: number } })
+          .response
+      ) {
+        const resp = (
+          err as {
+            response: { data?: { message?: string }; status?: number };
+          }
+        ).response;
+        if (
+          resp?.status === 409 ||
+          resp?.data?.message?.toLowerCase().includes("already applied")
+        ) {
+          recordApplication(id);
+          setIsApplyModalOpen(false);
+        }
+        if (resp?.data?.message) {
+          message = resp.data.message;
+        }
+      } else if (err instanceof Error) {
+        message = err.message;
       }
-    };
+      toast.error(message);
+    },
+  });
 
-    if (id) {
-      fetchJobDetails();
-    }
-  }, [id]);
+  const isApplying = applyMutation.isPending;
 
   const handleBookmarkToggle = async () => {
     if (!isAuthenticated || !user) {
@@ -120,46 +156,8 @@ const JobDetailsView: React.FC<JobDetailsViewProps> = ({ id }) => {
     setIsApplyModalOpen(true);
   };
 
-  const handleConfirmApplication = async () => {
-    setIsApplying(true);
-    try {
-      await applyJob(id);
-      recordApplication(id);
-      setIsApplyModalOpen(false);
-      toast.success("Application submitted successfully!", {
-        description: "Your application has been received by the recruiter.",
-      });
-    } catch (err: unknown) {
-      let message = "Failed to submit application.";
-      if (
-        err &&
-        typeof err === "object" &&
-        "response" in err &&
-        (err as { response?: { data?: { message?: string }; status?: number } })
-          .response
-      ) {
-        const resp = (
-          err as {
-            response: { data?: { message?: string }; status?: number };
-          }
-        ).response;
-        if (
-          resp?.status === 409 ||
-          resp?.data?.message?.toLowerCase().includes("already applied")
-        ) {
-          recordApplication(id);
-          setIsApplyModalOpen(false);
-        }
-        if (resp?.data?.message) {
-          message = resp.data.message;
-        }
-      } else if (err instanceof Error) {
-        message = err.message;
-      }
-      toast.error(message);
-    } finally {
-      setIsApplying(false);
-    }
+  const handleConfirmApplication = () => {
+    applyMutation.mutate();
   };
 
   const handleShare = () => {

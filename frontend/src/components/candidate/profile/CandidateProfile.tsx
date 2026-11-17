@@ -7,20 +7,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
 import { useAuth } from "@/context/AuthContext";
+import { useCandidateProfile } from "@/hooks/use-candidate";
 import type { ICandidateProfile } from "@/interfaces/candidate.interface";
-import { getProfile, updateProfile } from "@/services/candidate.service";
+import { queryKeys } from "@/lib/query-keys";
+import { updateProfile } from "@/services/candidate.service";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, RefreshCw } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_RESUME_SIZE = 5 * 1024 * 1024; // 5 MB
 
 function CandidateProfile() {
+  const queryClient = useQueryClient();
   const { user, refreshUser } = useAuth();
+  const {
+    profile: queryProfile,
+    isLoading,
+    refetch: fetchProfile,
+  } = useCandidateProfile();
   const [profile, setProfile] = useState<ICandidateProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
 
   // Form Fields
   const [name, setName] = useState("");
@@ -39,33 +46,46 @@ function CandidateProfile() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedResume, setSelectedResume] = useState<File | null>(null);
 
-  const fetchProfile = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getProfile();
-      setProfile(data);
-      setName(data.name || "");
-      setTitle(data.title || "");
-      setBio(data.bio || "");
-      setSkills(data.skills || []);
-      setLinkedin(data.socialLinks?.linkedin || "");
-      setGithub(data.socialLinks?.github || "");
-      setPortfolio(data.socialLinks?.portfolio || "");
-      const activeImg =
-        data.profilePicture?.url || user?.profilePicture?.url || null;
-      setImagePreview(activeImg);
-    } catch (err: unknown) {
-      let msg = "Failed to load candidate profile.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user?.profilePicture?.url]);
-
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (queryProfile) {
+      setProfile(queryProfile);
+      setName(queryProfile.name || "");
+      setTitle(queryProfile.title || "");
+      setBio(queryProfile.bio || "");
+      setSkills(queryProfile.skills || []);
+      setLinkedin(queryProfile.socialLinks?.linkedin || "");
+      setGithub(queryProfile.socialLinks?.github || "");
+      setPortfolio(queryProfile.socialLinks?.portfolio || "");
+      const activeImg =
+        queryProfile.profilePicture?.url || user?.profilePicture?.url || null;
+      setImagePreview(activeImg);
+    }
+  }, [queryProfile, user?.profilePicture?.url]);
+
+  const updateMutation = useMutation({
+    mutationFn: (formData: FormData) => updateProfile(formData),
+    onSuccess: async (updated) => {
+      setProfile(updated);
+      setSelectedImage(null);
+      setSelectedResume(null);
+      queryClient.setQueryData(queryKeys.candidate.profile(), updated);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.dashboard(),
+      });
+      await refreshUser();
+      toast.success("Profile saved", {
+        description:
+          "Your candidate profile and credentials have been updated.",
+      });
+    },
+    onError: (err: unknown) => {
+      let msg = "Failed to update profile.";
+      if (err instanceof Error) msg = err.message;
+      toast.error("Save error", { description: msg });
+    },
+  });
+
+  const isSaving = updateMutation.isPending;
 
   useEffect(() => {
     return () => {
@@ -142,53 +162,36 @@ function CandidateProfile() {
     setSkills(skills.filter((s) => s !== skillToRemove));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       toast.error("Name is required");
       return;
     }
 
-    setIsSaving(true);
-    try {
-      const formData = new FormData();
-      formData.append("name", name.trim());
-      formData.append("title", title.trim());
-      formData.append("bio", bio.trim());
-      formData.append(
-        "socialLinks",
-        JSON.stringify({
-          linkedin: linkedin.trim() || undefined,
-          github: github.trim() || undefined,
-          portfolio: portfolio.trim() || undefined,
-        }),
-      );
-      formData.append("skills", JSON.stringify(skills));
+    const formData = new FormData();
+    formData.append("name", name.trim());
+    formData.append("title", title.trim());
+    formData.append("bio", bio.trim());
+    formData.append(
+      "socialLinks",
+      JSON.stringify({
+        linkedin: linkedin.trim() || undefined,
+        github: github.trim() || undefined,
+        portfolio: portfolio.trim() || undefined,
+      }),
+    );
+    formData.append("skills", JSON.stringify(skills));
 
-      if (selectedImage) {
-        formData.append("profilePicture", selectedImage);
-      }
-
-      if (selectedResume) {
-        formData.append("resume", selectedResume);
-      }
-
-      const updated = await updateProfile(formData);
-      setProfile(updated);
-      setSelectedImage(null);
-      setSelectedResume(null);
-
-      await refreshUser();
-      toast.success("Profile saved", {
-        description: "Your candidate profile and credentials have been updated.",
-      });
-    } catch (err: unknown) {
-      let msg = "Failed to update profile.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Save error", { description: msg });
-    } finally {
-      setIsSaving(false);
+    if (selectedImage) {
+      formData.append("profilePicture", selectedImage);
     }
+
+    if (selectedResume) {
+      formData.append("resume", selectedResume);
+    }
+
+    updateMutation.mutate(formData);
   };
 
   if (isLoading) {
@@ -210,7 +213,7 @@ function CandidateProfile() {
         <Button
           variant="outline"
           size="sm"
-          onClick={fetchProfile}
+          onClick={() => fetchProfile()}
           disabled={isLoading}
           className="text-xs border-slate-200 self-start sm:self-auto"
         >

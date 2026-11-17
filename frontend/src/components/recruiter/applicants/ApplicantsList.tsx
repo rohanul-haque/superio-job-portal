@@ -12,76 +12,62 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { IJob } from "@/interfaces/job.interface";
-import type { IRecruiterApplicant } from "@/interfaces/recruiter.interface";
 import {
-  getApplicants,
-  getMyJobs,
-  updateApplicantStatus,
-} from "@/services/recruiter.service";
+  useRecruiterApplicants,
+  useRecruiterJobs,
+} from "@/hooks/use-recruiter";
+import type { IRecruiterApplicant } from "@/interfaces/recruiter.interface";
+import { queryKeys } from "@/lib/query-keys";
+import { updateApplicantStatus } from "@/services/recruiter.service";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Briefcase, Filter, Search, Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 function ApplicantsListInner() {
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const initialJobId = searchParams.get("jobId") || "all";
   const initialStatus = searchParams.get("status") || "all";
-
-  const [applicants, setApplicants] = useState<IRecruiterApplicant[]>([]);
-  const [myJobs, setMyJobs] = useState<IJob[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
 
   // Filters
   const [selectedJobId, setSelectedJobId] = useState<string>(initialJobId);
   const [selectedStatus, setSelectedStatus] = useState<string>(initialStatus);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState<string | null>(null);
+
+  // Queries
+  const { jobs: myJobs, isLoading: isLoadingJobs } = useRecruiterJobs();
+  const {
+    applicants,
+    isLoading: isLoadingApplicants,
+    refetch: fetchApplicants,
+  } = useRecruiterApplicants(
+    selectedJobId !== "all" ? selectedJobId : undefined
+  );
+
+  const isLoading = isLoadingJobs || isLoadingApplicants;
 
   // Candidate Profile Preview Modal
   const [selectedApplicant, setSelectedApplicant] =
     useState<IRecruiterApplicant | null>(null);
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const [jobsData, applicantsData] = await Promise.all([
-        getMyJobs(),
-        getApplicants({
-          jobId: selectedJobId !== "all" ? selectedJobId : undefined,
-        }),
-      ]);
-      setMyJobs(jobsData);
-      setApplicants(applicantsData);
-    } catch (err: unknown) {
-      let msg = "Failed to load applicants.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedJobId]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const handleStatusChange = async (applicantId: string, newStatus: string) => {
-    setIsUpdatingStatus(applicantId);
-    try {
-      await updateApplicantStatus(applicantId, newStatus);
-      toast.success("Status Updated", {
-        description: `Candidate status moved to "${newStatus}".`,
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      updateApplicantStatus(id, status),
+    onSuccess: (_data, { status }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recruiter.applicants(),
       });
-      setApplicants((prev) =>
-        prev.map((app) =>
-          app.id === applicantId
-            ? { ...app, status: newStatus as IRecruiterApplicant["status"] }
-            : app
-        )
-      );
-    } catch (err: unknown) {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recruiter.dashboard(),
+      });
+      toast.success("Status Updated", {
+        description: `Candidate status moved to "${status}".`,
+      });
+    },
+    onError: (err: unknown) => {
       let msg = "Failed to update status.";
       if (
         err &&
@@ -95,10 +81,16 @@ function ApplicantsListInner() {
       } else if (err instanceof Error) {
         msg = err.message;
       }
-      toast.error("Status Update Failed", { description: msg });
-    } finally {
+      toast.error("Error", { description: msg });
+    },
+    onSettled: () => {
       setIsUpdatingStatus(null);
-    }
+    },
+  });
+
+  const handleStatusChange = (applicantId: string, newStatus: string) => {
+    setIsUpdatingStatus(applicantId);
+    updateStatusMutation.mutate({ id: applicantId, status: newStatus });
   };
 
   const filteredApplicants = useMemo(() => {

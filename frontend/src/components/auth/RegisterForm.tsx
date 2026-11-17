@@ -20,6 +20,7 @@ import {
   registerCandidate,
   registerRecruiter,
 } from "@/services/auth.service";
+import { useMutation } from "@tanstack/react-query";
 import {
   AlertCircle,
   ArrowRight,
@@ -53,12 +54,52 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const registerMutation = useMutation({
+    mutationFn: async (payload: {
+      role: RoleType;
+      name: string;
+      email: string;
+      password: string;
+    }) => {
+      if (payload.role === "candidate") {
+        return registerCandidate({
+          name: payload.name,
+          email: payload.email,
+          password: payload.password,
+        });
+      } else {
+        return registerRecruiter({
+          name: payload.name,
+          email: payload.email,
+          password: payload.password,
+        });
+      }
+    },
+    onSuccess: (_, variables) => {
+      setRegisteredEmail(variables.email);
+      setName("");
+      setEmail("");
+      setPassword("");
+      setIsSuccess(true);
+      toast.success(
+        "Account created! Please check your email to complete verification.",
+      );
+    },
+    onError: (err: unknown) => {
+      const error = err as { message?: string };
+      setErrorMessage(
+        error.message || "Registration failed. Please try again.",
+      );
+    },
+  });
+
+  const isLoading = registerMutation.isPending;
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
 
@@ -83,41 +124,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     }
 
     setErrorMessage(null);
-    setIsLoading(true);
-
     const targetEmail = email.trim();
 
-    try {
-      if (selectedRole === "candidate") {
-        await registerCandidate({
-          name: name.trim(),
-          email: targetEmail,
-          password,
-        });
-      } else {
-        await registerRecruiter({
-          name: name.trim(),
-          email: targetEmail,
-          password,
-        });
-      }
-
-      setRegisteredEmail(targetEmail);
-      setName("");
-      setEmail("");
-      setPassword("");
-      setIsSuccess(true);
-      toast.success(
-        "Account created! Please check your email to complete verification.",
-      );
-    } catch (err: unknown) {
-      const error = err as { message?: string };
-      setErrorMessage(
-        error.message || "Registration failed. Please try again.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    registerMutation.mutate({
+      role: selectedRole,
+      name: name.trim(),
+      email: targetEmail,
+      password,
+    });
   };
 
   return (

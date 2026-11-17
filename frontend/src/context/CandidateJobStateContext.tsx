@@ -4,8 +4,7 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
-  useRef,
+  useMemo,
   useState,
 } from "react";
 import { useAuth } from "./AuthContext";
@@ -15,6 +14,8 @@ import {
   toggleBookmark as toggleBookmarkApi,
 } from "@/services/bookmark.service";
 import { getMyApplications } from "@/services/application.service";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface CandidateJobStateContextType {
   bookmarkedJobIds: Set<string>;
@@ -36,68 +37,126 @@ export const CandidateJobStateProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const { user, isAuthenticated } = useAuth();
-  const [bookmarkedJobIds, setBookmarkedJobIds] = useState<Set<string>>(
-    () => new Set()
-  );
-  const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(
-    () => new Set()
-  );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const activeFetchIdRef = useRef<number>(0);
+  const queryClient = useQueryClient();
+  const isCandidate = Boolean(isAuthenticated && user?.role === "candidate");
 
-  const refetchCandidateJobState = useCallback(async () => {
-    if (!isAuthenticated || !user || user.role !== "candidate") {
-      setBookmarkedJobIds(new Set());
-      setAppliedJobIds(new Set());
-      setIsLoading(false);
-      return;
+  // Query 1: Candidate Bookmarks (independent server state)
+  const bookmarksQuery = useQuery({
+    queryKey: queryKeys.candidate.bookmarks(),
+    queryFn: getMyBookmarks,
+    enabled: isCandidate,
+    staleTime: 30 * 1000,
+  });
+
+  // Query 2: Candidate Applications (independent server state)
+  const applicationsQuery = useQuery({
+    queryKey: queryKeys.candidate.applications(),
+    queryFn: () => getMyApplications(),
+    enabled: isCandidate,
+    staleTime: 30 * 1000,
+  });
+
+  // Local optimistic overrides to keep UI instantaneous
+  const [optimisticBookmarks, setOptimisticBookmarks] = useState<Map<string, boolean>>(
+    () => new Map()
+  );
+  const [optimisticApplied, setOptimisticApplied] = useState<Set<string>>(
+    () => new Set()
+  );
+
+  // Derive bookmarkedJobIds independently
+  const bookmarkedJobIds = useMemo(() => {
+    if (!isCandidate) return new Set<string>();
+    const ids = new Set<string>();
+    if (bookmarksQuery.data) {
+      for (const b of bookmarksQuery.data) {
+        if (b.jobId) ids.add(b.jobId);
+        if (b.job?.id) ids.add(b.job.id);
+      }
     }
-
-    const fetchId = ++activeFetchIdRef.current;
-    setIsLoading(true);
-
-    try {
-      const [bookmarks, applications] = await Promise.all([
-        getMyBookmarks().catch((err) => {
-          console.error("Failed to load candidate bookmarks:", err);
-          return [];
-        }),
-        getMyApplications().catch((err) => {
-          console.error("Failed to load candidate applications:", err);
-          return [];
-        }),
-      ]);
-
-      if (fetchId !== activeFetchIdRef.current) {
-        return;
+    // Apply optimistic bookmark mutations
+    optimisticBookmarks.forEach((isBookmarked, jobId) => {
+      if (isBookmarked) {
+        ids.add(jobId);
+      } else {
+        ids.delete(jobId);
       }
+    });
+    return ids;
+  }, [isCandidate, bookmarksQuery.data, optimisticBookmarks]);
 
-      const nextBookmarked = new Set<string>();
-      for (const b of bookmarks) {
-        if (b.jobId) nextBookmarked.add(b.jobId);
-        if (b.job?.id) nextBookmarked.add(b.job.id);
-      }
-
-      const nextApplied = new Set<string>();
-      for (const a of applications) {
+  // Derive appliedJobIds independently
+  const appliedJobIds = useMemo(() => {
+    if (!isCandidate) return new Set<string>();
+    const ids = new Set<string>();
+    if (applicationsQuery.data) {
+      for (const a of applicationsQuery.data) {
         if (!a.isDeleted) {
-          if (a.jobId) nextApplied.add(a.jobId);
-          if (a.job?.id) nextApplied.add(a.job.id);
+          if (a.jobId) ids.add(a.jobId);
+          if (a.job?.id) ids.add(a.job.id);
         }
       }
-
-      setBookmarkedJobIds(nextBookmarked);
-      setAppliedJobIds(nextApplied);
-    } finally {
-      if (fetchId === activeFetchIdRef.current) {
-        setIsLoading(false);
-      }
     }
-  }, [isAuthenticated, user]);
+    // Apply optimistic applied recordings
+    for (const id of optimisticApplied) {
+      ids.add(id);
+    }
+    return ids;
+  }, [isCandidate, applicationsQuery.data, optimisticApplied]);
 
-  useEffect(() => {
-    refetchCandidateJobState();
-  }, [refetchCandidateJobState]);
+  // Bookmark Mutation
+  const toggleBookmarkMutation = useMutation({
+    mutationFn: (jobId: string) => toggleBookmarkApi(jobId),
+    onSuccess: (res, jobId) => {
+      const serverState = res?.isBookmarked ?? true;
+      setOptimisticBookmarks((prev) => {
+        const next = new Map(prev);
+        next.set(jobId, serverState);
+        return next;
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.bookmarks(),
+      });
+    },
+    onError: (_err, jobId) => {
+      // Revert optimistic override on failure
+      setOptimisticBookmarks((prev) => {
+        const next = new Map(prev);
+        next.delete(jobId);
+        return next;
+      });
+    },
+  });
+
+  // Remove Bookmark Mutation
+  const removeBookmarkMutation = useMutation({
+    mutationFn: (jobId: string) => removeBookmarkApi(jobId),
+    onSuccess: (_res, jobId) => {
+      setOptimisticBookmarks((prev) => {
+        const next = new Map(prev);
+        next.set(jobId, false);
+        return next;
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.bookmarks(),
+      });
+    },
+    onError: (_err, jobId) => {
+      setOptimisticBookmarks((prev) => {
+        const next = new Map(prev);
+        next.delete(jobId);
+        return next;
+      });
+    },
+  });
+
+  const refetchCandidateJobState = useCallback(async () => {
+    if (!isCandidate) return;
+    await Promise.all([
+      bookmarksQuery.refetch(),
+      applicationsQuery.refetch(),
+    ]);
+  }, [isCandidate, bookmarksQuery, applicationsQuery]);
 
   const isJobBookmarked = useCallback(
     (jobId: string): boolean => {
@@ -118,89 +177,52 @@ export const CandidateJobStateProvider: React.FC<{
   const toggleBookmark = useCallback(
     async (jobId: string): Promise<boolean> => {
       if (!jobId) return false;
+      const currentlyBookmarked = bookmarkedJobIds.has(jobId);
+      const optimisticNext = !currentlyBookmarked;
 
-      // Optimistic update for immediate UI feedback
-      const wasBookmarked = bookmarkedJobIds.has(jobId);
-      const optimisticNext = !wasBookmarked;
-
-      setBookmarkedJobIds((prev) => {
-        const next = new Set(prev);
-        if (optimisticNext) {
-          next.add(jobId);
-        } else {
-          next.delete(jobId);
-        }
-        return next;
-      });
+      // Set optimistic state immediately
+      setOptimisticBookmarks((prev) => new Map(prev).set(jobId, optimisticNext));
 
       try {
-        const res = await toggleBookmarkApi(jobId);
-        const serverState = res?.isBookmarked ?? optimisticNext;
-
-        setBookmarkedJobIds((prev) => {
-          const next = new Set(prev);
-          if (serverState) {
-            next.add(jobId);
-          } else {
-            next.delete(jobId);
-          }
-          return next;
-        });
-
-        return serverState;
+        const res = await toggleBookmarkMutation.mutateAsync(jobId);
+        return res?.isBookmarked ?? optimisticNext;
       } catch (error) {
-        // Revert to original state on server failure
-        setBookmarkedJobIds((prev) => {
-          const next = new Set(prev);
-          if (wasBookmarked) {
-            next.add(jobId);
-          } else {
-            next.delete(jobId);
-          }
-          return next;
-        });
         throw error;
       }
     },
-    [bookmarkedJobIds]
+    [bookmarkedJobIds, toggleBookmarkMutation]
   );
 
   const removeBookmark = useCallback(
     async (jobId: string): Promise<boolean> => {
       if (!jobId) return false;
-
-      const wasBookmarked = bookmarkedJobIds.has(jobId);
-
-      // Optimistic removal
-      setBookmarkedJobIds((prev) => {
-        const next = new Set(prev);
-        next.delete(jobId);
-        return next;
-      });
+      setOptimisticBookmarks((prev) => new Map(prev).set(jobId, false));
 
       try {
-        await removeBookmarkApi(jobId);
+        await removeBookmarkMutation.mutateAsync(jobId);
         return true;
       } catch (error) {
-        // Revert on error
-        if (wasBookmarked) {
-          setBookmarkedJobIds((prev) => new Set(prev).add(jobId));
-        }
         throw error;
       }
     },
-    [bookmarkedJobIds]
+    [removeBookmarkMutation]
   );
 
-  const recordApplication = useCallback((jobId: string) => {
-    if (!jobId) return;
-    setAppliedJobIds((prev) => {
-      if (prev.has(jobId)) return prev;
-      const next = new Set(prev);
-      next.add(jobId);
-      return next;
-    });
-  }, []);
+  const recordApplication = useCallback(
+    (jobId: string) => {
+      if (!jobId) return;
+      setOptimisticApplied((prev) => new Set(prev).add(jobId));
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.applications(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.dashboard(),
+      });
+    },
+    [queryClient]
+  );
+
+  const isLoading = bookmarksQuery.isLoading || applicationsQuery.isLoading;
 
   const value = {
     bookmarkedJobIds,

@@ -7,11 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import Input from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
 import { useCandidateJobState } from "@/context/CandidateJobStateContext";
+import useApplications from "@/hooks/use-applications";
 import type { IJobApplication } from "@/interfaces/application.interface";
-import {
-  getMyApplications,
-  withdrawApplication,
-} from "@/services/application.service";
+import { queryKeys } from "@/lib/query-keys";
+import { withdrawApplication } from "@/services/application.service";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Briefcase,
@@ -20,59 +20,52 @@ import {
   Search,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 function ApplicationList() {
+  const queryClient = useQueryClient();
   const { refetchCandidateJobState } = useCandidateJobState();
-  const [applications, setApplications] = useState<IJobApplication[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+
+  const {
+    applications,
+    isLoading,
+    refetch: fetchApplications,
+  } = useApplications(selectedStatus);
 
   // Withdrawal modal state
   const [applicationToWithdraw, setApplicationToWithdraw] =
     useState<IJobApplication | null>(null);
-  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
-  const fetchApplications = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getMyApplications({
-        status: selectedStatus !== "all" ? selectedStatus : undefined,
+  const withdrawMutation = useMutation({
+    mutationFn: (appId: string) => withdrawApplication(appId),
+    onSuccess: async (_data, appId) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.applications(),
       });
-      setApplications(data);
-    } catch (err: unknown) {
-      let msg = "Failed to load applications.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedStatus]);
-
-  useEffect(() => {
-    fetchApplications();
-  }, [fetchApplications]);
-
-  const handleWithdraw = async () => {
-    if (!applicationToWithdraw) return;
-
-    setIsWithdrawing(true);
-    try {
-      await withdrawApplication(applicationToWithdraw.id);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.dashboard(),
+      });
+      await refetchCandidateJobState();
       toast.success("Application withdrawn", {
-        description: `Your application for "${applicationToWithdraw.job.title}" has been withdrawn.`,
+        description: `Your application has been withdrawn.`,
       });
       setApplicationToWithdraw(null);
-      await Promise.all([fetchApplications(), refetchCandidateJobState()]);
-    } catch (err: unknown) {
+    },
+    onError: (err: unknown) => {
       let msg = "Failed to withdraw application.";
       if (err instanceof Error) msg = err.message;
       toast.error("Withdrawal error", { description: msg });
-    } finally {
-      setIsWithdrawing(false);
-    }
+    },
+  });
+
+  const isWithdrawing = withdrawMutation.isPending;
+
+  const handleWithdraw = () => {
+    if (!applicationToWithdraw) return;
+    withdrawMutation.mutate(applicationToWithdraw.id);
   };
 
   const filteredApplications = applications.filter((app) => {
@@ -102,7 +95,7 @@ function ApplicationList() {
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchApplications}
+            onClick={() => fetchApplications()}
             disabled={isLoading}
             className="text-xs border-slate-200"
           >

@@ -71,7 +71,7 @@ function CandidateDashboard() {
           <Button
             variant="outline"
             size="sm"
-            onClick={refetch}
+            onClick={() => refetch()}
             disabled={isLoading}
             className="text-xs border-slate-200"
           >

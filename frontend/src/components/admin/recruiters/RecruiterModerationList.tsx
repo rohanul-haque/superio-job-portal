@@ -12,6 +12,8 @@ import {
   getRecruiters,
   moderateRecruiter,
 } from "@/services/admin.service";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Building2,
@@ -19,12 +21,11 @@ import {
   RefreshCw,
   Search,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 export default function RecruiterModerationList() {
-  const [recruiters, setRecruiters] = useState<IAdminRecruiter[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
@@ -37,51 +38,58 @@ export default function RecruiterModerationList() {
   const [previewRecruiter, setPreviewRecruiter] =
     useState<IAdminRecruiter | null>(null);
 
-  const fetchRecruiters = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getRecruiters({
-        search: searchQuery.trim() || undefined,
-        status: statusFilter !== "all" ? statusFilter : undefined,
-      });
-      setRecruiters(data.recruiters);
-    } catch (err: unknown) {
-      let msg = "Failed to load recruiters.";
+  const queryParams = {
+    search: searchQuery.trim() || undefined,
+    status: statusFilter !== "all" ? statusFilter : undefined,
+  };
+
+  const {
+    data: recruitersData,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.admin.recruiters(queryParams),
+    queryFn: () => getRecruiters(queryParams),
+  });
+
+  const recruiters = recruitersData?.recruiters || [];
+
+  const moderateMutation = useMutation({
+    mutationFn: ({
+      id,
+      action,
+    }: {
+      id: string;
+      action: "block" | "unblock" | "delete";
+    }) => moderateRecruiter(id, { action }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.recruiters() });
+      if (variables.action === "delete") {
+        queryClient.invalidateQueries({ queryKey: queryKeys.admin.trash() });
+      }
+      toast.success(
+        variables.action === "delete"
+          ? `Recruiter moved to Trash Center.`
+          : `Recruiter company status updated to ${variables.action === "block" ? "Blocked" : "Active"}.`
+      );
+      setRecruiterToModerate(null);
+    },
+    onError: (err: unknown) => {
+      let msg = "Failed to apply moderation action.";
       if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchQuery, statusFilter]);
+      toast.error("Action Failed", { description: msg });
+    },
+    onSettled: () => {
+      setActionLoadingId(null);
+    },
+  });
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchRecruiters();
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [fetchRecruiters]);
-
-  const handleConfirmAction = async () => {
+  const handleConfirmAction = () => {
     if (!recruiterToModerate) return;
     const { recruiter, action } = recruiterToModerate;
 
     setActionLoadingId(recruiter.id);
-    try {
-      await moderateRecruiter(recruiter.id, { action });
-      toast.success(
-        action === "delete"
-          ? `Recruiter moved to Trash Center.`
-          : `Recruiter company status updated to ${action === "block" ? "Blocked" : "Active"}.`
-      );
-      setRecruiterToModerate(null);
-      await fetchRecruiters();
-    } catch (err: unknown) {
-      let msg = "Failed to apply moderation action.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Action Failed", { description: msg });
-    } finally {
-      setActionLoadingId(null);
-    }
+    moderateMutation.mutate({ id: recruiter.id, action });
   };
 
   return (
@@ -100,7 +108,7 @@ export default function RecruiterModerationList() {
 
         <Button
           variant="outline"
-          onClick={fetchRecruiters}
+          onClick={() => refetch()}
           disabled={isLoading}
           className="gap-2 self-start sm:self-auto border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
         >

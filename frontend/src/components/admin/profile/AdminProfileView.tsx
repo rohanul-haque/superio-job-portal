@@ -15,8 +15,10 @@ import {
   updateProfile,
   uploadProfileImage,
 } from "@/services/admin.service";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, RefreshCw } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -28,59 +30,53 @@ const ALLOWED_MIME_TYPES = [
 ];
 
 function AdminProfileView() {
+  const queryClient = useQueryClient();
   const { user, refreshUser } = useAuth();
 
-  // Profile data state
-  const [profile, setProfile] = useState<IAdminProfile | null>(null);
-  const [isLoadingProfile, setIsLoadingProfile] = useState<boolean>(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  // Profile data query
+  const {
+    data: profileData,
+    isLoading: isLoadingProfile,
+    isError,
+    error,
+    refetch: fetchProfile,
+  } = useQuery({
+    queryKey: queryKeys.admin.profile(),
+    queryFn: getProfile,
+  });
+
+  const profile = profileData ?? null;
+  const loadError = isError && error instanceof Error ? error.message : null;
 
   // Section 1: Profile Picture state
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
-  const [isRemovingImage, setIsRemovingImage] = useState<boolean>(false);
 
   // Section 2: Personal Information state
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [isUpdatingProfile, setIsUpdatingProfile] = useState<boolean>(false);
 
   // Section 3: Password form state
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false);
 
-  // Fetch Admin Profile
-  const fetchProfile = useCallback(async () => {
-    setIsLoadingProfile(true);
-    setLoadError(null);
-    try {
-      const data = await getProfile();
-      setProfile(data);
-      setName(data.name || "");
-      setEmail(data.email || "");
-      const activeImg =
-        data.profilePicture?.url ||
-        data.profileImage?.url ||
-        user?.profilePicture?.url ||
-        null;
-      setPreviewUrl(activeImg);
-    } catch (err: unknown) {
-      let message = "Failed to load admin profile information.";
-      if (err instanceof Error) message = err.message;
-      setLoadError(message);
-      toast.error("Profile Error", { description: message });
-    } finally {
-      setIsLoadingProfile(false);
-    }
-  }, [user?.profilePicture?.url]);
-
+  // Sync profile data to local form fields
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (profileData) {
+      setName(profileData.name || "");
+      setEmail(profileData.email || "");
+      if (!selectedImage) {
+        const activeImg =
+          profileData.profilePicture?.url ||
+          profileData.profileImage?.url ||
+          user?.profilePicture?.url ||
+          null;
+        setPreviewUrl(activeImg);
+      }
+    }
+  }, [profileData, user?.profilePicture?.url, selectedImage]);
 
   useEffect(() => {
     return () => {
@@ -89,6 +85,92 @@ function AdminProfileView() {
       }
     };
   }, [previewUrl]);
+
+  // Mutations
+  const uploadImageMutation = useMutation({
+    mutationFn: (file: File) => uploadProfileImage(file),
+    onSuccess: async (updated) => {
+      queryClient.setQueryData(queryKeys.admin.profile(), updated);
+      setSelectedImage(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      const newUrl =
+        updated.profilePicture?.url || updated.profileImage?.url || null;
+      setPreviewUrl(newUrl);
+      await refreshUser();
+      toast.success("Profile Photo Uploaded", {
+        description:
+          "Your profile image has been securely uploaded to Cloudinary.",
+      });
+    },
+    onError: (err: unknown) => {
+      let message = "Failed to upload profile picture to Cloudinary.";
+      if (err instanceof Error) message = err.message;
+      toast.error("Upload Failed", { description: message });
+    },
+  });
+
+  const removeImageMutation = useMutation({
+    mutationFn: removeProfileImage,
+    onSuccess: async (updated) => {
+      queryClient.setQueryData(queryKeys.admin.profile(), updated);
+      setSelectedImage(null);
+      setPreviewUrl(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      await refreshUser();
+      toast.success("Profile Photo Removed", {
+        description:
+          "Your profile picture has been removed and reset to the default avatar.",
+      });
+    },
+    onError: (err: unknown) => {
+      let message = "Failed to remove profile picture.";
+      if (err instanceof Error) message = err.message;
+      toast.error("Removal Failed", { description: message });
+    },
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (payload: { name: string; email: string }) =>
+      updateProfile(payload),
+    onSuccess: async (updated) => {
+      queryClient.setQueryData(queryKeys.admin.profile(), updated);
+      setName(updated.name);
+      setEmail(updated.email);
+      await refreshUser();
+      toast.success("Profile Updated", {
+        description:
+          "Your administrator profile has been updated successfully.",
+      });
+    },
+    onError: (err: unknown) => {
+      let message = "Failed to update admin profile.";
+      if (err instanceof Error) message = err.message;
+      toast.error("Update Failed", { description: message });
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: changePassword,
+    onSuccess: (res) => {
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast.success("Password Changed", {
+        description:
+          res.message || "Your password has been changed successfully.",
+      });
+    },
+    onError: (err: unknown) => {
+      let message = "Failed to change password.";
+      if (err instanceof Error) message = err.message;
+      toast.error("Password Change Failed", { description: message });
+    },
+  });
+
+  const isUploadingImage = uploadImageMutation.isPending;
+  const isRemovingImage = removeImageMutation.isPending;
+  const isUpdatingProfile = updateProfileMutation.isPending;
+  const isChangingPassword = changePasswordMutation.isPending;
 
   // Handle local image file selection
   const handleImageFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,33 +198,9 @@ function AdminProfileView() {
   };
 
   // Upload selected profile picture to Cloudinary
-  const handleUploadImage = async () => {
+  const handleUploadImage = () => {
     if (!selectedImage) return;
-
-    setIsUploadingImage(true);
-    try {
-      const updated = await uploadProfileImage(selectedImage);
-      setProfile(updated);
-      setSelectedImage(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-
-      const newUrl =
-        updated.profilePicture?.url || updated.profileImage?.url || null;
-      setPreviewUrl(newUrl);
-
-      await refreshUser();
-
-      toast.success("Profile Photo Uploaded", {
-        description:
-          "Your profile image has been securely uploaded to Cloudinary.",
-      });
-    } catch (err: unknown) {
-      let message = "Failed to upload profile picture to Cloudinary.";
-      if (err instanceof Error) message = err.message;
-      toast.error("Upload Failed", { description: message });
-    } finally {
-      setIsUploadingImage(false);
-    }
+    uploadImageMutation.mutate(selectedImage);
   };
 
   // Cancel selected local image
@@ -158,32 +216,12 @@ function AdminProfileView() {
   };
 
   // Remove existing profile image from Cloudinary
-  const handleRemoveImage = async () => {
-    setIsRemovingImage(true);
-    try {
-      const updated = await removeProfileImage();
-      setProfile(updated);
-      setSelectedImage(null);
-      setPreviewUrl(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-
-      await refreshUser();
-
-      toast.success("Profile Photo Removed", {
-        description:
-          "Your profile picture has been removed and reset to the default avatar.",
-      });
-    } catch (err: unknown) {
-      let message = "Failed to remove profile picture.";
-      if (err instanceof Error) message = err.message;
-      toast.error("Removal Failed", { description: message });
-    } finally {
-      setIsRemovingImage(false);
-    }
+  const handleRemoveImage = () => {
+    removeImageMutation.mutate();
   };
 
   // Section 2: Handle Personal Information Update
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
 
     const trimmedName = name.trim();
@@ -215,33 +253,14 @@ function AdminProfileView() {
       return;
     }
 
-    setIsUpdatingProfile(true);
-    try {
-      const updated = await updateProfile({
-        name: trimmedName,
-        email: trimmedEmail,
-      });
-      setProfile(updated);
-      setName(updated.name);
-      setEmail(updated.email);
-
-      await refreshUser();
-
-      toast.success("Profile Updated", {
-        description:
-          "Your administrator profile has been updated successfully.",
-      });
-    } catch (err: unknown) {
-      let message = "Failed to update admin profile.";
-      if (err instanceof Error) message = err.message;
-      toast.error("Update Failed", { description: message });
-    } finally {
-      setIsUpdatingProfile(false);
-    }
+    updateProfileMutation.mutate({
+      name: trimmedName,
+      email: trimmedEmail,
+    });
   };
 
   // Section 3: Handle Password Change
-  const handleChangePassword = async (e: React.FormEvent) => {
+  const handleChangePassword = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!currentPassword) {
@@ -273,29 +292,11 @@ function AdminProfileView() {
       return;
     }
 
-    setIsChangingPassword(true);
-    try {
-      const res = await changePassword({
-        currentPassword,
-        newPassword,
-        confirmPassword,
-      });
-
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-
-      toast.success("Password Changed", {
-        description:
-          res.message || "Your password has been changed successfully.",
-      });
-    } catch (err: unknown) {
-      let message = "Failed to change admin password.";
-      if (err instanceof Error) message = err.message;
-      toast.error("Password Change Failed", { description: message });
-    } finally {
-      setIsChangingPassword(false);
-    }
+    changePasswordMutation.mutate({
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
   };
 
   const hasProfileChanges =

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/spinner";
 import { resendVerification } from "@/services/auth.service";
+import { useMutation } from "@tanstack/react-query";
 import { CheckCircle2, MailCheck, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "@/components/ui/toast";
@@ -22,16 +23,39 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   mode = "registration",
   email = "",
 }) => {
-  const [isResending, setIsResending] = useState(false);
   const [resendSuccessMessage, setResendSuccessMessage] = useState<
     string | null
   >(null);
+
+  const resendMutation = useMutation({
+    mutationFn: (targetEmail: string) => resendVerification(targetEmail),
+    onSuccess: () => {
+      const successMsg =
+        "A new verification email has been sent successfully. Please check your inbox. The verification link is valid for 5 minutes.";
+      setResendSuccessMessage(successMsg);
+      toast.success(successMsg);
+    },
+    onError: (err: unknown) => {
+      const error = err as { message?: string; statusCode?: number };
+      const msg = error.message || "Failed to resend verification email.";
+
+      if (msg.toLowerCase().includes("already verified")) {
+        toast.info(
+          "This account has already verified its email. You can proceed directly to log in.",
+        );
+        onClose();
+      } else {
+        toast.error(msg);
+      }
+    },
+  });
+
+  const isResending = resendMutation.isPending;
 
   // Reset resend states when modal opens or closes
   useEffect(() => {
     if (isOpen) {
       setResendSuccessMessage(null);
-      setIsResending(false);
     }
   }, [isOpen, mode]);
 
@@ -58,7 +82,7 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
     ? "Your account has been created successfully. Please check your inbox and verify your email address to continue."
     : "Your email address has not been verified yet. Please verify your email to access your account. You can request a new verification email below if needed.";
 
-  const handleResend = async () => {
+  const handleResend = () => {
     if (!email.trim()) {
       toast.error(
         "Email address not found. Please re-enter your credentials to resend.",
@@ -68,32 +92,8 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
 
     if (isResending) return;
 
-    setIsResending(true);
     setResendSuccessMessage(null);
-
-    try {
-      await resendVerification(email.trim());
-
-      const successMsg =
-        "A new verification email has been sent successfully. Please check your inbox. The verification link is valid for 5 minutes.";
-
-      setResendSuccessMessage(successMsg);
-      toast.success(successMsg);
-    } catch (err: unknown) {
-      const error = err as { message?: string; statusCode?: number };
-      const msg = error.message || "Failed to resend verification email.";
-
-      if (msg.toLowerCase().includes("already verified")) {
-        toast.info(
-          "This account has already verified its email. You can proceed directly to log in.",
-        );
-        onClose();
-      } else {
-        toast.error(msg);
-      }
-    } finally {
-      setIsResending(false);
-    }
+    resendMutation.mutate(email.trim());
   };
 
   return (

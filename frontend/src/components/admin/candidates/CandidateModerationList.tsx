@@ -12,6 +12,8 @@ import {
   getCandidates,
   moderateCandidate,
 } from "@/services/admin.service";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Filter,
@@ -19,12 +21,11 @@ import {
   Search,
   Users,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 export default function CandidateModerationList() {
-  const [candidates, setCandidates] = useState<IAdminCandidate[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
@@ -37,51 +38,58 @@ export default function CandidateModerationList() {
   const [previewCandidate, setPreviewCandidate] =
     useState<IAdminCandidate | null>(null);
 
-  const fetchCandidates = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getCandidates({
-        search: searchQuery.trim() || undefined,
-        status: statusFilter !== "all" ? statusFilter : undefined,
-      });
-      setCandidates(data.candidates);
-    } catch (err: unknown) {
-      let msg = "Failed to load candidates.";
+  const queryParams = {
+    search: searchQuery.trim() || undefined,
+    status: statusFilter !== "all" ? statusFilter : undefined,
+  };
+
+  const {
+    data: candidatesData,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.admin.candidates(queryParams),
+    queryFn: () => getCandidates(queryParams),
+  });
+
+  const candidates = candidatesData?.candidates || [];
+
+  const moderateMutation = useMutation({
+    mutationFn: ({
+      id,
+      action,
+    }: {
+      id: string;
+      action: "block" | "unblock" | "delete";
+    }) => moderateCandidate(id, { action }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.candidates() });
+      if (variables.action === "delete") {
+        queryClient.invalidateQueries({ queryKey: queryKeys.admin.trash() });
+      }
+      toast.success(
+        variables.action === "delete"
+          ? `Candidate moved to Trash Center.`
+          : `Candidate account status updated to ${variables.action === "block" ? "Blocked" : "Active"}.`
+      );
+      setCandidateToModerate(null);
+    },
+    onError: (err: unknown) => {
+      let msg = "Failed to apply moderation action.";
       if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchQuery, statusFilter]);
+      toast.error("Action Failed", { description: msg });
+    },
+    onSettled: () => {
+      setActionLoadingId(null);
+    },
+  });
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchCandidates();
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [fetchCandidates]);
-
-  const handleConfirmAction = async () => {
+  const handleConfirmAction = () => {
     if (!candidateToModerate) return;
     const { candidate, action } = candidateToModerate;
 
     setActionLoadingId(candidate.id);
-    try {
-      await moderateCandidate(candidate.id, { action });
-      toast.success(
-        action === "delete"
-          ? `Candidate moved to Trash Center.`
-          : `Candidate account status updated to ${action === "block" ? "Blocked" : "Active"}.`
-      );
-      setCandidateToModerate(null);
-      await fetchCandidates();
-    } catch (err: unknown) {
-      let msg = "Failed to apply moderation action.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Action Failed", { description: msg });
-    } finally {
-      setActionLoadingId(null);
-    }
+    moderateMutation.mutate({ id: candidate.id, action });
   };
 
   return (
@@ -100,7 +108,7 @@ export default function CandidateModerationList() {
 
         <Button
           variant="outline"
-          onClick={fetchCandidates}
+          onClick={() => refetch()}
           disabled={isLoading}
           className="gap-2 self-start sm:self-auto border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
         >

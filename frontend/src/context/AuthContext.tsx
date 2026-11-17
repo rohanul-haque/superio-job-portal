@@ -1,6 +1,8 @@
 "use client";
 
 import { toast } from "@/components/ui/toast";
+import { queryKeys } from "@/lib/query-keys";
+import { useQueryClient } from "@tanstack/react-query";
 import React, {
   createContext,
   useCallback,
@@ -37,6 +39,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<IAuthUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const userRef = useRef<IAuthUser | null>(null);
@@ -49,7 +52,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Initialize authentication on application mount via backend cookie session
   const initializeAuth = useCallback(async () => {
     try {
-      const currentUser = await getMe();
+      const currentUser = await queryClient.fetchQuery({
+        queryKey: queryKeys.auth.user(),
+        queryFn: getMe,
+        staleTime: 5 * 60 * 1000,
+      });
       setUser(currentUser);
       setSessionActive(true);
     } catch {
@@ -59,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [queryClient]);
 
   useEffect(() => {
     initializeAuth();
@@ -72,6 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!isExplicitLogout() && userRef.current !== null) {
         setUser(null);
         setSessionActive(false);
+        queryClient.clear();
         toast.error("Your session has expired. Please sign in again.");
       }
     };
@@ -85,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         );
       };
     }
-  }, []);
+  }, [queryClient]);
 
   const login = async (credentials: ILoginPayload): Promise<IAuthUser> => {
     setIsLoading(true);
@@ -93,6 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const response = await loginRequest(credentials);
       setUser(response.user);
+      queryClient.setQueryData(queryKeys.auth.user(), response.user);
       setSessionActive(true);
       toast.success(`Welcome back, ${response.user.name}!`);
       return response.user;
@@ -104,13 +113,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   /**
    * Unified Global Logout
    * Clears the active browser session for any role (Candidate, Recruiter, Admin),
-   * clears frontend authentication state, triggers backend HTTP-only cookie deletion,
+   * clears frontend authentication state, wipes all TanStack Query cache, triggers backend HTTP-only cookie deletion,
    * prevents token refresh calls, and navigates cleanly to the public homepage.
    */
   const logout = async (): Promise<void> => {
     setExplicitLogout(true);
     setSessionActive(false);
     setUser(null);
+    // Crucial: clear all user-specific cached queries so no data leaks on account switch or logout
+    queryClient.clear();
 
     try {
       await logoutRequest();
@@ -128,13 +139,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const refreshUser = async () => {
     try {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
       const currentUser = await getMe();
       setUser(currentUser);
+      queryClient.setQueryData(queryKeys.auth.user(), currentUser);
       setSessionActive(true);
     } catch (err) {
       console.error("Error refreshing user profile:", err);
       setUser(null);
       setSessionActive(false);
+      queryClient.setQueryData(queryKeys.auth.user(), null);
     }
   };
 

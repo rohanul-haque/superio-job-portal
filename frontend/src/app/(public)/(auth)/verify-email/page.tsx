@@ -19,6 +19,7 @@ import {
   verifyEmail,
   verifyEmailWithCredentials,
 } from "@/services/auth.service";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { IVerifyEmailResponse } from "@/types/auth";
 import {
   AlertCircle,
@@ -54,95 +55,114 @@ function VerifyEmailContent() {
   // Cross-device credential form
   const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
-  const [isSubmittingCredentials, setIsSubmittingCredentials] = useState(false);
 
   // Resend form
   const [resendEmail, setResendEmail] = useState(initialEmail);
-  const [isResending, setIsResending] = useState(false);
   const [showResend, setShowResend] = useState(false);
 
-  // 1. Same-Browser Verification on mount (using HTTP-only cookie)
+  // 1. Same-Browser Verification on mount (using HTTP-only cookie via TanStack Query)
+  const cookieVerificationQuery = useQuery({
+    queryKey: ["auth", "verify-email-cookie"],
+    queryFn: verifyEmail,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
   useEffect(() => {
-    let isMounted = true;
-
-    const attemptCookieVerification = async () => {
-      try {
-        const result = await verifyEmail();
-        if (isMounted) {
-          setVerifiedData({
-            name: result.user.name,
-            role: result.role || result.user.role,
-          });
-          setStage("success");
-          toast.success(result.message || "Email verified successfully!");
-        }
-      } catch (err: unknown) {
-        if (!isMounted) return;
-        const error = err as { statusCode?: number; message?: string };
-
-        // 401 indicates missing or expired cookie: switch to cross-device credentials verification
-        if (
-          error.statusCode === 401 ||
-          error.message?.toLowerCase().includes("session cookie not found") ||
-          error.message?.toLowerCase().includes("verification session")
-        ) {
-          setStage("cross_device");
-          setErrorMessage(
-            "Session cookie was not detected. If you opened this link on a new device or browser, please verify with your account credentials.",
-          );
-        } else {
-          setStage("error");
-          setErrorMessage(
-            error.message ||
-              "Email verification failed. The session may have expired.",
-          );
-        }
-      }
-    };
-
-    attemptCookieVerification();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // 2. Cross-Device / New-Browser Verification submit handler
-  const handleCredentialsSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      toast.error("Please provide both your registered email and password.");
-      return;
-    }
-
-    setIsSubmittingCredentials(true);
-    setErrorMessage(null);
-
-    try {
-      const result = await verifyEmailWithCredentials({
-        email: email.trim(),
-        password,
-      });
-
+    if (cookieVerificationQuery.isSuccess && cookieVerificationQuery.data) {
+      const result = cookieVerificationQuery.data;
       setVerifiedData({
         name: result.user.name,
         role: result.role || result.user.role,
       });
       setStage("success");
       toast.success(result.message || "Email verified successfully!");
-    } catch (err: unknown) {
+    } else if (cookieVerificationQuery.isError && cookieVerificationQuery.error) {
+      const error = cookieVerificationQuery.error as {
+        statusCode?: number;
+        message?: string;
+      };
+
+      if (
+        error.statusCode === 401 ||
+        error.message?.toLowerCase().includes("session cookie not found") ||
+        error.message?.toLowerCase().includes("verification session")
+      ) {
+        setStage("cross_device");
+        setErrorMessage(
+          "Session cookie was not detected. If you opened this link on a new device or browser, please verify with your account credentials.",
+        );
+      } else {
+        setStage("error");
+        setErrorMessage(
+          error.message ||
+            "Email verification failed. The session may have expired.",
+        );
+      }
+    }
+  }, [
+    cookieVerificationQuery.isSuccess,
+    cookieVerificationQuery.isError,
+    cookieVerificationQuery.data,
+    cookieVerificationQuery.error,
+  ]);
+
+  // 2. Cross-Device / New-Browser Verification submit mutation
+  const credentialsMutation = useMutation({
+    mutationFn: (credentials: { email: string; password: string }) =>
+      verifyEmailWithCredentials(credentials),
+    onSuccess: (result) => {
+      setVerifiedData({
+        name: result.user.name,
+        role: result.role || result.user.role,
+      });
+      setStage("success");
+      toast.success(result.message || "Email verified successfully!");
+    },
+    onError: (err: unknown) => {
       const error = err as { message?: string };
       setErrorMessage(
         error.message || "Verification failed. Please check your credentials.",
       );
       toast.error(error.message || "Failed to verify account.");
-    } finally {
-      setIsSubmittingCredentials(false);
+    },
+  });
+
+  const isSubmittingCredentials = credentialsMutation.isPending;
+
+  const handleCredentialsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      toast.error("Please provide both your registered email and password.");
+      return;
     }
+
+    setErrorMessage(null);
+    credentialsMutation.mutate({
+      email: email.trim(),
+      password,
+    });
   };
 
-  // 3. Resend Verification Email handler
-  const handleResend = async (e: React.FormEvent) => {
+  // 3. Resend Verification Email mutation
+  const resendMutation = useMutation({
+    mutationFn: (targetEmail: string) => resendVerification(targetEmail),
+    onSuccess: (message) => {
+      toast.success(
+        message || "A fresh verification email has been dispatched via Gmail.",
+      );
+      setShowResend(false);
+      setErrorMessage(null);
+    },
+    onError: (err: unknown) => {
+      const error = err as { message?: string };
+      toast.error(error.message || "Failed to dispatch verification email.");
+    },
+  });
+
+  const isResending = resendMutation.isPending;
+
+  const handleResend = (e: React.FormEvent) => {
     e.preventDefault();
     const targetEmail = resendEmail.trim() || email.trim();
     if (!targetEmail) {
@@ -150,20 +170,7 @@ function VerifyEmailContent() {
       return;
     }
 
-    setIsResending(true);
-    try {
-      const message = await resendVerification(targetEmail);
-      toast.success(
-        message || "A fresh verification email has been dispatched via Gmail.",
-      );
-      setShowResend(false);
-      setErrorMessage(null);
-    } catch (err: unknown) {
-      const error = err as { message?: string };
-      toast.error(error.message || "Failed to dispatch verification email.");
-    } finally {
-      setIsResending(false);
-    }
+    resendMutation.mutate(targetEmail);
   };
 
   // ==================== STATE 1: CHECKING (LOADING) ====================

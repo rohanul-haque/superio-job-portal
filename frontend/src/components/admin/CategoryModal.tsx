@@ -5,6 +5,8 @@ import Input from "@/components/ui/input";
 import Label from "@/components/ui/label";
 import Spinner from "@/components/ui/spinner";
 import { createCategory, updateCategory } from "@/services/category.service";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ICategory } from "@/types/category";
 import {
   AlertCircle,
@@ -42,13 +44,56 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
 }) => {
   const isEditMode = Boolean(category);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
 
   const [name, setName] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
+  const saveMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      if (isEditMode && category) {
+        return updateCategory(category.id, formData);
+      } else {
+        return createCategory(formData);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.categories() });
+      toast.success(
+        isEditMode
+          ? "Category updated successfully!"
+          : "Category created successfully!",
+        {
+          description: isEditMode
+            ? `Category "${name.trim()}" has been updated.`
+            : `Category "${name.trim()}" has been created with an automatic slug.`,
+        }
+      );
+      onSuccess();
+      onClose();
+    },
+    onError: (err: unknown) => {
+      let message = "An error occurred while saving the category.";
+      if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        (err as { response?: { data?: { message?: string } } }).response?.data?.message
+      ) {
+        message = (err as { response: { data: { message: string } } }).response.data.message;
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+      setFormError(message);
+      toast.error("Operation failed", { description: message });
+    },
+  });
+
+  const isSubmitting = saveMutation.isPending;
 
   // Sync state when modal opens or category changes
   useEffect(() => {
@@ -148,48 +193,15 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       return;
     }
 
-    setIsSubmitting(true);
+    const formData = new FormData();
+    formData.append("name", trimmedName);
+    formData.append("isActive", String(isActive));
 
-    try {
-      const formData = new FormData();
-      formData.append("name", trimmedName);
-      formData.append("isActive", String(isActive));
-
-      if (selectedFile) {
-        formData.append("image", selectedFile);
-      }
-
-      if (isEditMode && category) {
-        await updateCategory(category.id, formData);
-        toast.success("Category updated successfully!", {
-          description: `Category "${trimmedName}" has been updated.`,
-        });
-      } else {
-        await createCategory(formData);
-        toast.success("Category created successfully!", {
-          description: `Category "${trimmedName}" has been created with an automatic slug.`,
-        });
-      }
-
-      onSuccess();
-      onClose();
-    } catch (err: unknown) {
-      let message = "An error occurred while saving the category.";
-      if (
-        err &&
-        typeof err === "object" &&
-        "response" in err &&
-        (err as { response?: { data?: { message?: string } } }).response?.data?.message
-      ) {
-        message = (err as { response: { data: { message: string } } }).response.data.message;
-      } else if (err instanceof Error) {
-        message = err.message;
-      }
-      setFormError(message);
-      toast.error("Operation failed", { description: message });
-    } finally {
-      setIsSubmitting(false);
+    if (selectedFile) {
+      formData.append("image", selectedFile);
     }
+
+    saveMutation.mutate(formData);
   };
 
   return (

@@ -10,56 +10,52 @@ import JobCard from "@/components/jobs/JobCard";
 import { JobCardSkeleton } from "@/components/shared/skeletons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { queryKeys } from "@/lib/query-keys";
 import { getAllCategories } from "@/services/category.service";
 import { getAllJobs } from "@/services/job.service";
 import type { ICategory } from "@/types/category";
 import type { IJob } from "@/types/job";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Briefcase, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function HomePage() {
   const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [jobs, setJobs] = useState<IJob[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
-  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const catRes = await getAllCategories({
-          isActive: "true",
-        });
-        // Sort by latest created categories first and take exactly 8
-        const sorted = [...(catRes || [])].sort((a, b) => {
-          const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return timeB - timeA;
-        });
-        setCategories(sorted.slice(0, 8));
-      } catch (err) {
-        console.error("Failed to fetch categories:", err);
-      } finally {
-        setIsLoadingCategories(false);
-      }
+  const categoriesQuery = useQuery({
+    queryKey: queryKeys.categories.list({ isActive: "true" }),
+    queryFn: () => getAllCategories({ isActive: "true" }),
+  });
 
-      try {
-        const jobRes = await getAllJobs({
-          limit: 6,
-          sortBy: "newest",
-          hiringStatus: "Ongoing",
-        });
-        setJobs(jobRes.jobs || []);
-      } catch (err) {
-        console.error("Failed to fetch latest jobs:", err);
-      } finally {
-        setIsLoadingJobs(false);
-      }
-    };
+  const categories: ICategory[] = useMemo(() => {
+    const raw = categoriesQuery.data || [];
+    return [...raw]
+      .sort((a, b) => {
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return timeB - timeA;
+      })
+      .slice(0, 8);
+  }, [categoriesQuery.data]);
 
-    fetchData();
-  }, []);
+  const jobsQuery = useQuery({
+    queryKey: queryKeys.jobs.list({
+      limit: 6,
+      sortBy: "newest",
+      hiringStatus: "Ongoing",
+    }),
+    queryFn: () =>
+      getAllJobs({
+        limit: 6,
+        sortBy: "newest",
+        hiringStatus: "Ongoing",
+      }),
+  });
+
+  const jobs: IJob[] = jobsQuery.data?.jobs || [];
+  const isLoadingCategories = categoriesQuery.isLoading;
+  const isLoadingJobs = jobsQuery.isLoading;
 
   return (
     <div className="flex flex-col gap-16 md:gap-20 py-8 sm:py-12 md:py-16">

@@ -1,10 +1,4 @@
-import type { IJob } from "@/interfaces/job.interface";
-import type {
-  ICandidateMatchingResponseData,
-  ICompanyProfile,
-  IRecruiterApplicant,
-} from "@/interfaces/recruiter.interface";
-import type { IRecruiterDashboardStats } from "@/responses/recruiter.response";
+import { queryKeys } from "@/lib/query-keys";
 import {
   getApplicants,
   getDashboardStats,
@@ -12,226 +6,161 @@ import {
   getMyJobs,
   getProfile,
 } from "@/services/recruiter.service";
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 export function useRecruiterDashboard() {
-  const [statsData, setStatsData] = useState<IRecruiterDashboardStats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchStats = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await getDashboardStats();
-      setStatsData(data);
-    } catch (err: unknown) {
-      let msg = "Failed to load dashboard metrics.";
-      if (err instanceof Error) msg = err.message;
-      setError(msg);
-      toast.error("Dashboard error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+  const query = useQuery({
+    queryKey: queryKeys.recruiter.dashboard(),
+    queryFn: getDashboardStats,
+  });
 
   return {
-    statsData,
-    isLoading,
-    error,
-    refetch: fetchStats,
+    statsData: query.data || null,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    error:
+      query.error instanceof Error
+        ? query.error.message
+        : query.error
+          ? String(query.error)
+          : null,
+    refetch: query.refetch,
   };
 }
 
 export function useRecruiterJobs() {
-  const [jobs, setJobs] = useState<IJob[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await getMyJobs();
-      setJobs(data);
-    } catch (err: unknown) {
-      let msg = "Failed to load posted jobs.";
-      if (err instanceof Error) msg = err.message;
-      setError(msg);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+  const query = useQuery({
+    queryKey: queryKeys.recruiter.jobs(),
+    queryFn: getMyJobs,
+  });
 
   return {
-    jobs,
-    isLoading,
-    error,
-    refetch: fetchJobs,
+    jobs: query.data || [],
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    error:
+      query.error instanceof Error
+        ? query.error.message
+        : query.error
+          ? String(query.error)
+          : null,
+    refetch: query.refetch,
   };
 }
 
 export function useRecruiterApplicants(jobId?: string) {
-  const [applicants, setApplicants] = useState<IRecruiterApplicant[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchApplicants = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await getApplicants({ jobId });
-      setApplicants(data);
-    } catch (err: unknown) {
-      let msg = "Failed to load applicants.";
-      if (err instanceof Error) msg = err.message;
-      setError(msg);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [jobId]);
-
-  useEffect(() => {
-    fetchApplicants();
-  }, [fetchApplicants]);
+  const query = useQuery({
+    queryKey: queryKeys.recruiter.applicants({ jobId }),
+    queryFn: () => getApplicants({ jobId }),
+  });
 
   return {
-    applicants,
-    isLoading,
-    error,
-    refetch: fetchApplicants,
+    applicants: query.data || [],
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    error:
+      query.error instanceof Error
+        ? query.error.message
+        : query.error
+          ? String(query.error)
+          : null,
+    refetch: query.refetch,
   };
 }
 
 export function useCompanyProfile() {
-  const [profile, setProfile] = useState<ICompanyProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchProfile = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await getProfile();
-      setProfile(data);
-    } catch (err: unknown) {
-      let msg = "Failed to load company profile.";
-      if (err instanceof Error) msg = err.message;
-      setError(msg);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+  const query = useQuery({
+    queryKey: queryKeys.recruiter.profile(),
+    queryFn: getProfile,
+  });
 
   return {
-    profile,
-    isLoading,
-    error,
-    refetch: fetchProfile,
+    profile: query.data || null,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    error:
+      query.error instanceof Error
+        ? query.error.message
+        : query.error
+          ? String(query.error)
+          : null,
+    refetch: query.refetch,
   };
 }
 
 export function useCandidateMatching() {
-  const [jobs, setJobs] = useState<IJob[]>([]);
+  const queryClient = useQueryClient();
   const [selectedJobId, setSelectedJobId] = useState<string>("");
-  const [matchingData, setMatchingData] =
-    useState<ICandidateMatchingResponseData | null>(null);
-  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
-  const [isLoadingMatches, setIsLoadingMatches] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // 1. Fetch Recruiter's Jobs
-  const fetchJobs = useCallback(async () => {
-    setIsLoadingJobs(true);
-    try {
-      const data = await getMyJobs();
-      const activeJobs = data.filter((j) => !j.isDeleted);
-      setJobs(activeJobs);
-      if (activeJobs.length > 0 && !selectedJobId) {
-        setSelectedJobId(activeJobs[0].id);
-      }
-    } catch (err: unknown) {
-      let msg = "Failed to load jobs for candidate matching.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoadingJobs(false);
-    }
-  }, [selectedJobId]);
+  const jobsQuery = useQuery({
+    queryKey: queryKeys.recruiter.jobs(),
+    queryFn: getMyJobs,
+  });
 
+  const jobs = useMemo(() => {
+    return (jobsQuery.data || []).filter((j) => !j.isDeleted);
+  }, [jobsQuery.data]);
+
+  // Automatically select first active job when available
   useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+    if (jobs.length > 0 && !selectedJobId) {
+      setSelectedJobId(jobs[0].id);
+    }
+  }, [jobs, selectedJobId]);
 
   // 2. Fetch Matched Candidates for selected job
-  const fetchMatches = useCallback(
-    async (jobId: string, refresh = false) => {
-      if (!jobId) {
-        setMatchingData(null);
-        return;
-      }
-      if (refresh) {
-        setIsRefreshing(true);
-      } else {
-        setIsLoadingMatches(true);
-      }
-      setError(null);
-      try {
-        const data = await getMatchedCandidates(jobId, refresh);
-        setMatchingData(data);
-        if (refresh) {
-          toast.success("Matches Refreshed", {
-            description: "Evaluated latest candidate profiles against this role.",
-          });
-        }
-      } catch (err: unknown) {
-        let msg = "Failed to evaluate candidate matches.";
-        if (err instanceof Error) msg = err.message;
-        setError(msg);
-        toast.error("Matching Error", { description: msg });
-      } finally {
-        setIsLoadingMatches(false);
-        setIsRefreshing(false);
-      }
-    },
-    [],
-  );
+  const matchesQuery = useQuery({
+    queryKey: queryKeys.recruiter.matches(selectedJobId, false),
+    queryFn: () => getMatchedCandidates(selectedJobId, false),
+    enabled: Boolean(selectedJobId),
+  });
 
-  useEffect(() => {
-    if (selectedJobId) {
-      fetchMatches(selectedJobId, false);
-    }
-  }, [selectedJobId, fetchMatches]);
+  // Refresh Mutation for AI matching
+  const refreshMutation = useMutation({
+    mutationFn: (jobId: string) => getMatchedCandidates(jobId, true),
+    onSuccess: (data, jobId) => {
+      queryClient.setQueryData(queryKeys.recruiter.matches(jobId, false), data);
+      toast.success("Matches Refreshed", {
+        description: "Evaluated latest candidate profiles against this role.",
+      });
+    },
+    onError: (err: unknown) => {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Failed to evaluate candidate matches.";
+      toast.error("Matching Error", { description: msg });
+    },
+  });
 
   return {
     jobs,
     selectedJobId,
     setSelectedJobId,
-    matchingData,
-    matches: matchingData?.matches || [],
-    job: matchingData?.job,
-    meta: matchingData?.meta,
-    isLoadingJobs,
-    isLoadingMatches,
-    isRefreshing,
-    error,
+    matchingData: matchesQuery.data || null,
+    matches: matchesQuery.data?.matches || [],
+    job: matchesQuery.data?.job,
+    meta: matchesQuery.data?.meta,
+    isLoadingJobs: jobsQuery.isLoading,
+    isLoadingMatches: matchesQuery.isLoading,
+    isRefreshing: refreshMutation.isPending,
+    error:
+      matchesQuery.error instanceof Error
+        ? matchesQuery.error.message
+        : matchesQuery.error
+          ? String(matchesQuery.error)
+          : null,
     refetch: (refresh = true) => {
-      if (selectedJobId) fetchMatches(selectedJobId, refresh);
+      if (!selectedJobId) return;
+      if (refresh) {
+        refreshMutation.mutate(selectedJobId);
+      } else {
+        matchesQuery.refetch();
+      }
     },
-    refetchJobs: fetchJobs,
+    refetchJobs: jobsQuery.refetch,
   };
 }

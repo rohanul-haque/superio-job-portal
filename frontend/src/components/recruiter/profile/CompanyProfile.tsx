@@ -4,19 +4,26 @@ import CompanyProfileForm from "./CompanyProfileForm";
 import ProfileSkeleton from "@/components/loaders/skeleton/ProfileSkeleton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useCompanyProfile } from "@/hooks/use-recruiter";
 import type { ICompanyProfile } from "@/interfaces/recruiter.interface";
-import { getProfile, updateProfile } from "@/services/recruiter.service";
+import { queryKeys } from "@/lib/query-keys";
+import { updateProfile } from "@/services/recruiter.service";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export default function CompanyProfile() {
+  const queryClient = useQueryClient();
   const { refreshUser } = useAuth();
+  const {
+    profile: queryProfile,
+    isLoading,
+    refetch: fetchProfile,
+  } = useCompanyProfile();
   const [profile, setProfile] = useState<ICompanyProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
 
   // Form Fields
   const [name, setName] = useState("");
@@ -34,33 +41,59 @@ export default function CompanyProfile() {
   const [selectedLogo, setSelectedLogo] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
-  const fetchProfile = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getProfile();
-      setProfile(data);
-      setName(data.name || "");
-      setDescription(data.description || "");
-      setWebsite(data.website || "");
-      setLocation(data.location || "");
-      setCompanySize(data.companySize || "");
-      setLinkedin(data.socialLinks?.linkedin || "");
-      setGithub(data.socialLinks?.github || "");
-      setTwitter(data.socialLinks?.twitter || "");
-      setFacebook(data.socialLinks?.facebook || "");
-      setLogoPreview(data.image || null);
-    } catch (err: unknown) {
-      let msg = "Failed to load company profile.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (queryProfile) {
+      setProfile(queryProfile);
+      setName(queryProfile.name || "");
+      setDescription(queryProfile.description || "");
+      setWebsite(queryProfile.website || "");
+      setLocation(queryProfile.location || "");
+      setCompanySize(queryProfile.companySize || "");
+      setLinkedin(queryProfile.socialLinks?.linkedin || "");
+      setGithub(queryProfile.socialLinks?.github || "");
+      setTwitter(queryProfile.socialLinks?.twitter || "");
+      setFacebook(queryProfile.socialLinks?.facebook || "");
+      setLogoPreview(queryProfile.image || null);
+    }
+  }, [queryProfile]);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (formData: FormData) => updateProfile(formData),
+    onSuccess: async (updated) => {
+      setProfile(updated);
+      setSelectedLogo(null);
+      setLogoPreview(updated.image || null);
+
+      queryClient.setQueryData(queryKeys.recruiter.profile(), updated);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recruiter.dashboard(),
+      });
+      await refreshUser();
+
+      toast.success("Profile Updated", {
+        description:
+          "Company brand profile and credentials saved successfully.",
+      });
+    },
+    onError: (err: unknown) => {
+      let msg = "Failed to update company profile.";
+      if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+      ) {
+        msg = (err as { response: { data: { message: string } } }).response.data
+          .message;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
+      toast.error("Update Failed", { description: msg });
+    },
+  });
+
+  const isSaving = updateProfileMutation.isPending;
 
   useEffect(() => {
     return () => {
@@ -110,57 +143,27 @@ export default function CompanyProfile() {
       return;
     }
 
-    setIsSaving(true);
+    const formData = new FormData();
+    formData.append("name", name.trim());
+    formData.append("description", description.trim());
+    formData.append("website", website.trim());
+    formData.append("location", location.trim());
+    formData.append("companySize", companySize.trim());
+    formData.append(
+      "socialLinks",
+      JSON.stringify({
+        linkedin: linkedin.trim(),
+        github: github.trim(),
+        twitter: twitter.trim(),
+        facebook: facebook.trim(),
+      })
+    );
 
-    try {
-      const formData = new FormData();
-      formData.append("name", name.trim());
-      formData.append("description", description.trim());
-      formData.append("website", website.trim());
-      formData.append("location", location.trim());
-      formData.append("companySize", companySize.trim());
-      formData.append(
-        "socialLinks",
-        JSON.stringify({
-          linkedin: linkedin.trim(),
-          github: github.trim(),
-          twitter: twitter.trim(),
-          facebook: facebook.trim(),
-        })
-      );
-
-      if (selectedLogo) {
-        formData.append("image", selectedLogo);
-      }
-
-      const updated = await updateProfile(formData);
-      setProfile(updated);
-      setSelectedLogo(null);
-      setLogoPreview(updated.image || null);
-
-      await refreshUser();
-
-      toast.success("Profile Updated", {
-        description: "Company brand profile and credentials saved successfully.",
-      });
-    } catch (err: unknown) {
-      let msg = "Failed to update company profile.";
-      if (
-        err &&
-        typeof err === "object" &&
-        "response" in err &&
-        (err as { response?: { data?: { message?: string } } }).response?.data
-          ?.message
-      ) {
-        msg = (err as { response: { data: { message: string } } }).response.data
-          .message;
-      } else if (err instanceof Error) {
-        msg = err.message;
-      }
-      toast.error("Update Failed", { description: msg });
-    } finally {
-      setIsSaving(false);
+    if (selectedLogo) {
+      formData.append("image", selectedLogo);
     }
+
+    updateProfileMutation.mutate(formData);
   };
 
   if (isLoading) {
@@ -183,7 +186,7 @@ export default function CompanyProfile() {
 
         <Button
           variant="outline"
-          onClick={fetchProfile}
+          onClick={() => fetchProfile()}
           disabled={isLoading || isSaving}
           className="gap-2 self-start sm:self-auto border-slate-200 text-slate-700 hover:bg-slate-50"
         >

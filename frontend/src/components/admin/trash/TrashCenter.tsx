@@ -11,85 +11,89 @@ import {
   permanentlyDeleteTrashItem,
   restoreTrashItem,
 } from "@/services/admin.service";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Archive,
   RefreshCw,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 export default function TrashCenter() {
-  const [trashItems, setTrashItems] = useState<ITrashItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [selectedType, setSelectedType] = useState<string>("all");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   // Permanent Delete Modal
   const [itemToPurge, setItemToPurge] = useState<ITrashItem | null>(null);
 
-  const fetchTrashItems = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getTrashItems({
+  const {
+    data: trashItems = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.admin.trash(selectedType),
+    queryFn: () =>
+      getTrashItems({
         type: selectedType !== "all" ? selectedType : undefined,
-      });
-      setTrashItems(data);
-    } catch (err: unknown) {
-      let msg = "Failed to load trash items.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedType]);
+      }),
+  });
 
-  useEffect(() => {
-    fetchTrashItems();
-  }, [fetchTrashItems]);
-
-  const handleRestore = async (item: ITrashItem) => {
-    setActionLoadingId(item.id);
-    try {
-      const res = await restoreTrashItem({
-        type: item.type,
-        id: item.id,
-      });
+  const restoreMutation = useMutation({
+    mutationFn: (item: ITrashItem) =>
+      restoreTrashItem({ type: item.type, id: item.id }),
+    onSuccess: (res, item) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.trash() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.candidates() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.recruiters() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.jobs() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       toast.success("Entity Restored", {
         description:
           res.message || `${item.title} has been restored to active status.`,
       });
-      setTrashItems((prev) => prev.filter((i) => i.id !== item.id));
-    } catch (err: unknown) {
+    },
+    onError: (err: unknown) => {
       let msg = "Failed to restore item.";
       if (err instanceof Error) msg = err.message;
       toast.error("Restore Failed", { description: msg });
-    } finally {
+    },
+    onSettled: () => {
       setActionLoadingId(null);
-    }
-  };
+    },
+  });
 
-  const handlePermanentPurge = async () => {
-    if (!itemToPurge) return;
-
-    setActionLoadingId(itemToPurge.id);
-    try {
-      await permanentlyDeleteTrashItem(
-        itemToPurge.type,
-        itemToPurge.id
-      );
+  const purgeMutation = useMutation({
+    mutationFn: (item: ITrashItem) =>
+      permanentlyDeleteTrashItem(item.type, item.id),
+    onSuccess: (_, item) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.trash() });
       toast.success("Permanently Purged", {
-        description: `"${itemToPurge.title}" was permanently removed from database.`,
+        description: `"${item.title}" was permanently removed from database.`,
       });
-      setTrashItems((prev) => prev.filter((i) => i.id !== itemToPurge.id));
       setItemToPurge(null);
-    } catch (err: unknown) {
+    },
+    onError: (err: unknown) => {
       let msg = "Failed to permanently purge item.";
       if (err instanceof Error) msg = err.message;
       toast.error("Purge Failed", { description: msg });
-    } finally {
+    },
+    onSettled: () => {
       setActionLoadingId(null);
-    }
+    },
+  });
+
+  const handleRestore = (item: ITrashItem) => {
+    setActionLoadingId(item.id);
+    restoreMutation.mutate(item);
+  };
+
+  const handlePermanentPurge = () => {
+    if (!itemToPurge) return;
+    setActionLoadingId(itemToPurge.id);
+    purgeMutation.mutate(itemToPurge);
   };
 
   return (
@@ -108,7 +112,7 @@ export default function TrashCenter() {
 
         <Button
           variant="outline"
-          onClick={fetchTrashItems}
+          onClick={() => refetch()}
           disabled={isLoading}
           className="gap-2 self-start sm:self-auto border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
         >

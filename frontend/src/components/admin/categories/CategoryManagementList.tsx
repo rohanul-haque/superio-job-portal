@@ -12,6 +12,8 @@ import {
   deleteCategory,
   getAllCategories,
 } from "@/services/category.service";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Filter,
@@ -20,12 +22,11 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 export default function CategoryManagementList() {
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "true" | "false">("all");
 
@@ -34,56 +35,34 @@ export default function CategoryManagementList() {
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null);
 
   // Delete Confirmation State
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(null);
 
-  const fetchCategories = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getAllCategories({
-        search: searchQuery.trim() || undefined,
-        isActive: statusFilter,
-        isDeleted: "false",
-      });
-      setCategories(data);
-    } catch (err: unknown) {
-      let message = "Failed to load categories.";
-      if (err instanceof Error) message = err.message;
-      toast.error("Error loading categories", { description: message });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchQuery, statusFilter]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchCategories();
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [fetchCategories]);
-
-  const handleOpenCreateModal = () => {
-    setSelectedCategory(null);
-    setIsModalOpen(true);
+  const queryParams = {
+    search: searchQuery.trim() || undefined,
+    isActive: statusFilter,
+    isDeleted: "false",
   };
 
-  const handleOpenEditModal = (cat: ICategory) => {
-    setSelectedCategory(cat);
-    setIsModalOpen(true);
-  };
+  const {
+    data: categories = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.admin.categories(queryParams),
+    queryFn: () => getAllCategories(queryParams),
+  });
 
-  const confirmDeleteCategory = async () => {
-    if (!categoryToDelete) return;
-
-    setDeletingId(categoryToDelete.id);
-    try {
-      await deleteCategory(categoryToDelete.id);
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteCategory(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.categories() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
       toast.success("Category soft-deleted", {
-        description: `Category "${categoryToDelete.name}" was marked as deleted.`,
+        description: `Category "${categoryToDelete?.name || ""}" was marked as deleted.`,
       });
       setCategoryToDelete(null);
-      await fetchCategories();
-    } catch (err: unknown) {
+    },
+    onError: (err: unknown) => {
       let message = "Failed to delete category.";
       if (
         err &&
@@ -96,10 +75,25 @@ export default function CategoryManagementList() {
         message = err.message;
       }
       toast.error("Deletion failed", { description: message });
-    } finally {
-      setDeletingId(null);
-    }
+    },
+  });
+
+  const handleOpenCreateModal = () => {
+    setSelectedCategory(null);
+    setIsModalOpen(true);
   };
+
+  const handleOpenEditModal = (cat: ICategory) => {
+    setSelectedCategory(cat);
+    setIsModalOpen(true);
+  };
+
+  const confirmDeleteCategory = () => {
+    if (!categoryToDelete) return;
+    deleteMutation.mutate(categoryToDelete.id);
+  };
+
+  const isDeleting = deleteMutation.isPending;
 
   return (
     <div className="space-y-6">
@@ -117,7 +111,7 @@ export default function CategoryManagementList() {
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            onClick={() => fetchCategories()}
+            onClick={() => refetch()}
             disabled={isLoading}
             className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
           >
@@ -254,7 +248,7 @@ export default function CategoryManagementList() {
       {categoryToDelete && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-xs animate-in fade-in duration-150"
-          onClick={() => !deletingId && setCategoryToDelete(null)}
+          onClick={() => !isDeleting && setCategoryToDelete(null)}
         >
           <div
             className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-150"
@@ -287,7 +281,7 @@ export default function CategoryManagementList() {
                 variant="outline"
                 size="sm"
                 onClick={() => setCategoryToDelete(null)}
-                disabled={Boolean(deletingId)}
+                disabled={isDeleting}
                 className="text-xs"
               >
                 Cancel
@@ -296,10 +290,10 @@ export default function CategoryManagementList() {
                 variant="destructive"
                 size="sm"
                 onClick={confirmDeleteCategory}
-                disabled={Boolean(deletingId)}
+                disabled={isDeleting}
                 className="text-xs bg-red-600 hover:bg-red-700"
               >
-                {deletingId ? (
+                {isDeleting ? (
                   <>
                     <Spinner size="sm" className="mr-1.5" />
                     Deleting...
@@ -318,7 +312,10 @@ export default function CategoryManagementList() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         category={selectedCategory}
-        onSuccess={() => fetchCategories()}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.admin.categories() });
+          queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
+        }}
       />
     </div>
   );

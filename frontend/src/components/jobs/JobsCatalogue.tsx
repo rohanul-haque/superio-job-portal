@@ -12,10 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { queryKeys } from "@/lib/query-keys";
 import { getAllCategories } from "@/services/category.service";
 import { getAllJobs } from "@/services/job.service";
 import type { ICategory } from "@/types/category";
 import type { IJob, IJobsResponseMeta } from "@/types/job";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowUpDown,
   Briefcase,
@@ -31,7 +33,7 @@ import {
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 const JOB_TYPES = [
   "Full-time",
@@ -101,74 +103,36 @@ const JobsCatalogue: React.FC = () => {
   >(initialSortBy);
   const [page, setPage] = useState(initialPage);
 
-  // Data & Loading State
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [jobs, setJobs] = useState<IJob[]>([]);
-  const [meta, setMeta] = useState<IJobsResponseMeta>({
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPage: 1,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-
-  // Fetch Categories for sidebar filters
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const catRes = await getAllCategories({
-          isActive: "true",
-        });
-        setCategories(catRes || []);
-      } catch (err) {
-        console.error("Failed to fetch categories:", err);
-      }
+  const filterParams = useMemo(() => {
+    const params: Record<string, string | number> = {
+      page,
+      limit: 9,
+      sortBy,
+      hiringStatus: "Ongoing",
     };
-    fetchCategories();
-  }, []);
 
-  // Sync state to URL and fetch jobs
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const params: Record<string, string | number> = {
-        page,
-        limit: 9,
-        sortBy,
-        hiringStatus: "Ongoing",
-      };
+    if (keyword.trim()) params.keyword = keyword.trim();
+    if (selectedCategories.length > 0)
+      params.category = selectedCategories.join(",");
 
-      if (keyword.trim()) params.keyword = keyword.trim();
-      if (selectedCategories.length > 0)
-        params.category = selectedCategories.join(",");
-
-      const activeLocations = [...selectedLocations];
-      if (
-        customLocation.trim() &&
-        !activeLocations.includes(customLocation.trim())
-      ) {
-        activeLocations.push(customLocation.trim());
-      }
-      if (activeLocations.length > 0)
-        params.location = activeLocations.join(",");
-      if (selectedJobTypes.length > 0)
-        params.jobType = selectedJobTypes.join(",");
-      if (selectedLevels.length > 0) params.level = selectedLevels.join(",");
-      if (minSalary && !isNaN(Number(minSalary)))
-        params.minSalary = Number(minSalary);
-      if (maxSalary && !isNaN(Number(maxSalary)))
-        params.maxSalary = Number(maxSalary);
-
-      const res = await getAllJobs(params);
-      setJobs(res.jobs);
-      setMeta(res.meta);
-    } catch (err) {
-      console.error("Failed to fetch jobs:", err);
-      setJobs([]);
-    } finally {
-      setIsLoading(false);
+    const activeLocations = [...selectedLocations];
+    if (
+      customLocation.trim() &&
+      !activeLocations.includes(customLocation.trim())
+    ) {
+      activeLocations.push(customLocation.trim());
     }
+    if (activeLocations.length > 0)
+      params.location = activeLocations.join(",");
+    if (selectedJobTypes.length > 0)
+      params.jobType = selectedJobTypes.join(",");
+    if (selectedLevels.length > 0) params.level = selectedLevels.join(",");
+    if (minSalary && !isNaN(Number(minSalary)))
+      params.minSalary = Number(minSalary);
+    if (maxSalary && !isNaN(Number(maxSalary)))
+      params.maxSalary = Number(maxSalary);
+
+    return params;
   }, [
     keyword,
     selectedCategories,
@@ -182,9 +146,26 @@ const JobsCatalogue: React.FC = () => {
     page,
   ]);
 
-  useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+  const categoriesQuery = useQuery({
+    queryKey: queryKeys.categories.list({ isActive: "true" }),
+    queryFn: () => getAllCategories({ isActive: "true" }),
+  });
+
+  const jobsQuery = useQuery({
+    queryKey: queryKeys.jobs.list(filterParams),
+    queryFn: () => getAllJobs(filterParams),
+  });
+
+  const categories: ICategory[] = categoriesQuery.data || [];
+  const jobs: IJob[] = jobsQuery.data?.jobs || [];
+  const meta: IJobsResponseMeta = jobsQuery.data?.meta || {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPage: 1,
+  };
+  const isLoading = jobsQuery.isLoading;
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Update query params in URL when user changes filters
   const updateUrl = useCallback(() => {

@@ -74,7 +74,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            onClick={refetch}
+            onClick={() => refetch()}
             disabled={isLoading}
             className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
           >

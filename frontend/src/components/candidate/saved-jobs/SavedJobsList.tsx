@@ -5,54 +5,45 @@ import { JobCardSkeleton } from "@/components/loaders/skeleton/CardSkeleton";
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
-import type { IBookmark } from "@/types/bookmark";
-import { getMyBookmarks } from "@/services/bookmark.service";
 import { useCandidateJobState } from "@/context/CandidateJobStateContext";
+import useBookmarks from "@/hooks/use-bookmarks";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Briefcase, RefreshCw, Search } from "lucide-react";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 function SavedJobsList() {
+  const queryClient = useQueryClient();
   const { removeBookmark: removeCandidateBookmark } = useCandidateJobState();
-  const [bookmarks, setBookmarks] = useState<IBookmark[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { bookmarks, isLoading, refetch: fetchBookmarks } = useBookmarks();
   const [searchQuery, setSearchQuery] = useState("");
   const [removingId, setRemovingId] = useState<string | null>(null);
 
-  const fetchBookmarks = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getMyBookmarks();
-      setBookmarks(data);
-    } catch (err: unknown) {
-      let msg = "Failed to load saved jobs.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchBookmarks();
-  }, [fetchBookmarks]);
-
-  const handleRemoveBookmark = async (jobId: string) => {
-    setRemovingId(jobId);
-    try {
-      await removeCandidateBookmark(jobId);
+  const removeBookmarkMutation = useMutation({
+    mutationFn: (jobId: string) => removeCandidateBookmark(jobId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.candidate.bookmarks(),
+      });
       toast.success("Bookmark removed", {
         description: "The job was removed from your saved list.",
       });
-      setBookmarks((prev) => prev.filter((b) => b.job.id !== jobId));
-    } catch (err: unknown) {
+    },
+    onError: (err: unknown) => {
       let msg = "Failed to remove bookmark.";
       if (err instanceof Error) msg = err.message;
       toast.error("Error", { description: msg });
-    } finally {
+    },
+    onSettled: () => {
       setRemovingId(null);
-    }
+    },
+  });
+
+  const handleRemoveBookmark = (jobId: string) => {
+    setRemovingId(jobId);
+    removeBookmarkMutation.mutate(jobId);
   };
 
   const filteredBookmarks = bookmarks.filter((b) => {
@@ -80,7 +71,7 @@ function SavedJobsList() {
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchBookmarks}
+            onClick={() => fetchBookmarks()}
             disabled={isLoading}
             className="text-xs border-slate-200"
           >

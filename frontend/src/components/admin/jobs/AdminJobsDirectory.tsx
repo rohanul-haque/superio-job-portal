@@ -10,83 +10,92 @@ import type { IAdminJob } from "@/interfaces/admin.interface";
 import type { ICategory } from "@/types/category";
 import { getAllJobs, moderateJob } from "@/services/admin.service";
 import { getAllCategories } from "@/services/category.service";
+import { queryKeys } from "@/lib/query-keys";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Briefcase,
   RefreshCw,
   Search,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 export default function AdminJobsDirectory() {
-  const [jobs, setJobs] = useState<IAdminJob[]>([]);
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
-
-  // Filters
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [hiringStatusFilter, setHiringStatusFilter] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   // Soft-delete modal state
   const [jobToDelete, setJobToDelete] = useState<IAdminJob | null>(null);
 
   // Load categories
-  useEffect(() => {
-    getAllCategories({ isActive: "all", isDeleted: "false" })
-      .then(setCategories)
-      .catch((err) => console.error("Failed to load categories:", err));
-  }, []);
+  const { data: categories = [] } = useQuery({
+    queryKey: queryKeys.categories.list({ isActive: "all", isDeleted: "false" }),
+    queryFn: () => getAllCategories({ isActive: "all", isDeleted: "false" }),
+  });
 
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getAllJobs({
-        search: searchQuery.trim() || undefined,
-        categoryId: selectedCategory !== "all" ? selectedCategory : undefined,
-        hiringStatus:
-          hiringStatusFilter !== "all" ? hiringStatusFilter : undefined,
-        visible: visibilityFilter !== "all" ? visibilityFilter : undefined,
-      });
-      setJobs(data.jobs);
-    } catch (err: unknown) {
-      let msg = "Failed to load master jobs catalogue.";
+  const queryParams = {
+    search: searchQuery.trim() || undefined,
+    categoryId: selectedCategory !== "all" ? selectedCategory : undefined,
+    hiringStatus: hiringStatusFilter !== "all" ? hiringStatusFilter : undefined,
+    visible: visibilityFilter !== "all" ? visibilityFilter : undefined,
+  };
+
+  const {
+    data: jobsData,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: queryKeys.admin.jobs(queryParams),
+    queryFn: () => getAllJobs(queryParams),
+  });
+
+  const jobs = jobsData?.jobs || [];
+
+  const moderateMutation = useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: Parameters<typeof moderateJob>[1];
+    }) => moderateJob(id, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.jobs() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.jobs.all });
+      if (variables.payload.isDeleted) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.admin.trash() });
+      }
+    },
+    onError: (err: unknown) => {
+      let msg = "Failed to update job.";
       if (err instanceof Error) msg = err.message;
       toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchQuery, selectedCategory, hiringStatusFilter, visibilityFilter]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchJobs();
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [fetchJobs]);
+    },
+    onSettled: () => {
+      setActionLoadingId(null);
+    },
+  });
 
   const handleToggleVisibility = async (job: IAdminJob) => {
     setActionLoadingId(job.id);
     const newVisibility = !job.visible;
     try {
-      await moderateJob(job.id, { visible: newVisibility });
-      setJobs((prev) =>
-        prev.map((j) => (j.id === job.id ? { ...j, visible: newVisibility } : j))
-      );
+      await moderateMutation.mutateAsync({
+        id: job.id,
+        payload: { visible: newVisibility },
+      });
       toast.success(
         newVisibility
           ? "Job is now visible to candidates"
           : "Job hidden from public catalogue"
       );
-    } catch (err: unknown) {
-      let msg = "Failed to update visibility.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setActionLoadingId(null);
+    } catch {
+      // handled in mutation onError
     }
   };
 
@@ -94,19 +103,13 @@ export default function AdminJobsDirectory() {
     setActionLoadingId(job.id);
     const newStatus = job.hiringStatus === "Ongoing" ? "Closed" : "Ongoing";
     try {
-      await moderateJob(job.id, { hiringStatus: newStatus });
-      setJobs((prev) =>
-        prev.map((j) =>
-          j.id === job.id ? { ...j, hiringStatus: newStatus } : j
-        )
-      );
+      await moderateMutation.mutateAsync({
+        id: job.id,
+        payload: { hiringStatus: newStatus },
+      });
       toast.success(`Hiring status set to "${newStatus}"`);
-    } catch (err: unknown) {
-      let msg = "Failed to update hiring status.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setActionLoadingId(null);
+    } catch {
+      // handled in mutation onError
     }
   };
 
@@ -115,18 +118,16 @@ export default function AdminJobsDirectory() {
 
     setActionLoadingId(jobToDelete.id);
     try {
-      await moderateJob(jobToDelete.id, { isDeleted: true });
+      await moderateMutation.mutateAsync({
+        id: jobToDelete.id,
+        payload: { isDeleted: true },
+      });
       toast.success("Job moved to Trash Center", {
         description: `"${jobToDelete.title}" can be restored anytime from Trash.`,
       });
       setJobToDelete(null);
-      await fetchJobs();
-    } catch (err: unknown) {
-      let msg = "Failed to delete job.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Deletion failed", { description: msg });
-    } finally {
-      setActionLoadingId(null);
+    } catch {
+      // handled in mutation onError
     }
   };
 
@@ -146,7 +147,7 @@ export default function AdminJobsDirectory() {
 
         <Button
           variant="outline"
-          onClick={fetchJobs}
+          onClick={() => refetch()}
           disabled={isLoading}
           className="gap-2 self-start sm:self-auto border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold"
         >

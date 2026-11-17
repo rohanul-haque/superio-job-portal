@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Input from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
+import { useRecruiterJobs } from "@/hooks/use-recruiter";
 import type { IJob } from "@/interfaces/job.interface";
+import { queryKeys } from "@/lib/query-keys";
 import {
   deleteJob,
-  getMyJobs,
   updateJob,
 } from "@/services/recruiter.service";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   Briefcase,
@@ -20,96 +22,92 @@ import {
   Search,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "@/components/ui/toast";
 
 export default function ManageJobsList() {
-  const [jobs, setJobs] = useState<IJob[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { jobs, isLoading, refetch: fetchJobs } = useRecruiterJobs();
   const [searchQuery, setSearchQuery] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   // Soft-delete modal state
   const [jobToDelete, setJobToDelete] = useState<IJob | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getMyJobs();
-      setJobs(data);
-    } catch (err: unknown) {
-      let msg = "Failed to load jobs.";
+  const updateJobMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: Partial<IJob> }) =>
+      updateJob(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recruiter.jobs(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.jobs.all,
+      });
+    },
+    onError: (err: unknown) => {
+      let msg = "Failed to update job.";
       if (err instanceof Error) msg = err.message;
       toast.error("Error", { description: msg });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    onSettled: () => {
+      setUpdatingId(null);
+    },
+  });
 
-  useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+  const deleteJobMutation = useMutation({
+    mutationFn: (id: string) => deleteJob(id),
+    onSuccess: (_res, id) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recruiter.jobs(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recruiter.dashboard(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.jobs.all,
+      });
+      toast.success("Job soft-deleted successfully", {
+        description: `"${jobToDelete?.title || "Job"}" has been moved to archive.`,
+      });
+      setJobToDelete(null);
+    },
+    onError: (err: unknown) => {
+      let msg = "Failed to delete job.";
+      if (err instanceof Error) msg = err.message;
+      toast.error("Deletion failed", { description: msg });
+    },
+  });
+
+  const isDeleting = deleteJobMutation.isPending;
 
   const handleToggleVisibility = async (job: IJob) => {
     setUpdatingId(job.id);
     const newVisibility = !job.visible;
-    try {
-      await updateJob(job.id, { visible: newVisibility });
-      setJobs((prev) =>
-        prev.map((j) => (j.id === job.id ? { ...j, visible: newVisibility } : j))
-      );
-      toast.success(
-        newVisibility
-          ? "Job is now visible to candidates"
-          : "Job hidden from public listings"
-      );
-    } catch (err: unknown) {
-      let msg = "Failed to update visibility.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setUpdatingId(null);
-    }
+    updateJobMutation.mutate({
+      id: job.id,
+      payload: { visible: newVisibility },
+    });
+    toast.success(
+      newVisibility
+        ? "Job is now visible to candidates"
+        : "Job hidden from public listings"
+    );
   };
 
   const handleToggleHiringStatus = async (job: IJob) => {
     setUpdatingId(job.id);
     const newStatus = job.hiringStatus === "Ongoing" ? "Closed" : "Ongoing";
-    try {
-      await updateJob(job.id, { hiringStatus: newStatus });
-      setJobs((prev) =>
-        prev.map((j) =>
-          j.id === job.id ? { ...j, hiringStatus: newStatus } : j
-        )
-      );
-      toast.success(`Hiring status set to "${newStatus}"`);
-    } catch (err: unknown) {
-      let msg = "Failed to update hiring status.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Error", { description: msg });
-    } finally {
-      setUpdatingId(null);
-    }
+    updateJobMutation.mutate({
+      id: job.id,
+      payload: { hiringStatus: newStatus },
+    });
+    toast.success(`Hiring status set to "${newStatus}"`);
   };
 
   const handleDeleteJob = async () => {
     if (!jobToDelete) return;
-    setIsDeleting(true);
-    try {
-      await deleteJob(jobToDelete.id);
-      toast.success("Job soft-deleted successfully", {
-        description: `"${jobToDelete.title}" has been moved to archive.`,
-      });
-      setJobToDelete(null);
-      await fetchJobs();
-    } catch (err: unknown) {
-      let msg = "Failed to delete job.";
-      if (err instanceof Error) msg = err.message;
-      toast.error("Deletion failed", { description: msg });
-    } finally {
-      setIsDeleting(false);
-    }
+    deleteJobMutation.mutate(jobToDelete.id);
   };
 
   const filteredJobs = jobs.filter((job) => {
@@ -139,7 +137,7 @@ export default function ManageJobsList() {
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchJobs}
+            onClick={() => fetchJobs()}
             disabled={isLoading}
             className="text-xs border-slate-200"
           >
