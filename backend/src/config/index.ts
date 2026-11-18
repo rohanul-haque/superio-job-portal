@@ -36,9 +36,8 @@ const config = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 
-  GOOGLE_GEMINI_API_KEY:
-    process.env.GOOGLE_GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API,
-  GEMINI_MODEL: process.env.GEMINI_MODEL || "gemini-flash-lite-latest",
+  GOOGLE_GEMINI_API_KEY: process.env.GOOGLE_GEMINI_API_KEY,
+  GEMINI_MODEL: process.env.GEMINI_MODEL,
 };
 
 export default config;

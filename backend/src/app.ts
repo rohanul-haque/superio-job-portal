@@ -1,7 +1,7 @@
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import type { Application, Request, Response } from "express";
+import type { Application } from "express";
 import express from "express";
 import { StatusCodes } from "http-status-codes";
 import corsOptions from "./lib/cors-options";
@@ -9,7 +9,6 @@ import globalErrorHandler from "./middlewares/globalErrorHandler";
 import globalRateLimiter from "./middlewares/globalRateLimiter";
 import notFoundHandler from "./middlewares/notFoundHandler";
 import routes from "./routes";
-import healthCheckRoutes from "./routes/health-check.route";
 
 const app: Application = express();
 
@@ -40,13 +39,12 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
 // 6. Application routes
-app.use("/health", healthCheckRoutes);
-
-app.get("/", (req: Request, res: Response) => {
+app.use("/", (_, res) => {
   res.status(StatusCodes.OK).json({
-    message: "Welcome to Superio Job Portal Enterprise API (v2.0)",
-    version: "2.0.0",
-    documentation: "/api/v1",
+    success: true,
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    message: "Hire Nest API is running...",
   });
 });
 

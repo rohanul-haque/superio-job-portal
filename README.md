@@ -4,8 +4,8 @@ HireNest is a production-grade, AI-powered recruitment platform that seamlessly 
 
 ## 🔗 Live Demo
 
-- **Live Application:** [https://superio-job-portal-gamma.vercel.app](https://superio-job-portal-gamma.vercel.app)
-- **Backend API:** [https://superio-job-portal-backend.onrender.com/api/v1](https://superio-job-portal-backend.onrender.com/api/v1)
+- **Live Application:** [https://hire-nest-job-portal-lyart.vercel.app](https://hire-nest-job-portal-lyart.vercel.app/)
+- **Backend API:** [https://hire-nest-job-portal-backend.onrender.com](https://hire-nest-job-portal-backend.onrender.com/)
 
 ## 📸 Screenshots
 
@@ -128,7 +128,7 @@ JWT_REFRESH_SECRET="your_jwt_refresh_secret_here"
 
 # Google Gemini AI
 GOOGLE_GEMINI_API_KEY="your_google_gemini_api_key_here"
-GEMINI_MODEL="gemini-1.5-flash"
+GEMINI_MODEL="gemini-3-flash-preview"
 
 # Cloudinary Storage
 CLOUDINARY_CLOUD_NAME="your_cloudinary_cloud_name"
@@ -239,7 +239,6 @@ backend/
 │   └── schema.prisma             # Prisma ORM schema & MongoDB collection definitions
 ├── src/
 │   ├── config/                   # Centralized application and environment configurations
-│   ├── controllers/              # Base controllers (e.g. health-check)
 │   ├── lib/                      # Third-party integrations (Cloudinary, Gemini AI, Prisma Client, JWT)
 │   ├── middlewares/              # Express middlewares (authGuard, rateLimiters, upload, errorHandler)
 │   ├── modules/                  # Feature-based domain modules
@@ -271,8 +270,7 @@ Here is the complete documentation of all available Backend API endpoints, organ
 
 | Method | API Endpoint | Short Description                     | Authentication Requirement | Required User Role | Request Body / Query Parameters |
 | ------ | ------------ | ------------------------------------- | -------------------------- | ------------------ | ------------------------------- |
-| `GET`  | `/`          | API welcome and version index         | Public (No Auth)           | None               | None                            |
-| `GET`  | `/health`    | Server health check and uptime status | Public (No Auth)           | None               | None                            |
+| `GET`  | `/`          | Server health check and uptime status | Public (No Auth)           | None               | None                            |
 
 ### 2. Authentication Module (`/api/v1/auth`)
 
