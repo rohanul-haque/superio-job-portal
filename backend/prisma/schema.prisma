@@ -27,6 +27,7 @@ model User {
   isEmailVerified    Boolean         @default(false)
   verificationToken  String?
   resetPasswordToken String?
+  resetPasswordExpires DateTime?
   status             String          @default("active") // active | blocked
   isDeleted          Boolean         @default(false)
   deletedAt          DateTime?
@@ -55,6 +56,8 @@ model Company {
   socialLinks       Json?
   isEmailVerified   Boolean   @default(false)
   verificationToken String?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
   status            String    @default("active") // active | blocked
   isDeleted         Boolean   @default(false)
   deletedAt         DateTime?

@@ -43,6 +43,8 @@ export interface ISendVerificationEmailOptions {
 export interface ISendPasswordResetEmailOptions {
   to: string;
   name: string;
+  token: string;
+  expirationMinutes?: number;
 }
 
 export const getSenderAddress = (): string => {
@@ -133,9 +135,15 @@ export const sendVerificationEmail = async ({
 export const sendPasswordResetEmail = async ({
   to,
   name,
+  token,
+  expirationMinutes = config.PASSWORD_RESET_EXPIRES_IN_MINUTES || 15,
 }: ISendPasswordResetEmailOptions): Promise<void> => {
-  const resetUrl = `${config.FRONTEND_URL}/reset-password`;
-  const html = getPasswordResetEmailTemplate({ name, resetUrl });
+  const resetUrl = `${config.FRONTEND_URL}/reset-password?token=${encodeURIComponent(token)}`;
+  const html = getPasswordResetEmailTemplate({
+    name,
+    resetUrl,
+    expirationMinutes,
+  });
   const from = getSenderAddress();
   const subject = "[HireNest] Reset your password";
 
@@ -156,7 +164,8 @@ export const sendPasswordResetEmail = async ({
         "\n================== PASSWORD RESET (DEV FALLBACK - GMAIL SMTP NOT CONFIGURED) ==================",
       );
       console.log(`To: ${to} (${name})`);
-      console.log(`Reset URL (Zero-Token): ${resetUrl}`);
+      console.log(`Reset URL: ${resetUrl}`);
+      console.log(`Expires in: ${expirationMinutes} minutes`);
       console.log(
         "===============================================================================================\n",
       );

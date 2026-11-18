@@ -30,7 +30,8 @@ export function proxy(request: NextRequest) {
     pathname === "/candidate-signup" ||
     pathname === "/recruiter-signup" ||
     pathname === "/verify-email" ||
-    pathname === "/forgot-password";
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password";
 
   // Authentication routes are always accessible; never redirect them to themselves
   if (isAuthRoute) {

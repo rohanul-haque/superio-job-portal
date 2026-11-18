@@ -66,6 +66,25 @@ const resendVerificationValidationSchema = z.object({
   }),
 });
 
+const forgotPasswordValidationSchema = z.object({
+  body: z.object({
+    email: z
+      .string({ required_error: "Email is required" })
+      .email("Invalid email address"),
+  }),
+});
+
+const resetPasswordValidationSchema = z.object({
+  body: z.object({
+    token: z
+      .string({ required_error: "Reset token is required" })
+      .min(1, "Reset token is required"),
+    newPassword: z
+      .string({ required_error: "New password is required" })
+      .min(6, "Password must be at least 6 characters"),
+  }),
+});
+
 const refreshTokenValidationSchema = z
   .object({
     cookies: z
@@ -84,6 +103,8 @@ const authValidation = {
   loginValidationSchema,
   verifyEmailCredentialsValidationSchema,
   resendVerificationValidationSchema,
+  forgotPasswordValidationSchema,
+  resetPasswordValidationSchema,
   refreshTokenValidationSchema,
 };
 

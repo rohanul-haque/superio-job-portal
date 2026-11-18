@@ -1,4 +1,5 @@
 import {
+  forgotPassword as forgotPasswordApi,
   getMe as getMeApi,
   login as loginApi,
   logout as logoutApi,
@@ -6,6 +7,7 @@ import {
   registerCandidate as registerCandidateApi,
   registerRecruiter as registerRecruiterApi,
   resendVerification as resendVerificationApi,
+  resetPassword as resetPasswordApi,
   verifyEmail as verifyEmailApi,
   verifyEmailWithCredentials as verifyEmailWithCredentialsApi,
 } from "@/api/auth.api";
@@ -62,6 +64,22 @@ export const verifyEmailWithCredentials = async (
 export const resendVerification = async (email: string): Promise<string> => {
   const res = await resendVerificationApi(email);
   return res.data.message;
+};
+
+export const forgotPassword = async (email: string): Promise<string> => {
+  const res = await forgotPasswordApi(email);
+  return (
+    res.data.message ||
+    "If an eligible account exists with this email, you will receive a password reset link shortly."
+  );
+};
+
+export const resetPassword = async (payload: {
+  token: string;
+  newPassword: string;
+}): Promise<string> => {
+  const res = await resetPasswordApi(payload);
+  return res.data.message || "Password has been reset successfully.";
 };
 
 export const login = async (

@@ -2,9 +2,11 @@ import { Router } from "express";
 import authGuard from "../../middlewares/authGuard";
 import {
   emailVerificationLimiter,
+  forgotPasswordLimiter,
   loginLimiter,
   refreshTokenLimiter,
   resendVerificationLimiter,
+  resetPasswordLimiter,
   signupLimiter,
 } from "../../middlewares/authRateLimiter";
 import validateRequest from "../../middlewares/validateRequest";
@@ -67,6 +69,22 @@ router.post(
   resendVerificationLimiter,
   validateRequest(authValidation.resendVerificationValidationSchema),
   authController.resendVerificationEmail,
+);
+
+// Forgot Password (generates secure token & dispatches reset email)
+router.post(
+  "/forgot-password",
+  forgotPasswordLimiter,
+  validateRequest(authValidation.forgotPasswordValidationSchema),
+  authController.forgotPassword,
+);
+
+// Reset Password (single-use token verification & password update)
+router.post(
+  "/reset-password",
+  resetPasswordLimiter,
+  validateRequest(authValidation.resetPasswordValidationSchema),
+  authController.resetPassword,
 );
 
 // Current user profile

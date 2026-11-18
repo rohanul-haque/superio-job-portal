@@ -64,3 +64,12 @@ export interface IVerifyEmailCredentialsPayload {
 export interface IResendVerificationPayload {
   email: string;
 }
+
+export interface IForgotPasswordPayload {
+  email: string;
+}
+
+export interface IResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}

@@ -35,6 +35,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         pathname === "/recruiter-signup" ||
         pathname === "/verify-email" ||
         pathname === "/forgot-password" ||
+        pathname === "/reset-password" ||
         pathname === "/";
 
       const isAdminPath =
@@ -46,7 +47,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       // Admin routes redirect strictly to the dedicated Admin Gateway
       if (isAdminPath) {
         const adminParams = new URLSearchParams();
-        if (!isAuthPath && pathname !== "/admin" && pathname !== "/admin/dashboard") {
+        if (
+          !isAuthPath &&
+          pathname !== "/admin" &&
+          pathname !== "/admin/dashboard"
+        ) {
           adminParams.set("returnUrl", pathname);
         }
         const qs = adminParams.toString();

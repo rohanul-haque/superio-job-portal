@@ -18,6 +18,12 @@ const AUTH_MESSAGES = {
   RESEND_VERIFICATION_SUCCESS:
     "A new verification email has been sent successfully. Please check your inbox. The verification link is valid for 5 minutes.",
   PROFILE_FETCH_SUCCESS: "User profile retrieved successfully.",
+  FORGOT_PASSWORD_GENERIC_RESPONSE:
+    "If an eligible account exists with this email, you will receive a password reset link shortly.",
+  RESET_PASSWORD_SUCCESS:
+    "Password has been reset successfully. You can now log in with your new password.",
+  RESET_PASSWORD_TOKEN_INVALID_OR_EXPIRED:
+    "Password reset token is invalid or has expired. Please request a new reset link.",
 
   // Authentication & Session Errors
   NO_ACCESS_TOKEN:

@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { StatusCodes } from "http-status-codes";
+import config from "../../config";
 import type { IJwtPayload } from "../../lib/jwt";
 import {
   signAccessToken,
@@ -10,18 +12,23 @@ import {
 } from "../../lib/jwt";
 import prisma from "../../lib/prisma";
 import AppError from "../../utils/AppError";
-import { sendVerificationEmail } from "../../utils/email-sender";
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+} from "../../utils/email-sender";
 import type {
   IAuthAccount,
   IAuthUserAccount,
   ICandidateProfileDTO,
   ICandidateRegisterPayload,
+  IForgotPasswordPayload,
   ILoginPayload,
   ILoginResult,
   IRecruiterProfileDTO,
   IRecruiterRegisterPayload,
   IRefreshTokenResult,
   IRegistrationResult,
+  IResetPasswordPayload,
   IResendVerificationResponseDTO,
   IVerifyEmailCredentialsPayload,
   IVerifyEmailResponseDTO,
@@ -787,6 +794,202 @@ const getMe = async (userPayload: IJwtPayload & { dbUser?: unknown }) => {
   };
 };
 
+const forgotPassword = async (
+  payload: IForgotPasswordPayload,
+): Promise<{ message: string }> => {
+  const normalizedEmail = payload.email.toLowerCase().trim();
+
+  // Find candidate user or recruiter company concurrently
+  const [user, company] = await Promise.all([
+    prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    }),
+    prisma.company.findUnique({
+      where: { email: normalizedEmail },
+    }),
+  ]);
+
+  // Determine eligible account: strictly CANDIDATE or RECRUITER.
+  // Explicitly disallow ADMIN accounts from this public reset flow.
+  let eligibleAccount: {
+    id: string;
+    name: string;
+    email: string;
+    role: "candidate" | "recruiter";
+  } | null = null;
+  let isRecruiter = false;
+
+  if (
+    user &&
+    user.role === "candidate" &&
+    !user.isDeleted &&
+    user.status !== "blocked"
+  ) {
+    eligibleAccount = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: "candidate",
+    };
+  } else if (
+    company &&
+    company.role === "recruiter" &&
+    !company.isDeleted &&
+    company.status !== "blocked"
+  ) {
+    eligibleAccount = {
+      id: company.id,
+      name: company.name,
+      email: company.email,
+      role: "recruiter",
+    };
+    isRecruiter = true;
+  }
+
+  // If no eligible account is found (non-existent, deleted, blocked, or admin),
+  // return the generic response immediately without sending an email.
+  if (!eligibleAccount) {
+    return {
+      message: AUTH_MESSAGES.FORGOT_PASSWORD_GENERIC_RESPONSE,
+    };
+  }
+
+  // Generate cryptographically secure random reset token (64 hex characters)
+  const rawToken = crypto.randomBytes(32).toString("hex");
+
+  // Hash the token using SHA-256 for secure database storage
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(rawToken)
+    .digest("hex");
+
+  // Compute expiration time (default 15 minutes)
+  const expirationMinutes = config.PASSWORD_RESET_EXPIRES_IN_MINUTES || 15;
+  const resetPasswordExpires = new Date(
+    Date.now() + expirationMinutes * 60 * 1000,
+  );
+
+  // Store hashed token and expiration in database
+  if (isRecruiter) {
+    await prisma.company.update({
+      where: { id: eligibleAccount.id },
+      data: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires,
+      },
+    });
+  } else {
+    await prisma.user.update({
+      where: { id: eligibleAccount.id },
+      data: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires,
+      },
+    });
+  }
+
+  // Dispatch password reset email via Nodemailer
+  await sendPasswordResetEmail({
+    to: eligibleAccount.email,
+    name: eligibleAccount.name,
+    token: rawToken,
+    expirationMinutes,
+  });
+
+  return {
+    message: AUTH_MESSAGES.FORGOT_PASSWORD_GENERIC_RESPONSE,
+  };
+};
+
+const resetPassword = async (
+  payload: IResetPasswordPayload,
+): Promise<{ message: string }> => {
+  const { token, newPassword } = payload;
+
+  if (!token || !newPassword) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.RESET_PASSWORD_TOKEN_INVALID_OR_EXPIRED,
+    );
+  }
+
+  // Hash the incoming token using SHA-256 to compare against stored hash
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(token.trim())
+    .digest("hex");
+  const now = new Date();
+
+  // Look up candidate user or recruiter company with active, unexpired token
+  const [user, company] = await Promise.all([
+    prisma.user.findFirst({
+      where: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: { gt: now },
+        isDeleted: false,
+      },
+    }),
+    prisma.company.findFirst({
+      where: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: { gt: now },
+        isDeleted: false,
+      },
+    }),
+  ]);
+
+  if (!user && !company) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.RESET_PASSWORD_TOKEN_INVALID_OR_EXPIRED,
+    );
+  }
+
+  // Enforce role eligibility: Candidate or Recruiter only (never Admin)
+  if (user && user.role !== "candidate") {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      AUTH_MESSAGES.RESET_PASSWORD_TOKEN_INVALID_OR_EXPIRED,
+    );
+  }
+
+  if (user && user.status === "blocked") {
+    throw new AppError(StatusCodes.FORBIDDEN, AUTH_MESSAGES.ACCOUNT_BLOCKED);
+  }
+
+  if (company && company.status === "blocked") {
+    throw new AppError(StatusCodes.FORBIDDEN, AUTH_MESSAGES.ACCOUNT_BLOCKED);
+  }
+
+  // Hash new password using bcrypt (cost factor 10)
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Single-use guarantee: Invalidate reset token and resetPasswordExpires upon successful update
+  if (user) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      },
+    });
+  } else if (company) {
+    await prisma.company.update({
+      where: { id: company.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      },
+    });
+  }
+
+  return {
+    message: AUTH_MESSAGES.RESET_PASSWORD_SUCCESS,
+  };
+};
+
 const authService = {
   registerCandidate,
   registerRecruiter,
@@ -795,6 +998,8 @@ const authService = {
   login,
   refreshToken,
   resendVerificationEmail,
+  forgotPassword,
+  resetPassword,
   getMe,
 };
 

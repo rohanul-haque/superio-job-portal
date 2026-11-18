@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 dotenv.config({ path: path.join(process.cwd(), ".env") });
 
 const config = {
@@ -23,6 +24,9 @@ const config = {
   JWT_EMAIL_VERIFICATION_SECRET: process.env.JWT_EMAIL_VERIFICATION_SECRET,
   JWT_EMAIL_VERIFICATION_EXPIRES_IN:
     process.env.JWT_EMAIL_VERIFICATION_EXPIRES_IN,
+
+  PASSWORD_RESET_EXPIRES_IN_MINUTES:
+    Number(process.env.PASSWORD_RESET_EXPIRES_IN_MINUTES) || 15,
 
   ADMIN_NAME: process.env.ADMIN_NAME,
   ADMIN_EMAIL: process.env.ADMIN_EMAIL,

@@ -167,6 +167,26 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const forgotPassword = catchAsync(async (req: Request, res: Response) => {
+  const result = await authService.forgotPassword(req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: result.message,
+  });
+});
+
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const result = await authService.resetPassword(req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: result.message,
+  });
+});
+
 const authController = {
   registerCandidate,
   registerRecruiter,
@@ -175,6 +195,8 @@ const authController = {
   refreshToken,
   logout,
   resendVerificationEmail,
+  forgotPassword,
+  resetPassword,
   getMe,
 };
 

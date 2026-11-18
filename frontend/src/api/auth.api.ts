@@ -36,6 +36,14 @@ export const resendVerification = (email: string) => {
   });
 };
 
+export const forgotPassword = (email: string) => {
+  return api.post<IApiResponse<null>>("/auth/forgot-password", { email });
+};
+
+export const resetPassword = (payload: { token: string; newPassword: string }) => {
+  return api.post<IApiResponse<null>>("/auth/reset-password", payload);
+};
+
 export const login = (payload: ILoginPayload) => {
   return api.post<IApiResponse<{ user: IAuthUser }>>("/auth/login", payload);
 };
