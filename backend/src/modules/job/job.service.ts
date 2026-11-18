@@ -1,14 +1,17 @@
 import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
+import { getGeminiClient } from "../../lib/gemini";
 import prisma from "../../lib/prisma";
 import AppError from "../../utils/AppError";
 import { clearJobCandidateMatchingCache } from "../recommendation/recommendation.service";
 import {
   extractMeaningfulText,
+  formatMarkdownToHtml,
   sanitizeJobDescription,
 } from "../../utils/sanitizeHtml";
 import type {
   ICreateJobPayload,
+  IGenerateJobDescriptionPayload,
   IJobFilterQuery,
   IJobResponse,
   ISingleJobDetailResponse,
@@ -561,6 +564,106 @@ const getMyJobs = async (companyId: string): Promise<IJobResponse[]> => {
   }));
 };
 
+const generateDescription = async (
+  payload: IGenerateJobDescriptionPayload,
+): Promise<{ description: string }> => {
+  const {
+    title,
+    categoryName,
+    jobType,
+    level,
+    salary,
+    location,
+    vacancy,
+    skills,
+    requiredSkills,
+    preferredSkills,
+  } = payload;
+
+  const llm = getGeminiClient();
+
+  const detailsList: string[] = [`- Job Title: ${title}`];
+  if (categoryName) detailsList.push(`- Job Category: ${categoryName}`);
+  if (jobType) detailsList.push(`- Job Type / Employment: ${jobType}`);
+  if (level) detailsList.push(`- Experience Level: ${level}`);
+  if (salary && salary > 0)
+    detailsList.push(`- Offered Salary: $${salary.toLocaleString()} USD/year`);
+  if (location) detailsList.push(`- Work Location: ${location}`);
+  if (vacancy && vacancy > 0) detailsList.push(`- Open Vacancies: ${vacancy}`);
+  if (requiredSkills && requiredSkills.length > 0) {
+    detailsList.push(`- Required Skills: ${requiredSkills.join(", ")}`);
+  }
+  if (preferredSkills && preferredSkills.length > 0) {
+    detailsList.push(`- Preferred Skills: ${preferredSkills.join(", ")}`);
+  }
+  if (skills && skills.length > 0) {
+    detailsList.push(`- Skills: ${skills.join(", ")}`);
+  }
+
+  const prompt = `You are a professional HR specialist and senior hiring expert crafting a realistic, engaging, and comprehensive job description for a job recruitment platform.
+
+Given Job Information:
+${detailsList.join("\n")}
+
+Job Description Structure Requirements:
+Include the following sections where appropriate:
+1. <h3>Job Overview</h3>: A clear, engaging summary of the position, mission, and day-to-day impact.
+2. <h3>Key Responsibilities</h3>: A realistic bulleted list (<ul><li>...</li></ul>) of daily duties and core deliverables appropriate for a ${level || "professional"} ${title}.
+3. <h3>Required Qualifications</h3>: A bulleted list (<ul><li>...</li></ul>) of essential qualifications and core background.
+4. <h3>Technical & Professional Skills</h3>: A bulleted list (<ul><li>...</li></ul>) highlighting the required skills and proficiencies.${skills || requiredSkills ? ` Incorporate: ${(requiredSkills || skills || []).join(", ")}.` : ""}
+5. <h3>Preferred Qualifications</h3>: A bulleted list (<ul><li>...</li></ul>) of beneficial nice-to-have capabilities.
+
+Writing & Formatting Rules:
+- Tone: Professional, human-written, engaging, and clear.
+- Relevance: Tailor strictly to "${title}" and the provided parameters.
+- Do NOT invent unmentioned company perks, equity, bonuses, or unverified claims.
+- Do NOT include markdown code fences (e.g., do NOT wrap with \`\`\`html or \`\`\`).
+- Output clean HTML markup using <h3>, <p>, <strong>, and <ul><li> elements directly.`;
+
+  try {
+    const response = await llm.invoke(prompt);
+    let rawText = "";
+    if (typeof response.content === "string") {
+      rawText = response.content;
+    } else if (Array.isArray(response.content)) {
+      rawText = response.content
+        .map((p) =>
+          typeof p === "string"
+            ? p
+            : "text" in p
+              ? (p as { text: string }).text
+              : "",
+        )
+        .join("\n");
+    }
+
+    // Strip any markdown code fences if model wrapped the output
+    let cleanText = rawText
+      .replace(/^```(?:html)?\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    // If no HTML tags were generated, convert markdown format to HTML
+    if (
+      !cleanText.includes("<h3") &&
+      !cleanText.includes("<p>") &&
+      !cleanText.includes("<ul>")
+    ) {
+      cleanText = formatMarkdownToHtml(cleanText);
+    }
+
+    const sanitized = sanitizeJobDescription(cleanText);
+    return { description: sanitized };
+  } catch (error: unknown) {
+    const errorMsg =
+      error instanceof Error ? error.message : "AI service temporarily unavailable";
+    throw new AppError(
+      StatusCodes.BAD_GATEWAY,
+      `Failed to generate job description: ${errorMsg}`,
+    );
+  }
+};
+
 const jobService = {
   createJob,
   getAllJobs,
@@ -568,6 +671,7 @@ const jobService = {
   getMyJobs,
   updateJob,
   deleteJob,
+  generateDescription,
 };
 
 export default jobService;

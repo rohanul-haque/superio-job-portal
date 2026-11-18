@@ -46,7 +46,6 @@ export default function CandidateMatchingView() {
     meta,
     isLoadingJobs,
     isLoadingMatches,
-    isRefreshing,
     error,
     refetch,
   } = useCandidateMatching();
@@ -141,22 +140,6 @@ export default function CandidateMatchingView() {
         </div>
 
         <div className="flex items-center gap-2.5">
-          {selectedJobId && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch(true)}
-              disabled={isLoadingMatches || isRefreshing}
-              className="text-xs border-slate-200 cursor-pointer"
-            >
-              {isRefreshing ? (
-                <Spinner size="sm" className="mr-1.5" />
-              ) : (
-                <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-              )}
-              Refresh Matches
-            </Button>
-          )}
           <Link href="/recruiter/dashboard/add-job">
             <Button
               size="sm"

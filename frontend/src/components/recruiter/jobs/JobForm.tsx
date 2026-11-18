@@ -24,7 +24,11 @@ import { queryKeys } from "@/lib/query-keys";
 import cn from "@/lib/utils";
 import { getAllCategories } from "@/services/category.service";
 import { getJobById } from "@/services/job.service";
-import { createJob, updateJob } from "@/services/recruiter.service";
+import {
+  createJob,
+  generateJobDescription,
+  updateJob,
+} from "@/services/recruiter.service";
 import type { ICategory } from "@/types/category";
 import type { ExperienceLevel, JobType } from "@/types/job.type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,6 +38,7 @@ import {
   Pencil,
   PlusCircle,
   Save,
+  Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
@@ -92,6 +97,7 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
   const [description, setDescription] = useState("");
   const [visible, setVisible] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
 
   const deadlineDate = useMemo(() => {
     if (!deadline) return undefined;
@@ -203,6 +209,75 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
   });
 
   const isSubmitting = saveJobMutation.isPending;
+
+  const handleGenerateAiDescription = async () => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      setFormError("Job title is required before generating an AI description.");
+      toast.error("Job Title Required", {
+        description:
+          "Please enter a job title above so the AI can craft a tailored description.",
+      });
+      return;
+    }
+
+    const existingMeaningfulText = description
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .trim();
+
+    if (existingMeaningfulText.length > 20) {
+      const confirmOverwrite = window.confirm(
+        "The Description field already contains content. Overwrite it with a newly generated AI description?",
+      );
+      if (!confirmOverwrite) {
+        return;
+      }
+    }
+
+    setIsGeneratingAi(true);
+    setFormError(null);
+
+    try {
+      const selectedCategory = categories.find((c) => c.id === categoryId);
+      const generatedHtml = await generateJobDescription({
+        title: trimmedTitle,
+        categoryName: selectedCategory?.name,
+        jobType,
+        level,
+        salary: salary ? Number(salary) : undefined,
+        location: location.trim() || undefined,
+        vacancy: vacancy ? Number(vacancy) : undefined,
+      });
+
+      if (!generatedHtml) {
+        throw new Error("No description was returned from the AI service.");
+      }
+
+      setDescription(generatedHtml);
+      toast.success("Description Generated!", {
+        description:
+          "AI description inserted. You can freely edit and refine the content before saving.",
+      });
+    } catch (err: unknown) {
+      let msg = "Failed to generate AI description. Please try again.";
+      if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message
+      ) {
+        msg = (err as { response: { data: { message: string } } }).response.data
+          .message;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
+      toast.error("AI Generation Failed", { description: msg });
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -549,19 +624,46 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
             </p>
           </div>
 
-          <CardContent className="p-6 space-y-3">
+          <CardContent className="p-6 space-y-4">
             <TiptapEditor
               value={description}
               onChange={setDescription}
               placeholder="Outline the responsibilities, required qualifications, key technologies, and workplace perks..."
-              disabled={isSubmitting}
+              disabled={isSubmitting || isGeneratingAi}
               error={
                 formError && formError.toLowerCase().includes("description")
                   ? formError
                   : undefined
               }
             />
-            <p className="text-[11px] text-slate-400">
+
+            {/* AI Job Description Generator Action Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isGeneratingAi || isSubmitting}
+                onClick={handleGenerateAiDescription}
+                className="h-10 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 hover:text-indigo-700 text-indigo-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-all w-full sm:w-auto px-4"
+              >
+                {isGeneratingAi ? (
+                  <>
+                    <Spinner size="sm" className="text-indigo-600" />
+                    Generating Description...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 text-indigo-600 shrink-0" />
+                    Generate Description with AI
+                  </>
+                )}
+              </Button>
+              <p className="text-[11px] text-slate-400">
+                Uses your entered Job Title, Category, Level, and Salary to draft a complete role specification.
+              </p>
+            </div>
+
+            <p className="text-[11px] text-slate-400 border-t border-slate-100 pt-3">
               Format your job description using headings, lists, bold text, and
               links. Saved as clean, safe HTML.
             </p>

@@ -98,9 +98,30 @@ const updateJobValidationSchema = z.object({
   }),
 });
 
+const generateDescriptionValidationSchema = z.object({
+  body: z.object({
+    title: z
+      .string({
+        required_error: "Job title is required to generate a description",
+      })
+      .trim()
+      .min(2, "Job title must be at least 2 characters"),
+    categoryName: z.string().trim().optional(),
+    jobType: z.string().trim().optional(),
+    level: z.string().trim().optional(),
+    salary: z.number().min(0, "Salary cannot be negative").optional(),
+    location: z.string().trim().optional(),
+    vacancy: z.number().int().min(1).optional(),
+    skills: z.array(z.string().trim()).optional(),
+    requiredSkills: z.array(z.string().trim()).optional(),
+    preferredSkills: z.array(z.string().trim()).optional(),
+  }),
+});
+
 const jobValidation = {
   createJobValidationSchema,
   updateJobValidationSchema,
+  generateDescriptionValidationSchema,
 };
 
 export default jobValidation;

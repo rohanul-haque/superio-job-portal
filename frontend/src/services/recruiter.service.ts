@@ -1,6 +1,7 @@
 import {
   createJob as createJobApi,
   deleteJob as deleteJobApi,
+  generateJobDescription as generateJobDescriptionApi,
   getApplicants as getApplicantsApi,
   getDashboardStats as getDashboardStatsApi,
   getMatchedCandidates as getMatchedCandidatesApi,
@@ -12,6 +13,7 @@ import {
 } from "@/api/recruiter.api";
 import type {
   ICreateJobPayload,
+  IGenerateJobDescriptionPayload,
   IJob,
   IUpdateJobPayload,
 } from "@/interfaces/job.interface";
@@ -76,6 +78,13 @@ export const updateJob = async (
 
 export const deleteJob = async (id: string): Promise<void> => {
   await deleteJobApi(id);
+};
+
+export const generateJobDescription = async (
+  payload: IGenerateJobDescriptionPayload,
+): Promise<string> => {
+  const res = await generateJobDescriptionApi(payload);
+  return res.data.data?.description || "";
 };
 
 export const getMatchedCandidates = async (

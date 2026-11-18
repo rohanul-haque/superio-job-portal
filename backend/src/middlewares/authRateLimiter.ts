@@ -145,3 +145,17 @@ export const otpResendLimiter = createRateLimiter({
   message: "Too many OTP requests. Please wait 15 minutes before trying again.",
   keyPrefix: "otp-resend",
 });
+
+/**
+ * AI Description Generation Rate Limiter
+ * Protects AI endpoints against token quota exhaustion and abusive flooding.
+ * - Window: 15 minutes.
+ * - Max requests: 15.
+ */
+export const aiDescriptionLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 15,
+  message:
+    "Too many AI description generation requests. Please wait a few minutes before trying again.",
+  keyPrefix: "ai-description",
+});

@@ -79,6 +79,17 @@ const deleteJob = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const generateDescription = catchAsync(async (req: Request, res: Response) => {
+  const result = await jobService.generateDescription(req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: JOB_MESSAGES.DESCRIPTION_GENERATION_SUCCESS,
+    data: result,
+  });
+});
+
 const jobController = {
   createJob,
   getAllJobs,
@@ -86,6 +97,7 @@ const jobController = {
   getMyJobs,
   updateJob,
   deleteJob,
+  generateDescription,
 };
 
 export default jobController;

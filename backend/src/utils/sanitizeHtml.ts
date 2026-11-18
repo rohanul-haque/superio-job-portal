@@ -84,5 +84,73 @@ export const sanitizeJobDescription = (dirtyHtml: string): string => {
   return clean.trim();
 };
 
+/**
+ * Converts markdown-style headings, lists, bold text, and paragraphs into clean HTML elements.
+ */
+export const formatMarkdownToHtml = (content: string): string => {
+  if (!content || typeof content !== "string") return "";
+
+  const lines = content.split(/\r?\n/);
+  const htmlParts: string[] = [];
+  let inList = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const line = rawLine.trim();
+
+    if (!line) {
+      if (inList) {
+        htmlParts.push("</ul>");
+        inList = false;
+      }
+      continue;
+    }
+
+    // Check for headings: # to ####
+    const headingMatch = line.match(/^(#{1,4})\s+(.+)$/);
+    if (headingMatch) {
+      if (inList) {
+        htmlParts.push("</ul>");
+        inList = false;
+      }
+      const text = headingMatch[2].replace(/\*\*(.*?)\*\*/g, "$1").trim();
+      htmlParts.push(`<h3>${text}</h3>`);
+      continue;
+    }
+
+    // Check for bullet list items: * or -
+    const listMatch = line.match(/^[\*\-]\s+(.+)$/);
+    if (listMatch) {
+      if (!inList) {
+        htmlParts.push("<ul>");
+        inList = true;
+      }
+      const itemText = listMatch[1].replace(
+        /\*\*(.*?)\*\*/g,
+        "<strong>$1</strong>",
+      );
+      htmlParts.push(`<li>${itemText}</li>`);
+      continue;
+    }
+
+    // Normal paragraph text
+    if (inList) {
+      htmlParts.push("</ul>");
+      inList = false;
+    }
+    const formattedParagraph = line.replace(
+      /\*\*(.*?)\*\*/g,
+      "<strong>$1</strong>",
+    );
+    htmlParts.push(`<p>${formattedParagraph}</p>`);
+  }
+
+  if (inList) {
+    htmlParts.push("</ul>");
+  }
+
+  return htmlParts.join("\n");
+};
+
 export default sanitizeJobDescription;
 

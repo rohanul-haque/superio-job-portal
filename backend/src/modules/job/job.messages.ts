@@ -10,6 +10,8 @@ const JOB_MESSAGES = {
   COMPANY_NOT_FOUND: "Recruiter company profile not found",
   UNAUTHORIZED_ACCESS: "You are not authorized to modify this job vacancy",
   RECRUITER_ONLY: "Only verified recruiter accounts can publish job openings",
+  DESCRIPTION_GENERATION_SUCCESS:
+    "Job description generated successfully with AI",
 };
 
 export default JOB_MESSAGES;

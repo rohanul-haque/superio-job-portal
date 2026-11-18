@@ -1,6 +1,7 @@
 import type { IApiResponse } from "@/interfaces/api-response.interface";
 import type {
   ICreateJobPayload,
+  IGenerateJobDescriptionPayload,
   IJob,
   IUpdateJobPayload,
 } from "@/interfaces/job.interface";
@@ -53,6 +54,15 @@ export const updateJob = (id: string, data: IUpdateJobPayload) => {
 
 export const deleteJob = (id: string) => {
   return api.delete<IApiResponse<null>>(`/jobs/${id}`);
+};
+
+export const generateJobDescription = (
+  payload: IGenerateJobDescriptionPayload,
+) => {
+  return api.post<IApiResponse<{ description: string }>>(
+    "/jobs/generate-description",
+    payload,
+  );
 };
 
 export const getMatchedCandidates = (jobId: string, refresh = false) => {

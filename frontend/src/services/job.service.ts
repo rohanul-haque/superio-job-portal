@@ -1,8 +1,12 @@
 import {
+  generateJobDescription as generateJobDescriptionApi,
   getAllJobs as getAllJobsApi,
   getJobById as getJobByIdApi,
 } from "@/api/job.api";
-import type { IJobFilterParams } from "@/interfaces/job.interface";
+import type {
+  IGenerateJobDescriptionPayload,
+  IJobFilterParams,
+} from "@/interfaces/job.interface";
 import type {
   IJobsResponseData,
   ISingleJobDetail,
@@ -26,4 +30,11 @@ export const getAllJobs = async (
 export const getJobById = async (id: string): Promise<ISingleJobDetail> => {
   const res = await getJobByIdApi(id);
   return res.data.data;
+};
+
+export const generateJobDescription = async (
+  payload: IGenerateJobDescriptionPayload,
+): Promise<string> => {
+  const res = await generateJobDescriptionApi(payload);
+  return res.data.data?.description || "";
 };

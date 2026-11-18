@@ -1,10 +1,20 @@
 import { Router } from "express";
 import authGuard from "../../middlewares/authGuard";
+import { aiDescriptionLimiter } from "../../middlewares/authRateLimiter";
 import validateRequest from "../../middlewares/validateRequest";
 import jobController from "./job.controller";
 import jobValidation from "./job.validation";
 
 const router = Router();
+
+// Recruiter: AI-powered Job Description Generation
+router.post(
+  "/generate-description",
+  authGuard("recruiter"),
+  aiDescriptionLimiter,
+  validateRequest(jobValidation.generateDescriptionValidationSchema),
+  jobController.generateDescription,
+);
 
 // Public: Server-side filtered, searched, and paginated active jobs
 router.get("/", jobController.getAllJobs);

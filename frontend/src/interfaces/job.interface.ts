@@ -81,3 +81,16 @@ export interface IUpdateJobPayload {
   deadline?: string;
   visible?: boolean;
 }
+
+export interface IGenerateJobDescriptionPayload {
+  title: string;
+  categoryName?: string;
+  jobType?: string;
+  level?: string;
+  salary?: number;
+  location?: string;
+  vacancy?: number;
+  skills?: string[];
+  requiredSkills?: string[];
+  preferredSkills?: string[];
+}

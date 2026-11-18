@@ -1,7 +1,7 @@
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 import config from "../../config";
+import { getGeminiClient } from "../../lib/gemini";
 import prisma from "../../lib/prisma";
 import AppError from "../../utils/AppError";
 import type {
@@ -39,23 +39,6 @@ export const clearCandidateCache = (candidateId: string): void => {
 
 export const clearJobCandidateMatchingCache = (jobId: string): void => {
   candidateMatchingCache.delete(jobId);
-};
-
-// Cached singleton instance of ChatGoogleGenerativeAI to preserve Keep-Alive connections
-let cachedGeminiModel: ChatGoogleGenerativeAI | null = null;
-let cachedGeminiApiKey: string | null = null;
-
-const getGeminiClient = (apiKey: string): ChatGoogleGenerativeAI => {
-  if (!cachedGeminiModel || cachedGeminiApiKey !== apiKey) {
-    cachedGeminiModel = new ChatGoogleGenerativeAI({
-      model: "gemini-1.5-flash",
-      apiKey,
-      temperature: 0.1,
-      maxRetries: 2,
-    });
-    cachedGeminiApiKey = apiKey;
-  }
-  return cachedGeminiModel;
 };
 
 // ============================================================================

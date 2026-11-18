@@ -123,9 +123,6 @@ export function useCandidateMatching() {
     mutationFn: (jobId: string) => getMatchedCandidates(jobId, true),
     onSuccess: (data, jobId) => {
       queryClient.setQueryData(queryKeys.recruiter.matches(jobId, false), data);
-      toast.success("Matches Refreshed", {
-        description: "Evaluated latest candidate profiles against this role.",
-      });
     },
     onError: (err: unknown) => {
       const msg =
