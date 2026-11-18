@@ -1,36 +1,51 @@
 import { Router } from "express";
 import authGuard from "../../middlewares/authGuard";
+import {
+  emailVerificationLimiter,
+  loginLimiter,
+  refreshTokenLimiter,
+  resendVerificationLimiter,
+  signupLimiter,
+} from "../../middlewares/authRateLimiter";
 import validateRequest from "../../middlewares/validateRequest";
 import authController from "./auth.controller";
 import authValidation from "./auth.validation";
 
 const router = Router();
 
-// Candidate registration
+// Candidate registration (protected against account creation spam)
 router.post(
   "/candidate/register",
+  signupLimiter,
   validateRequest(authValidation.candidateRegisterValidationSchema),
   authController.registerCandidate,
 );
 
-// Recruiter registration
+// Recruiter registration (protected against account creation spam)
 router.post(
   "/recruiter/register",
+  signupLimiter,
   validateRequest(authValidation.recruiterRegisterValidationSchema),
   authController.registerRecruiter,
 );
 
 // Email verification (via HTTP-only cookie or login-gated on new device)
-router.post("/verify-email", authController.verifyEmail);
+router.post(
+  "/verify-email",
+  emailVerificationLimiter,
+  authController.verifyEmail,
+);
 router.post(
   "/verify-email/credentials",
+  loginLimiter,
   validateRequest(authValidation.verifyEmailCredentialsValidationSchema),
   authController.verifyEmail,
 );
 
-// Login (sets HTTP-only accessToken & refreshToken cookies)
+// Login (strict failed-attempt rate limiting to protect against brute force)
 router.post(
   "/login",
+  loginLimiter,
   validateRequest(authValidation.loginValidationSchema),
   authController.login,
 );
@@ -38,6 +53,7 @@ router.post(
 // Refresh Access Token (extracts refreshToken from cookie, sets new accessToken cookie)
 router.post(
   "/refresh-token",
+  refreshTokenLimiter,
   validateRequest(authValidation.refreshTokenValidationSchema),
   authController.refreshToken,
 );
@@ -45,9 +61,10 @@ router.post(
 // Logout (clears all authentication cookies)
 router.post("/logout", authController.logout);
 
-// Resend verification
+// Resend verification (strict quota to prevent email dispatch abuse)
 router.post(
   "/resend-verification",
+  resendVerificationLimiter,
   validateRequest(authValidation.resendVerificationValidationSchema),
   authController.resendVerificationEmail,
 );

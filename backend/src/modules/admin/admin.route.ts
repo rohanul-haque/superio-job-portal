@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { passwordChangeLimiter } from "../../middlewares/authRateLimiter";
 import authGuard from "../../middlewares/authGuard";
 import { uploadAdminMedia } from "../../middlewares/upload";
 import validateRequest from "../../middlewares/validateRequest";
@@ -68,6 +69,7 @@ router.delete("/profile/avatar", adminController.removeProfileImage);
 router.delete("/profile/image", adminController.removeProfileImage);
 router.patch(
   "/change-password",
+  passwordChangeLimiter,
   validateRequest(adminValidation.changePasswordValidationSchema),
   adminController.changePassword,
 );

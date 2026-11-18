@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { resetLoginLimit } from "../../middlewares/authRateLimiter";
 import AppError from "../../utils/AppError";
 import catchAsync from "../../utils/catchAsync";
 import {
@@ -64,6 +65,9 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   if (req.body?.email && req.body?.password) {
     const result = await authService.verifyEmailWithCredentials(req.body);
 
+    // Reset failed login attempt counter on successful credential verification
+    resetLoginLimit(req);
+
     // Set authenticated session cookies on this new device
     setAuthCookies(res, {
       accessToken: result.accessToken,
@@ -90,6 +94,9 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
 
 const login = catchAsync(async (req: Request, res: Response) => {
   const result = await authService.login(req.body);
+
+  // Reset failed login attempt counter on successful authentication
+  resetLoginLimit(req);
 
   // Store both Access Token and Refresh Token exclusively in HTTP-only cookies
   setAuthCookies(res, {
