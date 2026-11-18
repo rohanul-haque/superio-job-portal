@@ -38,7 +38,7 @@ import {
   Calendar as CalendarIcon,
   PlusCircle,
   Save,
-  Sparkles
+  Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
@@ -212,7 +212,9 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
   const handleGenerateAiDescription = async () => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      setFormError("Job title is required before generating an AI description.");
+      setFormError(
+        "Job title is required before generating an AI description.",
+      );
       toast.error("Job Title Required", {
         description:
           "Please enter a job title above so the AI can craft a tailored description.",
@@ -613,37 +615,16 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
 
         {/* Job Description Editor Card */}
         <Card className="border-slate-200 shadow-xs">
-          <div className="border-b border-slate-100 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="border-b border-slate-100 p-5 flex flex-col">
             <div>
               <h3 className="text-sm font-bold text-slate-900">
                 Role Description & Requirements
               </h3>
               <p className="text-[11px] text-slate-500">
-                Provide thorough details about the responsibilities, required tech
-                stack, and benefits.
+                Provide thorough details about the responsibilities, required
+                tech stack, and benefits.
               </p>
             </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={isGeneratingAi || isSubmitting}
-              onClick={handleGenerateAiDescription}
-              className="h-9 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 hover:text-indigo-700 text-indigo-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-all shrink-0 w-full sm:w-auto px-3.5"
-            >
-              {isGeneratingAi ? (
-                <>
-                  <Spinner size="sm" className="text-indigo-600" />
-                  Generating Description...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
-                  Generate Description with AI
-                </>
-              )}
-            </Button>
           </div>
 
           <CardContent className="p-6">
@@ -658,6 +639,28 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
                   : undefined
               }
             />
+            <div className="flex justify-end mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isGeneratingAi || isSubmitting}
+                onClick={handleGenerateAiDescription}
+                className="h-9 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 hover:text-indigo-700 text-indigo-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-all shrink-0 w-full sm:w-auto px-3.5"
+              >
+                {isGeneratingAi ? (
+                  <>
+                    <Spinner size="sm" className="text-indigo-600" />
+                    Generating Description...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+                    Generate Description with AI
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
