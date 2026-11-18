@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Spinner from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
 import { queryKeys } from "@/lib/query-keys";
 import cn from "@/lib/utils";
 import { getAllCategories } from "@/services/category.service";
@@ -35,14 +36,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   Calendar as CalendarIcon,
-  Pencil,
   PlusCircle,
   Save,
-  Sparkles,
+  Sparkles
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import { toast } from "@/components/ui/toast";
 
 const JOB_TYPES: JobType[] = [
   "Full-time",
@@ -614,17 +613,40 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
 
         {/* Job Description Editor Card */}
         <Card className="border-slate-200 shadow-xs">
-          <div className="border-b border-slate-100 p-5">
-            <h3 className="text-sm font-bold text-slate-900">
-              Role Description & Requirements
-            </h3>
-            <p className="text-[11px] text-slate-500">
-              Provide thorough details about the responsibilities, required tech
-              stack, and benefits.
-            </p>
+          <div className="border-b border-slate-100 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">
+                Role Description & Requirements
+              </h3>
+              <p className="text-[11px] text-slate-500">
+                Provide thorough details about the responsibilities, required tech
+                stack, and benefits.
+              </p>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isGeneratingAi || isSubmitting}
+              onClick={handleGenerateAiDescription}
+              className="h-9 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 hover:text-indigo-700 text-indigo-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-all shrink-0 w-full sm:w-auto px-3.5"
+            >
+              {isGeneratingAi ? (
+                <>
+                  <Spinner size="sm" className="text-indigo-600" />
+                  Generating Description...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+                  Generate Description with AI
+                </>
+              )}
+            </Button>
           </div>
 
-          <CardContent className="p-6 space-y-4">
+          <CardContent className="p-6">
             <TiptapEditor
               value={description}
               onChange={setDescription}
@@ -636,37 +658,6 @@ export default function JobForm({ mode, jobId }: JobFormProps) {
                   : undefined
               }
             />
-
-            {/* AI Job Description Generator Action Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={isGeneratingAi || isSubmitting}
-                onClick={handleGenerateAiDescription}
-                className="h-10 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 hover:text-indigo-700 text-indigo-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-all w-full sm:w-auto px-4"
-              >
-                {isGeneratingAi ? (
-                  <>
-                    <Spinner size="sm" className="text-indigo-600" />
-                    Generating Description...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 text-indigo-600 shrink-0" />
-                    Generate Description with AI
-                  </>
-                )}
-              </Button>
-              <p className="text-[11px] text-slate-400">
-                Uses your entered Job Title, Category, Level, and Salary to draft a complete role specification.
-              </p>
-            </div>
-
-            <p className="text-[11px] text-slate-400 border-t border-slate-100 pt-3">
-              Format your job description using headings, lists, bold text, and
-              links. Saved as clean, safe HTML.
-            </p>
           </CardContent>
         </Card>
 
