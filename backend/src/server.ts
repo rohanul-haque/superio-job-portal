@@ -11,9 +11,7 @@ async function bootstrap() {
     console.log("Connected to MongoDB via Prisma ORM successfully.");
 
     server = app.listen(config.PORT, () => {
-      console.log(
-        `Superio Enterprise Server (v2) is running on port ${config.PORT}`,
-      );
+      console.log(`Hire Nest Server is running on port ${config.PORT}`);
       console.log(`Environment: ${config.NODE_ENV}`);
       console.log(`API Base URL: http://localhost:${config.PORT}/api/v1`);
     });
