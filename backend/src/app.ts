@@ -3,7 +3,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import type { Application } from "express";
 import express from "express";
-import { StatusCodes } from "http-status-codes";
 import corsOptions from "./lib/cors-options";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import globalRateLimiter from "./middlewares/globalRateLimiter";
@@ -38,18 +37,17 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // 5. Existing global middleware
 app.use(cookieParser());
 
-// 6. Application routes
-app.use("/", (_, res) => {
-  res.status(StatusCodes.OK).json({
-    success: true,
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-    message: "Hire Nest API is running...",
-  });
-});
-
 // Protect all /api/v1 endpoints with the Global Rate Limiter
 app.use("/api/v1", globalRateLimiter, routes);
+
+app.get("/", (_, res) => {
+  res.status(200).json({
+    success: true,
+    version: "2.0.0",
+    message: "Hire Nest API is healthy",
+    timeStamp: new Date().toLocaleTimeString(),
+  });
+});
 
 // 7. Global error handler & 404 handler
 app.use(globalErrorHandler);

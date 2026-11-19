@@ -17,14 +17,16 @@ export interface IEmailVerificationPayload {
 
 export const signAccessToken = (payload: IJwtPayload): string => {
   const options: SignOptions = {
-    expiresIn: config.JWT_ACCESS_EXPIRES_IN as SignOptions["expiresIn"],
+    expiresIn:
+      (config.JWT_ACCESS_EXPIRES_IN as SignOptions["expiresIn"]) || "15m",
   };
   return jwt.sign(payload, config.JWT_ACCESS_SECRET as Secret, options);
 };
 
 export const signRefreshToken = (payload: IJwtPayload): string => {
   const options: SignOptions = {
-    expiresIn: config.JWT_REFRESH_EXPIRES_IN as SignOptions["expiresIn"],
+    expiresIn:
+      (config.JWT_REFRESH_EXPIRES_IN as SignOptions["expiresIn"]) || "30d",
   };
   return jwt.sign(payload, config.JWT_REFRESH_SECRET as Secret, options);
 };
